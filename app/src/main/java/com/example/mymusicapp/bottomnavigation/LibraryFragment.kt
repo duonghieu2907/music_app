@@ -8,8 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView.LayoutParams
 import com.example.mymusicapp.R
 import com.example.mymusicapp.library.BrowseLibrary
+import com.example.mymusicapp.library.FragmentLibraryFilterAdapter
+import com.example.mymusicapp.library.LibraryFilterItem
 
 class LibraryFragment : Fragment() {
 
@@ -33,10 +40,35 @@ class LibraryFragment : Fragment() {
             val intent: Intent = Intent(context, BrowseLibrary::class.java);
             startActivity(intent);
         }
+
+        //Implement item filter
+        //Init adapter
+        val itemFilterAdapter = FragmentLibraryFilterAdapter(createItemFilter())
+
+        //Init layourManager
+        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+        //Setup recycleView
+        val recyclerView: RecyclerView = view.findViewById(R.id.libraryFilter)
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = itemFilterAdapter
+
+
     }
     private fun loadFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit();
+    }
+
+    //Create the item list
+    private fun createItemFilter() : ArrayList<LibraryFilterItem> {
+        val items = ArrayList<LibraryFilterItem>()
+        items.add(LibraryFilterItem("Playlists"))
+        items.add(LibraryFilterItem("Artists"))
+        items.add(LibraryFilterItem("Albums"))
+        items.add(LibraryFilterItem("Podcasts"))
+
+        return items
     }
 }
