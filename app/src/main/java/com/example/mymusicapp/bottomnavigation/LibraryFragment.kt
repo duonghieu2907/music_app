@@ -6,22 +6,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutParams
 import com.example.mymusicapp.R
 import com.example.mymusicapp.library.BrowseLibrary
 import com.example.mymusicapp.library.FragmentLibraryFilterAdapter
+import com.example.mymusicapp.library.FragmentYourLibrary
 import com.example.mymusicapp.library.LibraryFilterItem
 
-class LibraryFragment : Fragment() {
+class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibraryFilterSelectionListener {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
@@ -33,8 +33,7 @@ class LibraryFragment : Fragment() {
 
     private fun App(view: View) {
         //Implement search icon
-        val toolbarContainer: FrameLayout = view.findViewById(R.id.toolNav)
-        val search_icon: ImageButton = toolbarContainer.findViewById(R.id.search_icon);
+        val search_icon: ImageButton = view.findViewById(R.id.search_icon);
         search_icon.setOnClickListener {
             //Going to search fragment
             val intent: Intent = Intent(context, BrowseLibrary::class.java);
@@ -43,7 +42,7 @@ class LibraryFragment : Fragment() {
 
         //Implement item filter
         //Init adapter
-        val itemFilterAdapter = FragmentLibraryFilterAdapter(createItemFilter())
+        val itemFilterAdapter = FragmentLibraryFilterAdapter(createItemFilter(), this)
 
         //Init layourManager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -53,12 +52,24 @@ class LibraryFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = itemFilterAdapter
 
+        //Default layout, calling once
+        onSelectionListener(null)
 
-    }
-    private fun loadFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit();
+        //Your library Fragment
+        val yourLibraryText : TextView = view.findViewById(R.id.YourLibraryText)
+        yourLibraryText.setOnClickListener {
+            onSelectionListener(null)
+            itemFilterAdapter.resetColors()
+        }
+
+        val yourLibraryIcon : ImageView = view.findViewById(R.id.YourLibraryIcon)
+        yourLibraryIcon.setOnClickListener {
+            onSelectionListener(null)
+            itemFilterAdapter.resetColors()
+        }
+        //Set up list
+
+
     }
 
     //Create the item list
@@ -70,5 +81,22 @@ class LibraryFragment : Fragment() {
         items.add(LibraryFilterItem("Podcasts"))
 
         return items
+    }
+
+    override fun onSelectionListener(item: LibraryFilterItem?) {
+        //Change fragment depends on the item clicks
+        when(item?.name) {
+            //"Playlists" -> loadFragment(FragmentPlaylists())
+            //"Artists" -> loadFragment(FragmentArtists)
+            //"Albums" -> loadFragment(FragmentAlbums)
+            //"Podcasts" -> loadFragment(FragmentPodcasts)
+            else -> loadFragment(FragmentYourLibrary())
+        }
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_library_container_list, fragment)
+            .commit();
     }
 }

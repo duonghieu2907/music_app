@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 
 data class LibraryFilterItem(val name: String);
-class FragmentLibraryFilterAdapter(private val filterItem: ArrayList<LibraryFilterItem>) :
+class FragmentLibraryFilterAdapter(
+    private val filterItem: ArrayList<LibraryFilterItem>,
+    private val selectionListener: FragmentLibraryFilterSelectionListener? = null) :
     RecyclerView.Adapter<FragmentLibraryFilterAdapter.ViewHolder>() {
 
         private var selectedPosition = RecyclerView.NO_POSITION
@@ -43,12 +45,28 @@ class FragmentLibraryFilterAdapter(private val filterItem: ArrayList<LibraryFilt
 
             selectedPosition = holder.adapterPosition
             notifyItemChanged(selectedPosition)
+
+            //notify the listener
+            selectionListener?.onSelectionListener(currentItem)
         }
 
     }
 
-
+    interface FragmentLibraryFilterSelectionListener {
+        fun onSelectionListener(item: LibraryFilterItem?)
+    }
     override fun getItemCount(): Int {
         return filterItem.size
+    }
+
+    fun resetColors() {
+        if(selectedPosition != RecyclerView.NO_POSITION) {
+            //Prepare a temp to store this position for further item changed
+            val prevSelectedPosition = selectedPosition
+            selectedPosition = RecyclerView.NO_POSITION //Set back to state where no item was clicked
+
+            //Changed the one that has blue
+            notifyItemChanged(prevSelectedPosition)
+        }
     }
 }
