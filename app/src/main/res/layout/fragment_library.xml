@@ -1,48 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_library_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/playListsLibraryText"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/toolNav"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/gothicbold"
-        android:text="Your Library"
-        android:textColor="@color/lightBlue"
-        android:textSize="27sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.28"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.036" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/music_logo"
-        app:layout_constraintBottom_toBottomOf="@+id/playListsLibraryText"
-        app:layout_constraintEnd_toStartOf="@id/playListsLibraryText"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/playListsLibraryText"
-        app:layout_constraintVertical_bias="0.555" />
-
-    <ImageButton
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:scaleType="centerCrop"
-        android:background="@color/black"
-        android:src="@drawable/ic_explore"
-        app:layout_constraintBottom_toBottomOf="@+id/playListsLibraryText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.772"
-        app:layout_constraintStart_toEndOf="@id/playListsLibraryText"
-        app:layout_constraintTop_toTopOf="@+id/playListsLibraryText"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.036" >
+    <include
+        layout="@layout/fragment_library_toolbar1"/>
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/libraryFilter"
@@ -53,7 +30,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playListsLibraryText"
+        app:layout_constraintTop_toBottomOf="@+id/toolNav"
         app:layout_constraintVertical_bias="0.05" />
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/libraryFilter"
+        app:layout_constraintVertical_bias="1.0" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
