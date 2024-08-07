@@ -10,13 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.mymusicapp.R
 
-data class PlaylistListItem(val name : String, val imageBit : Bitmap)
-class PlaylistListAdapter(
-    private val playlistListItem : ArrayList<PlaylistListItem>
-) : Adapter<PlaylistListAdapter.ViewHolder>() {
+data class PodcastItem(val podcastName : String, val podcastImage : Bitmap)
+class FragmentPodcastAdapter(
+    private val podcastList : ArrayList<PodcastItem>
+) : Adapter<FragmentPodcastAdapter.ViewHolder>() {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-        val titleText : TextView = itemView.findViewById(R.id.playlistTitle)
-        val titleImage : ImageButton = itemView.findViewById(R.id.playlistImage)
+        val itemText : TextView = itemView.findViewById(R.id.playlistTitle)
+        val itemImage : ImageButton = itemView.findViewById(R.id.playlistImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,10 +26,12 @@ class PlaylistListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return playlistListItem.size
+        return podcastList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
+        val currentItem = podcastList[position]
+        holder.itemText.text = currentItem.podcastName
+        holder.itemImage.setImageBitmap(currentItem.podcastImage)
     }
 }

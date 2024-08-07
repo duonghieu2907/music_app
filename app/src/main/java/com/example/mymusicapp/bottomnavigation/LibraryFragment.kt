@@ -13,8 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.library.BrowseLibrary
+import com.example.mymusicapp.library.FragmentAlbums
+import com.example.mymusicapp.library.FragmentArtists
 import com.example.mymusicapp.library.FragmentLibraryFilterAdapter
 import com.example.mymusicapp.library.FragmentPlaylists
+import com.example.mymusicapp.library.FragmentPodcasts
 import com.example.mymusicapp.library.FragmentYourLibrary
 import com.example.mymusicapp.library.LibraryFilterItem
 
@@ -87,9 +90,9 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
         //Change fragment depends on the item clicks
         when(item?.name) {
             "Playlists" -> loadFragment(FragmentPlaylists())
-            //"Artists" -> loadFragment(FragmentArtists)
-            //"Albums" -> loadFragment(FragmentAlbums)
-            //"Podcasts" -> loadFragment(FragmentPodcasts)
+            "Artists" -> loadFragment(FragmentArtists())
+            "Albums" -> loadFragment(FragmentAlbums())
+            "Podcasts" -> loadFragment(FragmentPodcasts())
             else -> loadFragment(FragmentYourLibrary())
         }
     }

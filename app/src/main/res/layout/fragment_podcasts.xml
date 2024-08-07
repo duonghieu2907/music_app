@@ -6,51 +6,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/addNewPlaylistsSection"
+        android:id="@+id/YourLikedPodcasts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.05">
-
-        <ImageButton
-            android:id="@+id/addIc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="center"
-            android:background="@color/black"
-            android:src="@drawable/add_new"
-            app:layout_constraintStart_toStartOf="@id/addNewPlaylistsSection"
-            app:layout_constraintEnd_toEndOf="@id/addNewPlaylistsSection"
-            app:layout_constraintTop_toTopOf="@id/addNewPlaylistsSection"
-            app:layout_constraintBottom_toBottomOf="@id/addNewPlaylistsSection"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintHorizontal_bias="0.07"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add new Playlist"
-            android:textColor="@color/white"
-            android:fontFamily="@font/gothicbold"
-            app:layout_constraintStart_toEndOf="@id/addIc"
-            app:layout_constraintEnd_toEndOf="@id/addNewPlaylistsSection"
-            app:layout_constraintTop_toTopOf="@id/addIc"
-            app:layout_constraintBottom_toBottomOf="@id/addIc"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintHorizontal_bias="0.1"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/YourLikedSongSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addNewPlaylistsSection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.05">
 
@@ -61,21 +22,21 @@
             android:scaleType="center"
             android:background="@color/black"
             android:src="@drawable/favorite_ic"
-            app:layout_constraintStart_toStartOf="@id/YourLikedSongSection"
-            app:layout_constraintEnd_toEndOf="@id/YourLikedSongSection"
-            app:layout_constraintTop_toTopOf="@id/YourLikedSongSection"
-            app:layout_constraintBottom_toBottomOf="@id/YourLikedSongSection"
+            app:layout_constraintStart_toStartOf="@id/YourLikedPodcasts"
+            app:layout_constraintEnd_toEndOf="@id/YourLikedPodcasts"
+            app:layout_constraintTop_toTopOf="@id/YourLikedPodcasts"
+            app:layout_constraintBottom_toBottomOf="@id/YourLikedPodcasts"
             app:layout_constraintVertical_bias="0"
             app:layout_constraintHorizontal_bias="0.07"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Liked Songs"
+            android:text="Your Liked Podcasts"
             android:textColor="@color/white"
             android:fontFamily="@font/gothicbold"
             app:layout_constraintStart_toEndOf="@id/favoriteIc"
-            app:layout_constraintEnd_toEndOf="@id/YourLikedSongSection"
+            app:layout_constraintEnd_toEndOf="@id/YourLikedPodcasts"
             app:layout_constraintTop_toTopOf="@id/favoriteIc"
             app:layout_constraintBottom_toBottomOf="@id/favoriteIc"
             app:layout_constraintVertical_bias="0.5"
@@ -84,28 +45,28 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/recentlyPlayed"
+        android:id="@+id/AtoZ"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Recently played"
+        android:text="A - Z"
         android:fontFamily="@font/gothicbold"
         android:textColor="@color/lightBlue"
         android:drawableLeft="@drawable/sort"
         android:drawablePadding="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/YourLikedSongSection"
+        app:layout_constraintTop_toBottomOf="@id/YourLikedPodcasts"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.05"
         app:layout_constraintHorizontal_bias="0.1"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/yourLibraryList"
+        android:id="@+id/PodcastsList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recentlyPlayed"
+        app:layout_constraintTop_toBottomOf="@id/AtoZ"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.1"
         app:layout_constraintHorizontal_bias="0.1"/>
