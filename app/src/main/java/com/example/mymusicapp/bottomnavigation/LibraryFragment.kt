@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.library.BrowseLibrary
 import com.example.mymusicapp.library.FragmentLibraryFilterAdapter
+import com.example.mymusicapp.library.FragmentPlaylists
 import com.example.mymusicapp.library.FragmentYourLibrary
 import com.example.mymusicapp.library.LibraryFilterItem
 
@@ -52,8 +53,6 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = itemFilterAdapter
 
-        //Default layout, calling once
-        onSelectionListener(null)
 
         //Your library Fragment
         val yourLibraryText : TextView = view.findViewById(R.id.YourLibraryText)
@@ -68,7 +67,8 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
             itemFilterAdapter.resetColors()
         }
         //Set up list
-
+        //Default layout, calling once
+        onSelectionListener(null)
 
     }
 
@@ -86,7 +86,7 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
     override fun onSelectionListener(item: LibraryFilterItem?) {
         //Change fragment depends on the item clicks
         when(item?.name) {
-            //"Playlists" -> loadFragment(FragmentPlaylists())
+            "Playlists" -> loadFragment(FragmentPlaylists())
             //"Artists" -> loadFragment(FragmentArtists)
             //"Albums" -> loadFragment(FragmentAlbums)
             //"Podcasts" -> loadFragment(FragmentPodcasts)
