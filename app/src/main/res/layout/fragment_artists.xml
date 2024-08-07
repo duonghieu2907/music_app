@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.05">
+
+        <TextView
+            android:id="@+id/sortBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sort by"
+            android:fontFamily="@font/gothicbold"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toStartOf="@id/toolSection"
+            app:layout_constraintEnd_toEndOf="@id/toolSection"
+            app:layout_constraintTop_toTopOf="@id/toolSection"
+            app:layout_constraintBottom_toBottomOf="@id/toolSection"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.1"/>
+
+        <TextView
+            android:id="@+id/recentlyPlayed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableRight="@drawable/sort"
+            android:drawablePadding="4dp"
+            android:fontFamily="@font/gothicbold"
+            android:text="Recently played"
+            android:textColor="@color/lightBlue"
+            app:layout_constraintStart_toStartOf="@id/toolSection"
+            app:layout_constraintEnd_toEndOf="@id/toolSection"
+            app:layout_constraintTop_toTopOf="@id/toolSection"
+            app:layout_constraintBottom_toBottomOf="@id/toolSection"
+            app:layout_constraintHorizontal_bias="0.9"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/artistsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolSection"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintHorizontal_bias="0.1"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
