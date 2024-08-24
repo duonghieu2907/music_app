@@ -25,6 +25,11 @@ class FragmentAlbums : Fragment() {
 
     private fun App(view: View) {
         //Your Liked Albums
+        val yourLikedAlbums : View = view.findViewById(R.id.YourLikedAlbums)
+
+        yourLikedAlbums.setOnClickListener {
+            //Navigate here
+        }
 
         //Adapter
         val adapter = FragmentAlbumsAdapter(createAlbumsItem())

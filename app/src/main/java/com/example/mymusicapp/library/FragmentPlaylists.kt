@@ -26,6 +26,11 @@ class FragmentPlaylists : Fragment() {
         //Implementing here
 
         //Your liked playlists
+        val yourLikedPlaylists : View = view.findViewById(R.id.YourLikedPlaylist)
+
+        yourLikedPlaylists.setOnClickListener {
+            //Navigate here
+        }
 
         //Lists
         //Adapter
