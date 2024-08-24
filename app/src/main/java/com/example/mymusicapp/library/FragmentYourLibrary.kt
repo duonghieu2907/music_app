@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,11 +31,17 @@ class FragmentYourLibrary : Fragment() {
         val addNewPlaylistSection : View  = view.findViewById(R.id.addNewPlaylistsSection)
 
         addNewPlaylistSection.setOnClickListener {
+            //Sample to test if working
             val intent: Intent = Intent(context, CreateNewPlaylist::class.java)
             startActivity(intent)
         }
-        //your liked song
 
+        //your liked song
+        val yourLikedSongs : View = view.findViewById(R.id.YourLikedSongSection)
+
+        yourLikedSongs.setOnClickListener {
+            //Change here
+        }
 
         //Lists
         //Adapter

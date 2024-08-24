@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +26,12 @@ class FragmentPodcasts : Fragment() {
     }
 
     private fun App(view: View) {
-        //Your liked podcasts
+        //Your liked podcasts, click on image or text to change
+        val yourLikedPodcasts : View = view.findViewById(R.id.YourLikedPodcasts)
+
+        yourLikedPodcasts.setOnClickListener {
+            //Navigate here
+        }
 
         //Adapter
         val adapter = FragmentPodcastAdapter(createPodcastItem())
