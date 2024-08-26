@@ -6,4 +6,9 @@
     </style>
 
     <style name="Theme.MyMusicApp" parent="Base.Theme.MyMusicApp" />
+
+    <!-- Custom text appearance for BottomNavigationView items -->
+    <style name="BottomNavigationViewTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>
