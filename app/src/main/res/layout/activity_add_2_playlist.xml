@@ -27,7 +27,7 @@
         app:layout_constraintTop_toTopOf="@id/back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/newPlaylistButton"
@@ -43,7 +43,7 @@
         android:textSize="15sp"
         android:background="@drawable/new_playlist"
         android:padding="16dp"
-        android:fontFamily="@font/centurygothic_bold" />
+        android:fontFamily="@font/gothicbold" />
 
 
 
@@ -81,7 +81,7 @@
             android:textColor="@color/MorningBlue"
             android:textSize="13sp"
             android:background="@android:color/transparent"
-            android:fontFamily="@font/centurygothic"
+            android:fontFamily="@font/gothic"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/browse"
@@ -128,7 +128,7 @@
                 app:layout_constraintStart_toEndOf="@id/currentFav"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="9dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <TextView
                 android:id="@+id/numSongs1"
@@ -141,7 +141,7 @@
                 app:layout_constraintStart_toEndOf="@id/currentFav"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/vibesIcon"
@@ -165,7 +165,7 @@
                 app:layout_constraintStart_toEndOf="@id/currentFav"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="9dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <TextView
                 android:id="@+id/numSongs2"
@@ -178,7 +178,7 @@
                 app:layout_constraintStart_toEndOf="@id/vibesIcon"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/centurygothic_bold" />
+                android:fontFamily="@font/gothicbold" />
 
             <ImageView
                 android:id="@+id/lofiIcon"
@@ -202,7 +202,7 @@
                 app:layout_constraintStart_toEndOf="@id/currentFav"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="9dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <TextView
                 android:id="@+id/numSongs3"
@@ -215,7 +215,7 @@
                 app:layout_constraintStart_toEndOf="@id/vibesIcon"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/rainOnMyWindowIcon"
@@ -239,7 +239,7 @@
                 app:layout_constraintStart_toEndOf="@id/currentFav"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="9dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <TextView
                 android:id="@+id/numSongs4"
@@ -252,7 +252,7 @@
                 app:layout_constraintStart_toEndOf="@id/vibesIcon"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/animeIcon"
@@ -276,7 +276,7 @@
                 app:layout_constraintStart_toEndOf="@id/currentFav"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="9dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <TextView
                 android:id="@+id/numSongs5"
@@ -289,9 +289,14 @@
                 app:layout_constraintStart_toEndOf="@id/vibesIcon"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
 
+            <!-- padding for scroll view ending -->
+            <View
+                app:layout_constraintTop_toBottomOf="@id/animeOSTs"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -299,7 +304,7 @@
     <View
         android:id="@+id/gradientRectangle"
         android:layout_width="match_parent"
-        android:layout_height="80sp"
+        android:layout_height="50sp"
         android:background="@drawable/black_gradient"
         app:layout_constraintBottom_toBottomOf="@id/playlist_scroll_view"
         app:layout_constraintEnd_toEndOf="parent"

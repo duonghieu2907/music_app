@@ -50,7 +50,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/songArtist"
@@ -63,7 +63,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="5dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <!-- ScrollView for the menu items -->
     <ScrollView
@@ -104,7 +104,7 @@
                 app:layout_constraintStart_toEndOf="@id/addPlaylist"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/addQ"
@@ -128,7 +128,7 @@
                 app:layout_constraintStart_toEndOf="@id/addPlaylist"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/removePlaylist"
@@ -152,7 +152,7 @@
                 app:layout_constraintStart_toEndOf="@id/addQ"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/viewArtist"
@@ -176,7 +176,7 @@
                 app:layout_constraintStart_toEndOf="@id/removePlaylist"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/viewAlbum"
@@ -200,7 +200,7 @@
                 app:layout_constraintStart_toEndOf="@id/viewArtist"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/showCreditsIcon"
@@ -224,7 +224,7 @@
                 app:layout_constraintStart_toEndOf="@id/viewAlbum"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/shareIcon"
@@ -248,7 +248,7 @@
                 app:layout_constraintStart_toEndOf="@id/showCreditsIcon"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/sleepTimerIcon"
@@ -272,7 +272,7 @@
                 app:layout_constraintStart_toEndOf="@id/shareIcon"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/hideSongIcon"
@@ -296,7 +296,7 @@
                 app:layout_constraintStart_toEndOf="@id/sleepTimerIcon"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
 
             <ImageView
                 android:id="@+id/songRadio"
@@ -320,7 +320,7 @@
                 app:layout_constraintStart_toEndOf="@id/hideSongIcon"
                 android:layout_marginTop="28dp"
                 android:layout_marginStart="38dp"
-                android:fontFamily="@font/centurygothic_bold"/>
+                android:fontFamily="@font/gothicbold"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="200dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/EOT"
@@ -30,7 +30,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="40dp"
         android:layout_marginStart="60dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/s60"
@@ -43,7 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="30dp"
         android:layout_marginStart="60dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/m5"
@@ -56,7 +56,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="30dp"
         android:layout_marginStart="60dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/m10"
@@ -69,7 +69,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="30dp"
         android:layout_marginStart="60dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/m15"
@@ -82,7 +82,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="30dp"
         android:layout_marginStart="60dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/m30"
@@ -95,7 +95,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="30dp"
         android:layout_marginStart="60dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 
     <TextView
         android:id="@+id/h1"
@@ -108,5 +108,5 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="30dp"
         android:layout_marginStart="60dp"
-        android:fontFamily="@font/centurygothic_bold"/>
+        android:fontFamily="@font/gothicbold"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
