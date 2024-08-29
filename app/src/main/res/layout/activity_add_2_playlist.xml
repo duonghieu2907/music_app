@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/sleep_timer_background">
+    android:background="@color/ChineseBlack">
 
     <ImageView
         android:id="@+id/back"
@@ -102,210 +102,36 @@
         android:layout_marginBottom="28dp"
         android:fillViewport="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/currentFav"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/current_favorites"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/playlistRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:paddingBottom="30dp"
+                android:clipToPadding="false"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="38dp" />
-
-            <TextView
-                android:id="@+id/currentFavorites"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="current favorites"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintTop_toTopOf="@id/currentFav"
-                app:layout_constraintStart_toEndOf="@id/currentFav"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="9dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <TextView
-                android:id="@+id/numSongs1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="20 songs"
-                android:textColor="@color/MorningBlue"
-                android:textSize="15sp"
-                app:layout_constraintTop_toBottomOf="@id/currentFavorites"
-                app:layout_constraintStart_toEndOf="@id/currentFav"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <ImageView
-                android:id="@+id/vibesIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/vibes"
-                app:layout_constraintTop_toBottomOf="@id/currentFav"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
-
-            <TextView
-                android:id="@+id/vibes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="3:00am vibes"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintTop_toTopOf="@id/vibesIcon"
-                app:layout_constraintStart_toEndOf="@id/currentFav"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="9dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <TextView
-                android:id="@+id/numSongs2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="18 songs"
-                android:textColor="@color/MorningBlue"
-                android:textSize="15sp"
-                app:layout_constraintTop_toBottomOf="@id/vibes"
-                app:layout_constraintStart_toEndOf="@id/vibesIcon"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/gothicbold" />
-
-            <ImageView
-                android:id="@+id/lofiIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/lofi_loft"
-                app:layout_constraintTop_toBottomOf="@id/vibesIcon"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
-
-            <TextView
-                android:id="@+id/lofiLoft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lofi Loft"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintTop_toTopOf="@id/lofiIcon"
-                app:layout_constraintStart_toEndOf="@id/currentFav"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="9dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <TextView
-                android:id="@+id/numSongs3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="63 songs"
-                android:textColor="@color/MorningBlue"
-                android:textSize="15sp"
-                app:layout_constraintTop_toBottomOf="@id/lofiLoft"
-                app:layout_constraintStart_toEndOf="@id/vibesIcon"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <ImageView
-                android:id="@+id/rainOnMyWindowIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/rain_on_my_window"
-                app:layout_constraintTop_toBottomOf="@id/lofiIcon"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
-
-            <TextView
-                android:id="@+id/rainOnMyWindow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="rain on my window"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintTop_toTopOf="@id/rainOnMyWindowIcon"
-                app:layout_constraintStart_toEndOf="@id/currentFav"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="9dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <TextView
-                android:id="@+id/numSongs4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="32 songs"
-                android:textColor="@color/MorningBlue"
-                android:textSize="15sp"
-                app:layout_constraintTop_toBottomOf="@id/rainOnMyWindow"
-                app:layout_constraintStart_toEndOf="@id/vibesIcon"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <ImageView
-                android:id="@+id/animeIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/anime_osts"
-                app:layout_constraintTop_toBottomOf="@id/rainOnMyWindowIcon"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
-
-            <TextView
-                android:id="@+id/animeOSTs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Anime OSTs"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintTop_toTopOf="@id/animeIcon"
-                app:layout_constraintStart_toEndOf="@id/currentFav"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="9dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <TextView
-                android:id="@+id/numSongs5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="20 songs"
-                android:textColor="@color/MorningBlue"
-                android:textSize="15sp"
-                app:layout_constraintTop_toBottomOf="@id/animeOSTs"
-                app:layout_constraintStart_toEndOf="@id/vibesIcon"
-                android:layout_marginStart="18dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/gothicbold"/>
-
-
-            <!-- padding for scroll view ending -->
-            <View
-                app:layout_constraintTop_toBottomOf="@id/animeIcon"
-                android:layout_width="match_parent"
-                android:layout_height="50dp" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
     </ScrollView>
 
     <View
         android:id="@+id/gradientRectangle"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="80sp"
         android:background="@drawable/black_gradient"
-        app:layout_constraintBottom_toBottomOf="@id/playlist_scroll_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
