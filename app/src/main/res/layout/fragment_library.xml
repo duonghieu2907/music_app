@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:layout_margin="16dp"
         android:contentDescription="avatar"
-        android:src="@drawable/ic_avatar" />
+        android:src="@drawable/ic_avatar"/>
 
     <TextView
         android:id="@+id/YourLibraryText"
