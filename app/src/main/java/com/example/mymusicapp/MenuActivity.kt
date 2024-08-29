@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 
 import androidx.activity.enableEdgeToEdge
 
-import com.example.mymusicapp.ui.theme.MyMusicAppTheme
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.View
