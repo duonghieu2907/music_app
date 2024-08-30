@@ -12,7 +12,8 @@ import com.example.mymusicapp.R
 
 data class PlaylistListItem(val name : String, val imageBit : Bitmap)
 class PlaylistListAdapter(
-    private val playlistListItem : ArrayList<PlaylistListItem>
+    private val playlistListItem : ArrayList<PlaylistListItem>,
+    private val setItemOnClickListener: FragmentPlaylistItemOnClickListener? = null
 ) : Adapter<PlaylistListAdapter.ViewHolder>() {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         val titleText : TextView = itemView.findViewById(R.id.playlistTitle)
@@ -33,5 +34,18 @@ class PlaylistListAdapter(
         val currentItem = playlistListItem[position]
         holder.titleText.text = currentItem.name
         holder.titleImage.setImageBitmap(currentItem.imageBit)
+
+        //Implement interface
+        holder.itemView.setOnClickListener {
+            setItemOnClickListener?.itemSelectionClickListener(currentItem)
+        }
+
+        holder.titleImage.setOnClickListener {
+            setItemOnClickListener?.itemSelectionClickListener(currentItem)
+        }
+    }
+
+    interface FragmentPlaylistItemOnClickListener {
+        fun itemSelectionClickListener(item: PlaylistListItem?)
     }
 }

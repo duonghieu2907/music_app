@@ -1,34 +1,34 @@
 package com.example.mymusicapp.library
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
-class FragmentArtists : Fragment() {
+class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view : View = inflater.inflate(R.layout.fragment_artists, container, false)
 
-        App(view)
+        app(view)
 
         return view
     }
 
-    private fun App(view: View) {
+    private fun app(view: View) {
         //Sort By
 
         //List
         //Adapter
-        val adapter = FragmentArtistAdapter(createArtistItem())
+        val adapter = FragmentArtistAdapter(createArtistItem(), this)
 
         //Layout Manager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -52,5 +52,10 @@ class FragmentArtists : Fragment() {
 
         //return
         return sample
+    }
+
+    override fun setOnItemClickListener(item: ArtistItem?) {
+        //Navigate here
+        Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
     }
 }

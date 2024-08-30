@@ -6,33 +6,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.createnew.CreateNewPlaylist
 
-class FragmentYourLibrary : Fragment() {
+class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view : View = inflater.inflate(R.layout.fragment_your_library, container, false)
-        App(view)
+        app(view)
 
         return view
     }
 
-    private fun App(view: View) {
+    private fun app(view: View) {
         //Add new playlist
         val addNewPlaylistSection : View  = view.findViewById(R.id.addNewPlaylistsSection)
 
         addNewPlaylistSection.setOnClickListener {
             //Sample to test if working
-            val intent: Intent = Intent(context, CreateNewPlaylist::class.java)
+            val intent = Intent(context, CreateNewPlaylist::class.java)
             startActivity(intent)
         }
 
@@ -45,7 +44,7 @@ class FragmentYourLibrary : Fragment() {
 
         //Lists
         //Adapter
-        val fragmentYourLibraryAdapter = FragmentYourLibraryAdapter(createPlaylistItem())
+        val fragmentYourLibraryAdapter = FragmentYourLibraryAdapter(createPlaylistItem(), this)
 
         //LayoutManager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -65,5 +64,10 @@ class FragmentYourLibrary : Fragment() {
 
         //return
         return sample
+    }
+
+    override fun setOnItemClickListener(item: PlaylistItem?) {
+        //Navigate here
+        Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
     }
 }
