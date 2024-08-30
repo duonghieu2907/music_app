@@ -10,15 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
-import com.example.mymusicapp.playlist.SongAdapter
-import com.example.mymusicapp.playlist.Song
+import com.example.mymusicapp.playlist.SongsAdapter
+
 
 class PlaylistFragment : Fragment() {
 
     private lateinit var playlistTitle: TextView
     private lateinit var playlistSubtitle: TextView
     private lateinit var recyclerViewSongs: RecyclerView
-    private lateinit var songsAdapter: SongAdapter
+    private lateinit var songsAdapter: SongsAdapter
 
     // Dummy song data
     private val songList = listOf(
@@ -44,7 +44,7 @@ class PlaylistFragment : Fragment() {
 
         // Set up RecyclerView
         recyclerViewSongs.layoutManager = LinearLayoutManager(requireContext())
-        songsAdapter = SongAdapter(songList) // Pass the dummy data
+        songsAdapter = SongsAdapter(songList) // Pass the dummy data
         recyclerViewSongs.adapter = songsAdapter
 
         // Set playlist details

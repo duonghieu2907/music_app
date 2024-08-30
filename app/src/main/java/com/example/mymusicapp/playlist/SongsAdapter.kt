@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
-import com.example.mymusicapp.playlist.Song
+
 class SongsAdapter(private var songs: List<Song>) : RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -18,7 +18,7 @@ class SongsAdapter(private var songs: List<Song>) : RecyclerView.Adapter<SongsAd
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_small_song, parent, false)
         return SongViewHolder(view)
     }
 
@@ -43,3 +43,4 @@ class SongsAdapter(private var songs: List<Song>) : RecyclerView.Adapter<SongsAd
         notifyDataSetChanged()
     }
 }
+
