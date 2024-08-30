@@ -39,7 +39,7 @@ class MenuActivity : ComponentActivity() {
             val intent = Intent(this, Add2PlaylistActivity::class.java)
             startActivity(intent)
         }
-
+  
         // Find views by ID for the menu items
         val addQIcon = findViewById<ImageView>(R.id.addQ)
         val add2QText = findViewById<TextView>(R.id.add2Q)
