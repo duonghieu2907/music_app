@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
 
-class SongsAdapter(private var songs: List<Song>) : RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
+class SongsAdapter(private var songs: List<Song>, private val onItemClick: (Song) -> Unit) : RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val songTitle: TextView = itemView.findViewById(R.id.songTitleTextView)
@@ -32,6 +32,9 @@ class SongsAdapter(private var songs: List<Song>) : RecyclerView.Adapter<SongsAd
             .load(song.imageUrl)
             .placeholder(R.drawable.anime_osts) // Optional placeholder image
             .into(holder.songImage)
+        holder.itemView.setOnClickListener {
+            onItemClick(song)
+        }
     }
 
     override fun getItemCount(): Int {

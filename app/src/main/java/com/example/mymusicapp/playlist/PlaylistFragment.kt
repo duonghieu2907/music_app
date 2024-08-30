@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.playlist.SongsAdapter
-
+import android.widget.Toast
 
 class PlaylistFragment : Fragment() {
 
@@ -44,7 +44,7 @@ class PlaylistFragment : Fragment() {
 
         // Set up RecyclerView
         recyclerViewSongs.layoutManager = LinearLayoutManager(requireContext())
-        songsAdapter = SongsAdapter(songList) // Pass the dummy data
+        songsAdapter = SongsAdapter(songList) { song -> openSong(song) }
         recyclerViewSongs.adapter = songsAdapter
 
         // Set playlist details
@@ -52,6 +52,14 @@ class PlaylistFragment : Fragment() {
         playlistSubtitle.text = "soft, chill, dreamy, lo-fi beats"
 
         return view
+    }
+    private fun openSong(song: Song) {
+        val fragment = SingleSongFragment.newInstance(song)
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+        Toast.makeText(requireContext(), song.title, Toast.LENGTH_SHORT).show()
     }
 }
 
