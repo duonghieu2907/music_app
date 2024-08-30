@@ -9,36 +9,35 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
 
-data class Song(
-    val title: String,
-    val artist: String,
-    val albumArtUrl: String // URL or local resource path for the album art
-)
-
-
-class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapter(private val songs: List<Song>, private val clickListener: (Song) -> Unit) :
+    RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleTextView: TextView = itemView.findViewById(R.id.songTitleTextView)
-        val artistTextView: TextView = itemView.findViewById(R.id.songArtistTextView)
-        val albumArtImageView: ImageView = itemView.findViewById(R.id.albumArtImageView)
+        val songTitle: TextView = itemView.findViewById(R.id.songTitleTextView)
+        val songArtist: TextView = itemView.findViewById(R.id.songArtistTextView)
+        val albumArt: ImageView = itemView.findViewById(R.id.albumArtImageView)
+
+        fun bind(song: Song, clickListener: (Song) -> Unit) {
+            songTitle.text = song.title
+            songArtist.text = song.artist
+            itemView.setOnClickListener { clickListener(song) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_small_song, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
         return SongViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+        holder.bind(songs[position], clickListener)
         val song = songs[position]
-        holder.titleTextView.text = song.title
-        holder.artistTextView.text = song.artist
-        // Load the album art
-        Glide.with(holder.itemView.context).load(song.albumArtUrl).into(holder.albumArtImageView) // Using Glide to load images
-
+        holder.songTitle.text = song.title
+        holder.songArtist.text = song.artist
+        Glide.with(holder.itemView.context)
+            .load(song.imageUrl)
+            .into(holder.albumArt)
     }
 
-    override fun getItemCount(): Int {
-        return songs.size
-    }
+    override fun getItemCount(): Int = songs.size
 }

@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.playlist.PlaylistFragment
 
+//user's all playlists
 class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +32,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         val yourLikedPlaylists : View = view.findViewById(R.id.YourLikedPlaylist)
 
         yourLikedPlaylists.setOnClickListener {
-            //Navigate here
+            loadFragment(PlaylistFragment())
         }
 
         //Lists
@@ -62,7 +64,33 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     }
 
     override fun itemSelectionClickListener(item: PlaylistListItem?) {
-        //Navigation here
-        Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
+        // Ensure that item is not null
+        item?.let {
+            val playlistFragment = PlaylistFragment()
+
+            // Use a bundle to pass data to PlaylistFragment if needed
+            /*val bundle = Bundle()
+            bundle.putSerializable("playlistItem", it)  // Assuming PlaylistListItem is Serializable
+            playlistFragment.arguments = bundle*/
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
+                .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                .commit()
+
+            Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+        } ?: run {
+            Toast.makeText(requireContext(), "Item is null!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+
+    private fun loadFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

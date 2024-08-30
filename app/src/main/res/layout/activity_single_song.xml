@@ -1,0 +1,189 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121111">
+
+    <!-- Top Section: Playlist Information -->
+    <RelativeLayout
+        android:id="@+id/playlist_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="16dp">
+
+        <TextView
+            android:id="@+id/playing_from_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PLAYING FROM PLAYLIST:"
+            android:textColor="#B3FFFFFF"
+            android:textSize="9sp"
+            android:fontFamily="sans-serif"
+            android:letterSpacing="0.12"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/playlist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/playing_from_playlist"
+            android:layout_marginTop="4dp"
+            android:text="Lofi Loft"
+            android:textColor="#7CEEFF"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:letterSpacing="0.1"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <!-- More Options Button -->
+    <ImageView
+        android:id="@+id/more_options"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="30dp"
+        android:rotation="90"
+        android:src="@drawable/ic_avatar" />
+    <!--android:src="@drawable/ic_more_vert"-->
+
+    <!-- Song Cover Image -->
+    <ImageView
+        android:id="@+id/song_cover"
+        android:layout_width="345dp"
+        android:layout_height="330dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/grainy_days"
+        android:scaleType="centerCrop"
+        android:background="#000" />
+
+    <!-- Song Title -->
+    <TextView
+        android:id="@+id/song_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/song_cover"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="grainy days"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold" />
+
+    <!-- Artist Name -->
+    <TextView
+        android:id="@+id/artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/song_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="moody."
+        android:textColor="#8A9A9D"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold" />
+
+    <!-- Song Progress Bar -->
+    <View
+        android:id="@+id/progress_bar_background"
+        android:layout_width="331dp"
+        android:layout_height="5dp"
+        android:layout_below="@id/artist_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:background="#8A9A9D" />
+
+    <View
+        android:id="@+id/progress_bar_foreground"
+        android:layout_width="237dp"
+        android:layout_height="5dp"
+        android:layout_below="@id/artist_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:background="#00C2CB" />
+
+    <!-- Song Duration -->
+    <TextView
+        android:id="@+id/song_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progress_bar_background"
+        android:layout_alignStart="@id/progress_bar_background"
+        android:layout_marginTop="8dp"
+        android:text="0:00"
+        android:textColor="#8A9A9D"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/song_end_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progress_bar_background"
+        android:layout_alignEnd="@id/progress_bar_background"
+        android:layout_marginTop="8dp"
+        android:text="2:43"
+        android:textColor="#8A9A9D"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold" />
+
+    <!-- Control Buttons -->
+    <ImageView
+        android:id="@+id/previous_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_below="@id/song_end_time"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="60dp"
+        android:layout_toStartOf="@id/play_button"
+        android:src="@drawable/ic_avatar"/>
+        <!--android:src="@drawable/ic_skip_previous" -->
+
+    <ImageView
+        android:id="@+id/play_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_below="@id/song_end_time"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/play_button"/>
+
+    <ImageView
+        android:id="@+id/next_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_below="@id/song_end_time"
+        android:layout_marginStart="60dp"
+        android:layout_toEndOf="@id/play_button"
+        android:src="@drawable/ic_avatar"/>
+        <!--android:src="@drawable/ic_skip_next" -->
+
+    <!-- Lyrics Section -->
+    <RelativeLayout
+        android:id="@+id/lyrics_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/play_button"
+        android:layout_marginTop="40dp"
+        android:layout_marginHorizontal="26dp"
+        android:background="@drawable/lyrics_background"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/lyrics_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You never look at the sky\nCause you think it's too high\nYou never look at the stars\nCause you think they're too far\nBut they're showing the lights to the way back home\nWhen you don't know where to go"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif"
+            android:lineSpacingExtra="8dp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+</RelativeLayout>
