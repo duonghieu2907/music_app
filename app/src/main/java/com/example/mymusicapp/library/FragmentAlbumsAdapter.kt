@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.mymusicapp.R
 
-data class AlbumItem(val albumName : String, val albumImage : Bitmap)
+data class AlbumItem(val albumName: String, val albumImage: Bitmap?)
 class FragmentAlbumsAdapter(
-    private val albumsList : ArrayList<AlbumItem>,
+    private val albumsList: ArrayList<AlbumItem>,
     private val onItemClickListener: OnItemClickListener? = null
 ) : Adapter<FragmentAlbumsAdapter.ViewHolder>() {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
