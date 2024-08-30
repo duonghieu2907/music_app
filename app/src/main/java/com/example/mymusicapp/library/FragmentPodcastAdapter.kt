@@ -12,7 +12,8 @@ import com.example.mymusicapp.R
 
 data class PodcastItem(val podcastName : String, val podcastImage : Bitmap)
 class FragmentPodcastAdapter(
-    private val podcastList : ArrayList<PodcastItem>
+    private val podcastList : ArrayList<PodcastItem>,
+    private val onItemClickListener: OnItemClickListener? = null
 ) : Adapter<FragmentPodcastAdapter.ViewHolder>() {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         val itemText : TextView = itemView.findViewById(R.id.playlistTitle)
@@ -33,5 +34,14 @@ class FragmentPodcastAdapter(
         val currentItem = podcastList[position]
         holder.itemText.text = currentItem.podcastName
         holder.itemImage.setImageBitmap(currentItem.podcastImage)
+
+        //Implement Listener
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.setOnItemClickListener(currentItem)
+        }
+    }
+
+    interface OnItemClickListener {
+        fun setOnItemClickListener(item: PodcastItem)
     }
 }

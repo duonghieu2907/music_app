@@ -30,25 +30,25 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
     ): View {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_library, container, false)
-        App(view);
+        app(view)
 
-        return view;
+        return view
     }
 
-    private fun App(view: View) {
+    private fun app(view: View) {
         //Implement search icon
-        val search_icon: ImageButton = view.findViewById(R.id.search_icon);
-        search_icon.setOnClickListener {
+        val searchIcon: ImageButton = view.findViewById(R.id.search_icon)
+        searchIcon.setOnClickListener {
             //Going to search fragment
-            val intent: Intent = Intent(context, BrowseLibrary::class.java);
-            startActivity(intent);
+            val intent = Intent(context, BrowseLibrary::class.java)
+            startActivity(intent)
         }
 
         //Implement item filter
         //Init adapter
         val itemFilterAdapter = FragmentLibraryFilterAdapter(createItemFilter(), this)
 
-        //Init layourManager
+        //Init layoutManager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         //Setup recycleView
@@ -100,6 +100,6 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
     private fun loadFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_library_container_list, fragment)
-            .commit();
+            .commit()
     }
 }

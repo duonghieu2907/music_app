@@ -12,7 +12,8 @@ import com.example.mymusicapp.R
 
 data class ArtistItem(val name: String, val imageBit : Bitmap)
 class FragmentArtistAdapter(
-    private val ArtistsList : ArrayList<ArtistItem>
+    private val artistsList : ArrayList<ArtistItem>,
+    private val onItemClickListener: OnItemClickListener? = null
 ) : Adapter<FragmentArtistAdapter.ViewHolder>() {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         val artistName : TextView = itemView.findViewById(R.id.playlistTitle)
@@ -26,12 +27,21 @@ class FragmentArtistAdapter(
     }
 
     override fun getItemCount(): Int {
-        return ArtistsList.size
+        return artistsList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currentItem = ArtistsList[position]
+        val currentItem = artistsList[position]
         holder.artistName.text = currentItem.name
         holder.artistImage.setImageBitmap(currentItem.imageBit)
+
+        //Implement Listener
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.setOnItemClickListener(currentItem)
+        }
+    }
+
+    interface OnItemClickListener {
+        fun setOnItemClickListener(item: ArtistItem?)
     }
 }

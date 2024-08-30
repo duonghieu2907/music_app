@@ -12,7 +12,8 @@ import com.example.mymusicapp.R
 
 data class PlaylistItem(val name : String, val imageBit : Bitmap)
 class FragmentYourLibraryAdapter(
-    private val playlistItem: ArrayList<PlaylistItem>
+    private val playlistItem: ArrayList<PlaylistItem>,
+    private val onItemClickListener: OnItemClickListener? = null
 ) : Adapter<FragmentYourLibraryAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,5 +35,17 @@ class FragmentYourLibraryAdapter(
         holder.titleText.text = currentItem.name
         holder.imagePlaylist.setImageBitmap(currentItem.imageBit)
 
+        //Implement Listener
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.setOnItemClickListener(currentItem)
+        }
+
+        holder.imagePlaylist.setOnClickListener {
+            onItemClickListener?.setOnItemClickListener(currentItem)
+        }
+    }
+
+    interface OnItemClickListener {
+        fun setOnItemClickListener(item: PlaylistItem?)
     }
 }

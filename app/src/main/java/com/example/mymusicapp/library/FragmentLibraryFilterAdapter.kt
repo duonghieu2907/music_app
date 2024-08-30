@@ -38,6 +38,7 @@ class FragmentLibraryFilterAdapter(
             holder.rectangleItemFilterBackground.setBackgroundResource(R.drawable.rectangle_item_filter_nocolor)
         }
 
+        //Implement Listener
         holder.rectangleItemFilterBackground.setOnClickListener {
             if(selectedPosition != RecyclerView.NO_POSITION) {
                 notifyItemChanged(selectedPosition)
