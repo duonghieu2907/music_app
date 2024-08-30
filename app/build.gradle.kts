@@ -43,6 +43,7 @@ android {
 dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.squareup.picasso:picasso:2.8")
+    implementation("com.adamratzman:spotify-api-kotlin-android:3.8.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

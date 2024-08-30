@@ -1,6 +1,5 @@
 package com.example.mymusicapp.library
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.SpotifyData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
     override fun onCreateView(
@@ -46,16 +50,15 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
     }
 
     private fun createAlbumsItem(): ArrayList<AlbumItem> {
-        val sample = ArrayList<AlbumItem>()
+        var sample = ArrayList<AlbumItem>()
+        val spotifyData = SpotifyData()
 
-        //1st Sample
-        var bitmap = BitmapFactory.decodeResource(resources, R.drawable.playlistsample)
-        sample.add(AlbumItem("Conan Gray", bitmap))
-
-        //2nd Sample
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.chase_atlantic)
-        sample.add(AlbumItem("Chase Atlantic", bitmap))
-
+        CoroutineScope(Dispatchers.IO).launch {
+            spotifyData.buildSearchApi()
+            withContext(Dispatchers.Main) {
+                sample = spotifyData.findAllPlaylist()!!
+            }
+        }
         //return
         return sample
     }
