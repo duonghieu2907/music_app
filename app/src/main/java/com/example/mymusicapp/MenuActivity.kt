@@ -5,15 +5,12 @@ import androidx.activity.ComponentActivity
 
 import androidx.activity.enableEdgeToEdge
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.mymusicapp.playlist.Add2PlaylistActivity
+import com.example.mymusicapp.queue.QueueActivity
 
 class MenuActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

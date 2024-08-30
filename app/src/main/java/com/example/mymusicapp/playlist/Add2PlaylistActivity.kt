@@ -1,9 +1,10 @@
-package com.example.mymusicapp
+package com.example.mymusicapp.playlist
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymusicapp.R
 
 class Add2PlaylistActivity : ComponentActivity() {
 

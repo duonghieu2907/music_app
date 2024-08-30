@@ -1,10 +1,11 @@
-package com.example.mymusicapp
+package com.example.mymusicapp.queue
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymusicapp.R
 
 class QueueActivity : ComponentActivity() {
     private lateinit var recyclerView: RecyclerView
