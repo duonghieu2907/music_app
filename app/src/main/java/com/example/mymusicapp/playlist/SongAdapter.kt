@@ -8,20 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
+import com.example.mymusicapp.playlist.Song
+class SongsAdapter(private var songs: List<Song>) : RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
 
-class SongAdapter(private val songs: List<Song>, private val clickListener: (Song) -> Unit) :
-    RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
-
-    class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val songTitle: TextView = itemView.findViewById(R.id.songTitleTextView)
         val songArtist: TextView = itemView.findViewById(R.id.songArtistTextView)
-        val albumArt: ImageView = itemView.findViewById(R.id.albumArtImageView)
-
-        fun bind(song: Song, clickListener: (Song) -> Unit) {
-            songTitle.text = song.title
-            songArtist.text = song.artist
-            itemView.setOnClickListener { clickListener(song) }
-        }
+        val songImage: ImageView = itemView.findViewById(R.id.albumArtImageView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
@@ -30,14 +23,23 @@ class SongAdapter(private val songs: List<Song>, private val clickListener: (Son
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        holder.bind(songs[position], clickListener)
         val song = songs[position]
         holder.songTitle.text = song.title
         holder.songArtist.text = song.artist
+
+        // Load image from URL (using a library like Glide or Picasso)
         Glide.with(holder.itemView.context)
             .load(song.imageUrl)
-            .into(holder.albumArt)
+            .placeholder(R.drawable.anime_osts) // Optional placeholder image
+            .into(holder.songImage)
     }
 
-    override fun getItemCount(): Int = songs.size
+    override fun getItemCount(): Int {
+        return songs.size
+    }
+
+    fun updateSongs(newSongs: List<Song>) {
+        songs = newSongs
+        notifyDataSetChanged()
+    }
 }
