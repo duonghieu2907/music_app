@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.playlist.PlaylistFragment
 
 class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOnClickListener {
     override fun onCreateView(
@@ -62,7 +63,26 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     }
 
     override fun itemSelectionClickListener(item: PlaylistListItem?) {
-        //Navigation here
-        Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
+        // Ensure that item is not null
+        item?.let {
+            // Create a new instance of PlaylistFragment
+            val playlistFragment = PlaylistFragment()
+
+            // Use a bundle to pass data to PlaylistFragment if needed
+
+
+            // Navigate to the PlaylistFragment using FragmentManager
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
+                .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                .commit()
+
+            // Show a Toast message
+            Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+        } ?: run {
+            // Handle the case when item is null
+            Toast.makeText(requireContext(), "Item is null!", Toast.LENGTH_SHORT).show()
+        }
     }
+
 }
