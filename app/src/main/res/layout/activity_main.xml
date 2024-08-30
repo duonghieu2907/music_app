@@ -35,13 +35,34 @@
         android:layout_width="350dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/white">
+        android:background="@color/EerieBlack">
 
-    <TextView
-        android:id="@+id/drawer_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Drawer Item 1" />
+        <LinearLayout
+            android:id="@+id/top_section"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <!-- Avatar Icon -->
+            <ImageView
+                android:id="@+id/avatar_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:contentDescription="avatar"
+                android:src="@drawable/ic_avatar"
+                android:layout_marginEnd="16dp"/>
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taylor Swift"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
 
     <!-- Add more drawer items as needed -->
 

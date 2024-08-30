@@ -1,4 +1,4 @@
-package com.example.mymusicapp
+package com.example.mymusicapp.queue
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,13 +6,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymusicapp.R
 
 data class Song(val name: String, val artist: String)
 
 class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_queue_song, parent, false)
         return SongViewHolder(itemView)
     }
 
