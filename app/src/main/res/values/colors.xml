@@ -2,5 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="cyan">#00C2CB </color>
     <color name="lightBlue">#00C2CB</color>
+    <color name="SpanishGray">#979797</color>
+    <color name="MorningBlue">#8A9A9D</color>
+    <color name="ChineseBlack">#121111</color>
+    <color name="EerieBlack">#1E1E1E</color>
+    <color name="BlueGreen">#06A0B5</color>
+    <color name="ElectricBlue">#7CEEFF</color>Turquoise Surf
+    <color name="TurquoiseSurf">#00C2CB</color>
 </resources>

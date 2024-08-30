@@ -1,0 +1,37 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121111">
+
+    <!-- Header Title -->
+    <TextView
+        android:id="@+id/playlistTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:text="Lofi Loft"
+        android:textSize="34sp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="sans-serif-medium" />
+
+    <!-- Subheader -->
+    <TextView
+        android:id="@+id/playlistSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/playlistTitle"
+        android:layout_centerHorizontal="true"
+        android:text="soft, chill, dreamy, lo-fi beats"
+        android:textSize="13sp"
+        android:textColor="#B3FFFFFF"
+        android:fontFamily="sans-serif" />
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSongs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:padding="16dp" />
+</RelativeLayout>

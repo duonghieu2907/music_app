@@ -1,0 +1,112 @@
+<!-- res/layout/menu_drawer.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/sleep_timer_background">
+
+    <TextView
+        android:id="@+id/stopAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop audio in"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="200dp"
+        android:fontFamily="@font/gothicbold"/>
+
+    <TextView
+        android:id="@+id/EOT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="End of Track"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/stopAudio"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="60dp"
+        android:fontFamily="@font/gothicbold"/>
+
+    <TextView
+        android:id="@+id/s60"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="60 seconds"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/EOT"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="60dp"
+        android:fontFamily="@font/gothicbold"/>
+
+    <TextView
+        android:id="@+id/m5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5 minutes"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/s60"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="60dp"
+        android:fontFamily="@font/gothicbold"/>
+
+    <TextView
+        android:id="@+id/m10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 minutes"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/m5"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="60dp"
+        android:fontFamily="@font/gothicbold"/>
+
+    <TextView
+        android:id="@+id/m15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15 minutes"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/m10"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="60dp"
+        android:fontFamily="@font/gothicbold"/>
+
+    <TextView
+        android:id="@+id/m30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="30 minutes"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/m15"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="60dp"
+        android:fontFamily="@font/gothicbold"/>
+
+    <TextView
+        android:id="@+id/h1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1 hour"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/m30"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="60dp"
+        android:fontFamily="@font/gothicbold"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

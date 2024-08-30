@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,7 +24,8 @@ import com.example.mymusicapp.library.FragmentYourLibrary
 import com.example.mymusicapp.library.LibraryFilterItem
 
 class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibraryFilterSelectionListener {
-
+    private lateinit var drawerLayout: DrawerLayout
+ 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,9 +36,19 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
         app(view)
 
         return view
+
     }
 
     private fun app(view: View) {
+        // Reference to drawer layout
+        drawerLayout = requireActivity().findViewById(R.id.main)
+
+        // Avatar icon
+        val avatarIcon = view.findViewById<ImageView>(R.id.avatar_icon)
+        avatarIcon.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+      
         //Implement search icon
         val searchIcon: ImageButton = view.findViewById(R.id.search_icon)
         searchIcon.setOnClickListener {
