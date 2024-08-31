@@ -23,12 +23,14 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_albums, container, false)
 
-        app(view)
+        CoroutineScope(Dispatchers.Main).launch {
+            app(view)
+        }
 
         return view
     }
 
-    private fun app(view: View) {
+    private suspend fun app(view: View) {
         //Your Liked Albums
         val yourLikedAlbums : View = view.findViewById(R.id.YourLikedAlbums)
 
@@ -38,6 +40,7 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
 
         //Adapter
         val adapter = FragmentAlbumsAdapter(createAlbumsItem(), this)
+
 
         //Layout manager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -49,16 +52,13 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
 
     }
 
-    private fun createAlbumsItem(): ArrayList<AlbumItem> {
+    private suspend fun createAlbumsItem(): ArrayList<AlbumItem> {
         var sample = ArrayList<AlbumItem>()
         val spotifyData = SpotifyData()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            spotifyData.buildSearchApi()
-            withContext(Dispatchers.Main) {
-                sample = spotifyData.findAllPlaylist()!!
-            }
-        }
+        spotifyData.buildSearchApi()
+        sample = spotifyData.findAlbums()!!
+
         //return
         return sample
     }
