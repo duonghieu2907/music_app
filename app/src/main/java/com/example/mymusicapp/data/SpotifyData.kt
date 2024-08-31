@@ -3,8 +3,12 @@ package com.example.mymusicapp.data
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.adamratzman.spotify.SpotifyAppApi
+import com.adamratzman.spotify.models.SpotifyPublicUser
 import com.adamratzman.spotify.spotifyAppApi
 import com.example.mymusicapp.library.AlbumItem
+import com.example.mymusicapp.library.PlaylistListItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.URL
 
 class SpotifyData {
@@ -15,70 +19,60 @@ class SpotifyData {
         api = spotifyAppApi(clientID, clientSecret).build()
     }
 
-    suspend fun findAllPlaylist(): ArrayList<AlbumItem>? {
-        val albums: ArrayList<AlbumItem>? = null
-        buildSearchApi()
-
+    suspend fun findAlbums(): ArrayList<AlbumItem>? {
         try {
-            val temp =api?.albums?.getAlbum("3iPSVi54hsacKKl1xIR2eH")
-            albums?.add(AlbumItem(temp!!.name,
-                urlToBitmap(temp.images[0].url, temp.images[0].height, temp.images[0].width)))
+            val albums = ArrayList<AlbumItem>()
+            val album = api?.albums?.getAlbum("3iPSVi54hsacKKl1xIR2eH")
+            val imageURL: String = album!!.images[0].url
+            val image = loadUrl(imageURL)
+            val item = AlbumItem(album.name, image)
 
+            albums.add(item)
             println("Success")
             return albums
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Error getting album: ${e.message}")
             return null
         }
 
     }
 
-    fun urlToBitmap(urlString: String, targetWidth: Int?, targetHeight: Int?): Bitmap? {
-        return try {
-            val url = URL(urlString)
-            val connection = url.openConnection()
-            connection.connect()
-            val inputStream = connection.getInputStream()
-            val options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true  // Get image dimensions only
-            BitmapFactory.decodeStream(inputStream, null, options)
-            inputStream.close() // Close the stream
-
-            // Calculate inSampleSize for scaling
-            val inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
-            options.inJustDecodeBounds = false
-            options.inSampleSize = inSampleSize
-
-            // Decode the image with the calculated inSampleSize
-            val inputStream2 = connection.getInputStream()
-            val bitmap = BitmapFactory.decodeStream(inputStream2, null, options)
-            inputStream2.close()
-
-            return bitmap
-        } catch (e: Exception) {
-            // Handle exceptions (e.g., invalid URL, network errors)
-            println("Error decoding image: ${e.message}")
-            null
-        }
+    suspend fun getUser(userQuery: String): SpotifyPublicUser? {
+        return api!!.users.getProfile(userQuery)
     }
 
-    // Helper function to calculate inSampleSize
-    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int?, reqHeight: Int?): Int {
-        var inSampleSize = 1
-        val height = options.outHeight
-        val width = options.outWidth
+    suspend fun findPlaylists(): ArrayList<PlaylistListItem>? {
+        val playlists: ArrayList<PlaylistListItem>? = null
 
-        if (height > reqHeight!! || width > reqWidth!!) {
-            val halfHeight = height / 2
-            val halfWidth = width / 2
+        try {
+            val publicUser: SpotifyPublicUser? = getUser("Salmoe")
+            api?.playlists?.getUserPlaylists(publicUser!!.id, 2)
 
-            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth!!) {
-                inSampleSize *= 2
+            println("Success")
+            return playlists
+        } catch (e: Exception) {
+            println("Error getting album: ${e.message}")
+            return null
+        }
+
+    }
+
+    suspend fun loadUrl(Url: String): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(Url)
+                val connection = url.openConnection()
+                connection.connect()
+                val inputStream = connection.getInputStream()
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                inputStream.close()
+
+                bitmap
+            }
+            catch (e: Exception) {
+                println("Error loading image: , ${e.message}")
+                null
             }
         }
-
-        return inSampleSize
     }
-
 }

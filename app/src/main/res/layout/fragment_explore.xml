@@ -86,7 +86,7 @@
                 android:background="@drawable/recent_listen_bg"
                 android:layout_columnWeight="1">
                 <!-- Content of the box -->
-                <!-- Genre Cover (Square ImageView) -->
+                <!-- Genre Cover (Square ImageView)-->
                 <ImageView
                     android:id="@+id/genre_cover_1"
                     android:layout_width="100dp"
