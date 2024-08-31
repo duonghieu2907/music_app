@@ -17,6 +17,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //load DB
+        /*
+        val dbHelper = MusicAppDatabaseHelper(context)
+        val newUser = User(0, "John Doe", "john.doe@example.com", "password123", "1990-01-01", "http://example.com/profile.jpg")
+        dbHelper.addUser(newUser)
+
+        val user = dbHelper.getUser(1)
+
+         */
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
