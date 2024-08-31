@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
-import com.squareup.picasso.Picasso
 
 class SingleSongFragment : Fragment() {
 
@@ -48,7 +48,10 @@ class SingleSongFragment : Fragment() {
         artistName.text = song.artist
         songEndTime.text = song.duration
         lyricsText.text = song.lyrics
-        Picasso.get().load(song.imageUrl).into(songCover)
+        Glide.with(this)
+            .load(song.imageUrl)
+            .placeholder(R.drawable.blacker_gradient)
+            .into(songCover)
 
         return view
     }

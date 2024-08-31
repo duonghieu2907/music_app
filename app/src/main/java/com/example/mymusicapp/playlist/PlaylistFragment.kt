@@ -22,8 +22,8 @@ class PlaylistFragment : Fragment() {
 
     // Dummy song data
     private val songList = listOf(
-        Song("grainy days", "moody.", "https://via.placeholder.com/53x52", "You never look at the sky...", "2:43"),
-        Song("Coffee", "Kainbeats", "https://via.placeholder.com/53x52", "You never look at the sky...", "2:43"),
+        Song("grainy days", "moody.", "https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb", "You never look at the sky...", "2:43"),
+        Song("Coffee", "Kainbeats", "https://i1.sndcdn.com/artworks-IBdGI4FyQ2iKPI1e-2jwAgQ-t500x500.jpg", "You never look at the sky...", "2:43"),
         Song("raindrops", "rainyyxx", "https://via.placeholder.com/53x52", "You never look at the sky...", "2:43"),
         Song("Tokyo", "SmYang", "https://via.placeholder.com/53x52", "You never look at the sky...", "2:43"),
         Song("Lullaby", "iamfinenow", "https://via.placeholder.com/53x52", "You never look at the sky...", "2:43"),

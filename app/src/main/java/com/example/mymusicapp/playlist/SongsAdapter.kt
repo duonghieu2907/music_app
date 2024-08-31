@@ -30,7 +30,8 @@ class SongsAdapter(private var songs: List<Song>, private val onItemClick: (Song
         // Load image from URL (using a library like Glide or Picasso)
         Glide.with(holder.itemView.context)
             .load(song.imageUrl)
-            .placeholder(R.drawable.anime_osts) // Optional placeholder image
+            .override(53,52)
+            .placeholder(R.drawable.blacker_gradient)
             .into(holder.songImage)
         holder.itemView.setOnClickListener {
             onItemClick(song)
