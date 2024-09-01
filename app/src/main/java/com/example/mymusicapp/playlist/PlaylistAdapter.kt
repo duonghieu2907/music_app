@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
 
 data class PlaylistItem(
-    val iconResId: Int,   // Resource ID for the drawable icon
+    val iconUrl: String,  // URL for the playlist icon
     val name: String,     // Name of the playlist
     val songCount: String // Number of songs in the playlist
 )
@@ -17,7 +18,6 @@ data class PlaylistItem(
 class PlaylistAdapter(private val playlists: List<PlaylistItem>) :
     RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
-    // ViewHolder class that binds the data to the view
     class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val icon: ImageView = itemView.findViewById(R.id.icon)
         private val playlistName: TextView = itemView.findViewById(R.id.playlistName)
@@ -25,7 +25,12 @@ class PlaylistAdapter(private val playlists: List<PlaylistItem>) :
 
         // Binds data to the views
         fun bind(playlist: PlaylistItem) {
-            icon.setImageResource(playlist.iconResId)
+            Glide.with(itemView.context)
+                .load(playlist.iconUrl)
+                .placeholder(R.drawable.blacker_gradient) // Placeholder while loading
+                .error(R.drawable.blacker_gradient) // Error image if URL fails
+                .into(icon)
+
             playlistName.text = playlist.name
             songCount.text = playlist.songCount
         }

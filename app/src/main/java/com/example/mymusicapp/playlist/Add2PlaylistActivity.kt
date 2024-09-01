@@ -21,11 +21,11 @@ class Add2PlaylistActivity : ComponentActivity() {
 
         // Create an adapter and set it to the RecyclerView
         val playlists = listOf(
-            PlaylistItem(R.drawable.current_favorites, "Current Favorites", "20 songs"),
-            PlaylistItem(R.drawable.vibes, "3:00am vibes", "18 songs"),
-            PlaylistItem(R.drawable.lofi_loft, "Lofi Loft", "63 songs"),
-            PlaylistItem(R.drawable.rain_on_my_window, "Rain on My Window", "32 songs"),
-            PlaylistItem(R.drawable.anime_osts, "Anime OSTs", "20 songs")
+            PlaylistItem("https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb", "Current Favorites", "20 songs"),
+            PlaylistItem("https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb", "3:00am vibes", "18 songs"),
+            PlaylistItem("https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb", "Lofi Loft", "63 songs"),
+            PlaylistItem("https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb", "Rain on My Window", "32 songs"),
+            PlaylistItem("https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb", "Anime OSTs", "20 songs")
         )
         playlistAdapter = PlaylistAdapter(playlists)
         playlistRecyclerView.adapter = playlistAdapter
