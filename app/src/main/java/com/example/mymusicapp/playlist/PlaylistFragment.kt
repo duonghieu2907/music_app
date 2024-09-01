@@ -1,6 +1,5 @@
 package com.example.mymusicapp.playlist
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
-import com.example.mymusicapp.playlist.SongsAdapter
 import android.widget.Toast
+import com.example.mymusicapp.models.Song
 
 class PlaylistFragment : Fragment() {
 

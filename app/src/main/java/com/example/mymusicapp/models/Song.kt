@@ -1,4 +1,4 @@
-package com.example.mymusicapp.playlist
+package com.example.mymusicapp.models
 
 // Song.kt
 import android.os.Parcelable

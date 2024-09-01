@@ -1,4 +1,4 @@
-package com.example.mymusicapp.data
+package com.example.mymusicapp.models
 
 data class User(
     val userId: Int,

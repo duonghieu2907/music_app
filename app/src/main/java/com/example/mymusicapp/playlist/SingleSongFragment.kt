@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
+import com.example.mymusicapp.models.Song
 
 class SingleSongFragment : Fragment() {
 
