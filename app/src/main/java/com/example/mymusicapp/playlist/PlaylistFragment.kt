@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import android.widget.Toast
-import com.example.mymusicapp.models.Song
 
 class PlaylistFragment : Fragment() {
 

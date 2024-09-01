@@ -3,8 +3,14 @@ package com.example.mymusicapp.data
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.adamratzman.spotify.models.*
 import android.content.ContentValues
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Follower
+import com.example.mymusicapp.models.Like
+import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.models.PlaylistTrack
+import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.User
 
 class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {

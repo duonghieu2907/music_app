@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
-import com.example.mymusicapp.models.Song
 
 class SongsAdapter(private var songs: List<Song>, private val onItemClick: (Song) -> Unit) : RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
 
