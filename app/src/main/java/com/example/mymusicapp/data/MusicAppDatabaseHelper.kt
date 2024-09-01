@@ -121,6 +121,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 + "FOREIGN KEY($FOLLOWER_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($FOLLOWER_ARTIST_ID) REFERENCES $TABLE_ARTIST($ARTIST_ID))")
 
+
         val createLikeTable = ("CREATE TABLE $TABLE_LIKE ("
                 + "$LIKE_USER_ID INTEGER,"
                 + "$LIKE_TRACK_ID INTEGER,"
@@ -140,7 +141,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        //db.execSQL("DROP TABLE IF EXISTS $TABLE_LIKE")
+        db.execSQL("DROP TABLE IF EXISTS \"$TABLE_LIKE\"")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLIST_TRACK")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLIST")
@@ -150,6 +151,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USER")
         onCreate(db)
     }
+
 
 
     // CRUD Operations for Users
