@@ -66,7 +66,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     override fun itemSelectionClickListener(item: PlaylistListItem?) {
         // Ensure that item is not null
         item?.let {
-            val playlistFragment = PlaylistFragment()
+            val playlistFragment = PlaylistFragment.newInstance("1")
 
             // Use a bundle to pass data to PlaylistFragment if needed
             /*val bundle = Bundle()
