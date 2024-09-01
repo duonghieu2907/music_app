@@ -15,12 +15,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyMusicApp"
         tools:targetApi="31">
+
+        <!-- Other activities -->
+
         <activity
             android:name=".createnew.CreateNewPlaylist"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -30,7 +32,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -38,12 +39,26 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".playlist.MenuActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Updated declarations for activities in new folders -->
+        <activity
+            android:name=".playlist.Add2PlaylistActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".queue.QueueActivity"
+            android:exported="true" />
     </application>
+
 
 </manifest>
