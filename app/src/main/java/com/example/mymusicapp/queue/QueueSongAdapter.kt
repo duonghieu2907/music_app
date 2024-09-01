@@ -8,9 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 
-data class Song(val name: String, val artist: String)
+data class QueueSong(val name: String, val artist: String)
 
-class SongAdapter(private val songs: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class QueueSongAdapter(private val songs: List<QueueSong>) : RecyclerView.Adapter<QueueSongAdapter.SongViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_queue_song, parent, false)
