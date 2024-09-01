@@ -40,8 +40,8 @@ class PlaylistTracksAdapter(
         val track = trackList[position]
 
         // Fetch album and artist details from database or a data source
-        val album: Album? = dbHelper.getAlbum(track.albumId)
-        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: 0)
+        val album: Album? = dbHelper.getAlbum(track.albumId)  // Ensure getAlbum accepts String type
+        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")  // Ensure getArtist accepts String type
 
         holder.songTitle.text = track.name
         holder.songArtist.text = artist?.name ?: "Unknown Artist"
@@ -56,6 +56,4 @@ class PlaylistTracksAdapter(
     override fun getItemCount(): Int {
         return trackList.size
     }
-
-
 }
