@@ -586,5 +586,51 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         db.close()
     }
+
+
+    fun getTracksByPlaylistId(playlistId: Int): List<Track> {
+        val tracks = mutableListOf<Track>()
+        val db = this.readableDatabase
+
+        // Query to get tracks that are part of the specified playlist
+        val query = """
+        SELECT t.$TRACK_ID, t.$TRACK_ALBUM_ID, t.$TRACK_NAME, t.$TRACK_DURATION, t.$TRACK_PATH
+        FROM $TABLE_TRACK t
+        INNER JOIN $TABLE_PLAYLIST_TRACK pt ON t.$TRACK_ID = pt.$PLAYLIST_TRACK_TRACK_ID
+        WHERE pt.$PLAYLIST_TRACK_PLAYLIST_ID = ?
+        ORDER BY pt.$PLAYLIST_TRACK_ORDER ASC
+    """
+        val cursor = db.rawQuery(query, arrayOf(playlistId.toString()))
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val trackId = cursor.getInt(cursor.getColumnIndexOrThrow(TRACK_ID))
+                val albumId = cursor.getInt(cursor.getColumnIndexOrThrow(TRACK_ALBUM_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
+                val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
+                val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
+
+                // Create a Track object
+                val track = Track(
+                    trackId = trackId,
+                    albumId = albumId,
+                    name = name,
+                    duration = duration,
+                    path = path
+                )
+
+                tracks.add(track) // Add the track to the list
+
+            } while (cursor.moveToNext()) // Move to the next result
+        }
+
+        cursor?.close() // Close the cursor after use
+
+        return tracks // Return the list of tracks
+    }
+
+
+
+
 }
 

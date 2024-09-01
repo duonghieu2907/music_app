@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
 
-class SongsAdapter(private var songs: List<Song>, private val onItemClick: (Song) -> Unit) : RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
+class SongsAdapter(private var songs: List<Song>, private val onItemClick: (Song) -> Unit) :
+    RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val songTitle: TextView = itemView.findViewById(R.id.songTitleTextView)
@@ -18,7 +19,8 @@ class SongsAdapter(private var songs: List<Song>, private val onItemClick: (Song
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_small_song, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_small_song, parent, false)
         return SongViewHolder(view)
     }
 
@@ -30,10 +32,10 @@ class SongsAdapter(private var songs: List<Song>, private val onItemClick: (Song
 
         Glide.with(holder.itemView.context)
             .load(song.imageUrl)
-            .override(53,52)
+            .override(53, 52)
             .placeholder(R.drawable.blacker_gradient)
             .into(holder.songImage)
-        
+
         holder.itemView.setOnClickListener {
             onItemClick(song)
         }
