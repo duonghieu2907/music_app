@@ -77,7 +77,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
     override fun onCreate(db: SQLiteDatabase) {
         val createUserTable = ("CREATE TABLE $TABLE_USER ("
-                + "$USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "$USER_ID TEXT PRIMARY KEY,"
                 + "$USER_NAME TEXT,"
                 + "$USER_EMAIL TEXT,"
                 + "$USER_PASSWORD TEXT,"
@@ -85,53 +85,52 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 + "$USER_PROFILE_IMAGE TEXT)")
 
         val createArtistTable = ("CREATE TABLE $TABLE_ARTIST ("
-                + "$ARTIST_ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "$ARTIST_ID TEXT PRIMARY KEY,"
                 + "$ARTIST_NAME TEXT,"
                 + "$ARTIST_GENRE TEXT,"
                 + "$ARTIST_IMAGE TEXT)")
 
         val createAlbumTable = ("CREATE TABLE $TABLE_ALBUM ("
-                + "$ALBUM_ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "$ALBUM_ARTIST_ID INTEGER,"
+                + "$ALBUM_ID TEXT PRIMARY KEY,"
+                + "$ALBUM_ARTIST_ID TEXT,"
                 + "$ALBUM_NAME TEXT,"
                 + "$ALBUM_RELEASE_DATE TEXT,"
                 + "$ALBUM_IMAGE TEXT,"
                 + "FOREIGN KEY($ALBUM_ARTIST_ID) REFERENCES $TABLE_ARTIST($ARTIST_ID))")
 
         val createTrackTable = ("CREATE TABLE $TABLE_TRACK ("
-                + "$TRACK_ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "$TRACK_ALBUM_ID INTEGER,"
+                + "$TRACK_ID TEXT PRIMARY KEY,"
+                + "$TRACK_ALBUM_ID TEXT,"
                 + "$TRACK_NAME TEXT,"
                 + "$TRACK_DURATION TEXT,"
                 + "$TRACK_PATH TEXT,"
                 + "FOREIGN KEY($TRACK_ALBUM_ID) REFERENCES $TABLE_ALBUM($ALBUM_ID))")
 
         val createPlaylistTable = ("CREATE TABLE $TABLE_PLAYLIST ("
-                + "$PLAYLIST_ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "$PLAYLIST_USER_ID INTEGER,"
+                + "$PLAYLIST_ID TEXT PRIMARY KEY,"
+                + "$PLAYLIST_USER_ID TEXT,"
                 + "$PLAYLIST_NAME TEXT,"
                 + "$PLAYLIST_IMAGE TEXT,"
                 + "FOREIGN KEY($PLAYLIST_USER_ID) REFERENCES $TABLE_USER($USER_ID))")
 
         val createPlaylistTrackTable = ("CREATE TABLE $TABLE_PLAYLIST_TRACK ("
-                + "$PLAYLIST_TRACK_PLAYLIST_ID INTEGER,"
-                + "$PLAYLIST_TRACK_TRACK_ID INTEGER,"
+                + "$PLAYLIST_TRACK_PLAYLIST_ID TEXT,"
+                + "$PLAYLIST_TRACK_TRACK_ID TEXT,"
                 + "$PLAYLIST_TRACK_ORDER INTEGER,"
                 + "PRIMARY KEY($PLAYLIST_TRACK_PLAYLIST_ID, $PLAYLIST_TRACK_TRACK_ID),"
                 + "FOREIGN KEY($PLAYLIST_TRACK_PLAYLIST_ID) REFERENCES $TABLE_PLAYLIST($PLAYLIST_ID),"
                 + "FOREIGN KEY($PLAYLIST_TRACK_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
 
         val createFollowerTable = ("CREATE TABLE $TABLE_FOLLOWER ("
-                + "$FOLLOWER_USER_ID INTEGER,"
-                + "$FOLLOWER_ARTIST_ID INTEGER,"
+                + "$FOLLOWER_USER_ID TEXT,"
+                + "$FOLLOWER_ARTIST_ID TEXT,"
                 + "PRIMARY KEY($FOLLOWER_USER_ID, $FOLLOWER_ARTIST_ID),"
                 + "FOREIGN KEY($FOLLOWER_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($FOLLOWER_ARTIST_ID) REFERENCES $TABLE_ARTIST($ARTIST_ID))")
 
-
         val createLikeTable = ("CREATE TABLE $TABLE_LIKE ("
-                + "$LIKE_USER_ID INTEGER,"
-                + "$LIKE_TRACK_ID INTEGER,"
+                + "$LIKE_USER_ID TEXT,"
+                + "$LIKE_TRACK_ID TEXT,"
                 + "PRIMARY KEY($LIKE_USER_ID, $LIKE_TRACK_ID),"
                 + "FOREIGN KEY($LIKE_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($LIKE_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
@@ -146,6 +145,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.execSQL(createFollowerTable)
         db.execSQL(createLikeTable)
     }
+
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS \"$TABLE_LIKE\"")
@@ -175,20 +175,20 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    fun getUser(userId: Int): User? {
+    fun getUser(userId: String): User? {
         val db = this.readableDatabase
         val cursor = db.query(
             TABLE_USER,
             arrayOf(USER_ID, USER_NAME, USER_EMAIL, USER_PASSWORD, USER_DOB, USER_PROFILE_IMAGE),
             "$USER_ID=?",
-            arrayOf(userId.toString()),
+            arrayOf(userId),
             null,
             null,
             null
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val user = User(
-                cursor.getInt(0),
+                cursor.getString(0),
                 cursor.getString(1),
                 cursor.getString(2),
                 cursor.getString(3),
@@ -204,6 +204,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
 
+
     // CRUD Operations for Artist
     fun addArtist(artist: Artist) {
         val db = this.writableDatabase
@@ -216,20 +217,20 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    fun getArtist(artistId: Int): Artist? {
+    fun getArtist(artistId: String): Artist? {
         val db = this.readableDatabase
         val cursor = db.query(
             TABLE_ARTIST,
             arrayOf(ARTIST_ID, ARTIST_NAME, ARTIST_GENRE, ARTIST_IMAGE),
             "$ARTIST_ID=?",
-            arrayOf(artistId.toString()),
+            arrayOf(artistId),
             null,
             null,
             null
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val artist = Artist(
-                cursor.getInt(0),
+                cursor.getString(0),
                 cursor.getString(1),
                 cursor.getString(2),
                 cursor.getString(3)
@@ -241,6 +242,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             null
         }
     }
+
+
 
     fun updateArtist(artist: Artist) {
         val db = this.writableDatabase
@@ -273,7 +276,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    fun getAlbum(albumId: Int): Album? {
+    fun getAlbum(albumId: String): Album? {
         val db = this.readableDatabase
         val cursor = db.query(
             TABLE_ALBUM,
@@ -286,8 +289,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val album = Album(
-                cursor.getInt(0),
-                cursor.getInt(1),
+                cursor.getString(0),
+                cursor.getString(1),
                 cursor.getString(2),
                 cursor.getString(3),
                 cursor.getString(4)
@@ -345,8 +348,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val track = Track(
-                cursor.getInt(0),
-                cursor.getInt(1),
+                cursor.getString(0),
+                cursor.getString(1),
                 cursor.getString(2),
                 cursor.getString(3),
                 cursor.getString(4)
@@ -390,7 +393,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    fun getPlaylist(playlistId: Int): Playlist? {
+    fun getPlaylist(playlistId: String): Playlist? {
         val db = this.readableDatabase
         val cursor = db.query(
             TABLE_PLAYLIST,
@@ -403,8 +406,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val playlist = Playlist(
-                cursor.getInt(0),
-                cursor.getInt(1),
+                cursor.getString(0),
+                cursor.getString(1),
                 cursor.getString(2),
                 cursor.getString(3)
             )
@@ -459,8 +462,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val playlistTrack = PlaylistTrack(
-                cursor.getInt(0),
-                cursor.getInt(1),
+                cursor.getString(0),
+                cursor.getString(1),
                 cursor.getInt(2)
             )
             cursor.close()
@@ -520,8 +523,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val follower = Follower(
-                cursor.getInt(0),
-                cursor.getInt(1)
+                cursor.getString(0),
+                cursor.getString(1)
             )
             cursor.close()
             follower
@@ -566,8 +569,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         )
         return if (cursor != null && cursor.moveToFirst()) {
             val like = Like(
-                cursor.getInt(0),
-                cursor.getInt(1)
+                cursor.getString(0),
+                cursor.getString(1)
             )
             cursor.close()
             like
@@ -588,7 +591,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
 
-    fun getTracksByPlaylistId(playlistId: Int): List<Track> {
+    fun getTracksByPlaylistId(playlistId: String): List<Track> {
         val tracks = mutableListOf<Track>()
         val db = this.readableDatabase
 
@@ -604,8 +607,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                val trackId = cursor.getInt(cursor.getColumnIndexOrThrow(TRACK_ID))
-                val albumId = cursor.getInt(cursor.getColumnIndexOrThrow(TRACK_ALBUM_ID))
+                val trackId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
+                val albumId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ALBUM_ID))
                 val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
                 val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
                 val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
