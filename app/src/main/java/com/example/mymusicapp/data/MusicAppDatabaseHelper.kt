@@ -154,7 +154,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
 
 
-
+    // CRUD Operations for Users
     fun addUser(user: User) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -195,13 +195,389 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             null
         }
     }
+
+
     // CRUD Operations for Artist
+    fun addArtist(artist: Artist) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(ARTIST_NAME, artist.name)
+            put(ARTIST_GENRE, artist.genre)
+            put(ARTIST_IMAGE, artist.image)
+        }
+        db.insert(TABLE_ARTIST, null, values)
+        db.close()
+    }
 
-    fun addArtist(artist: Artist) { /*...*/ }
-    //fun getArtist(artistId: Int): Artist? { /*...*/ }
-    fun updateArtist(artist: Artist) { /*...*/ }
-    fun deleteArtist(artistId: Int) { /*...*/ }
+    fun getArtist(artistId: Int): Artist? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_ARTIST,
+            arrayOf(ARTIST_ID, ARTIST_NAME, ARTIST_GENRE, ARTIST_IMAGE),
+            "$ARTIST_ID=?",
+            arrayOf(artistId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val artist = Artist(
+                cursor.getInt(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getString(3)
+            )
+            cursor.close()
+            artist
+        } else {
+            cursor?.close()
+            null
+        }
+    }
 
-    // Repeat for Album, Track, Playlist, Playlist_Track, Follower, Like
+    fun updateArtist(artist: Artist) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(ARTIST_NAME, artist.name)
+            put(ARTIST_GENRE, artist.genre)
+            put(ARTIST_IMAGE, artist.image)
+        }
+        db.update(TABLE_ARTIST, values, "$ARTIST_ID=?", arrayOf(artist.artistId.toString()))
+        db.close()
+    }
+
+    fun deleteArtist(artistId: Int) {
+        val db = this.writableDatabase
+        db.delete(TABLE_ARTIST, "$ARTIST_ID=?", arrayOf(artistId.toString()))
+        db.close()
+    }
+
+
+    // CRUD Operations for Albums
+    fun addAlbum(album: Album) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(ALBUM_ARTIST_ID, album.artistId)
+            put(ALBUM_NAME, album.name)
+            put(ALBUM_RELEASE_DATE, album.releaseDate)
+            put(ALBUM_IMAGE, album.image)
+        }
+        db.insert(TABLE_ALBUM, null, values)
+        db.close()
+    }
+
+    fun getAlbum(albumId: Int): Album? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_ALBUM,
+            arrayOf(ALBUM_ID, ALBUM_ARTIST_ID, ALBUM_NAME, ALBUM_RELEASE_DATE, ALBUM_IMAGE),
+            "$ALBUM_ID=?",
+            arrayOf(albumId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val album = Album(
+                cursor.getInt(0),
+                cursor.getInt(1),
+                cursor.getString(2),
+                cursor.getString(3),
+                cursor.getString(4)
+            )
+            cursor.close()
+            album
+        } else {
+            cursor?.close()
+            null
+        }
+    }
+
+    fun updateAlbum(album: Album) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(ALBUM_ARTIST_ID, album.artistId)
+            put(ALBUM_NAME, album.name)
+            put(ALBUM_RELEASE_DATE, album.releaseDate)
+            put(ALBUM_IMAGE, album.image)
+        }
+        db.update(TABLE_ALBUM, values, "$ALBUM_ID=?", arrayOf(album.albumId.toString()))
+        db.close()
+    }
+
+    fun deleteAlbum(albumId: Int) {
+        val db = this.writableDatabase
+        db.delete(TABLE_ALBUM, "$ALBUM_ID=?", arrayOf(albumId.toString()))
+        db.close()
+    }
+
+
+    // CRUD Operations for Tracks
+    fun addTrack(track: Track) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(TRACK_ALBUM_ID, track.albumId)
+            put(TRACK_NAME, track.name)
+            put(TRACK_DURATION, track.duration)
+            put(TRACK_PATH, track.path)
+        }
+        db.insert(TABLE_TRACK, null, values)
+        db.close()
+    }
+
+    fun getTrack(trackId: Int): Track? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_TRACK,
+            arrayOf(TRACK_ID, TRACK_ALBUM_ID, TRACK_NAME, TRACK_DURATION, TRACK_PATH),
+            "$TRACK_ID=?",
+            arrayOf(trackId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val track = Track(
+                cursor.getInt(0),
+                cursor.getInt(1),
+                cursor.getString(2),
+                cursor.getString(3),
+                cursor.getString(4)
+            )
+            cursor.close()
+            track
+        } else {
+            cursor?.close()
+            null
+        }
+    }
+
+    fun updateTrack(track: Track) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(TRACK_ALBUM_ID, track.albumId)
+            put(TRACK_NAME, track.name)
+            put(TRACK_DURATION, track.duration)
+            put(TRACK_PATH, track.path)
+        }
+        db.update(TABLE_TRACK, values, "$TRACK_ID=?", arrayOf(track.trackId.toString()))
+        db.close()
+    }
+
+    fun deleteTrack(trackId: Int) {
+        val db = this.writableDatabase
+        db.delete(TABLE_TRACK, "$TRACK_ID=?", arrayOf(trackId.toString()))
+        db.close()
+    }
+
+
+    // CRUD Operations for Playlists
+    fun addPlaylist(playlist: Playlist) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(PLAYLIST_USER_ID, playlist.userId)
+            put(PLAYLIST_NAME, playlist.name)
+            put(PLAYLIST_IMAGE, playlist.image)
+        }
+        db.insert(TABLE_PLAYLIST, null, values)
+        db.close()
+    }
+
+    fun getPlaylist(playlistId: Int): Playlist? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_PLAYLIST,
+            arrayOf(PLAYLIST_ID, PLAYLIST_USER_ID, PLAYLIST_NAME, PLAYLIST_IMAGE),
+            "$PLAYLIST_ID=?",
+            arrayOf(playlistId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val playlist = Playlist(
+                cursor.getInt(0),
+                cursor.getInt(1),
+                cursor.getString(2),
+                cursor.getString(3)
+            )
+            cursor.close()
+            playlist
+        } else {
+            cursor?.close()
+            null
+        }
+    }
+
+    fun updatePlaylist(playlist: Playlist) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(PLAYLIST_USER_ID, playlist.userId)
+            put(PLAYLIST_NAME, playlist.name)
+            put(PLAYLIST_IMAGE, playlist.image)
+        }
+        db.update(TABLE_PLAYLIST, values, "$PLAYLIST_ID=?", arrayOf(playlist.playlistId.toString()))
+        db.close()
+    }
+
+    fun deletePlaylist(playlistId: Int) {
+        val db = this.writableDatabase
+        db.delete(TABLE_PLAYLIST, "$PLAYLIST_ID=?", arrayOf(playlistId.toString()))
+        db.close()
+    }
+
+
+    // CRUD Operations for Playlist_Tracks
+    fun addPlaylistTrack(playlistTrack: PlaylistTrack) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(PLAYLIST_TRACK_PLAYLIST_ID, playlistTrack.playlistId)
+            put(PLAYLIST_TRACK_TRACK_ID, playlistTrack.trackId)
+            put(PLAYLIST_TRACK_ORDER, playlistTrack.trackOrder)
+        }
+        db.insert(TABLE_PLAYLIST_TRACK, null, values)
+        db.close()
+    }
+
+    fun getPlaylistTrack(playlistId: Int, trackId: Int): PlaylistTrack? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_PLAYLIST_TRACK,
+            arrayOf(PLAYLIST_TRACK_PLAYLIST_ID, PLAYLIST_TRACK_TRACK_ID, PLAYLIST_TRACK_ORDER),
+            "$PLAYLIST_TRACK_PLAYLIST_ID=? AND $PLAYLIST_TRACK_TRACK_ID=?",
+            arrayOf(playlistId.toString(), trackId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val playlistTrack = PlaylistTrack(
+                cursor.getInt(0),
+                cursor.getInt(1),
+                cursor.getInt(2)
+            )
+            cursor.close()
+            playlistTrack
+        } else {
+            cursor?.close()
+            null
+        }
+    }
+
+    fun updatePlaylistTrack(playlistTrack: PlaylistTrack) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(PLAYLIST_TRACK_ORDER, playlistTrack.trackOrder)
+        }
+        db.update(
+            TABLE_PLAYLIST_TRACK,
+            values,
+            "$PLAYLIST_TRACK_PLAYLIST_ID=? AND $PLAYLIST_TRACK_TRACK_ID=?",
+            arrayOf(playlistTrack.playlistId.toString(), playlistTrack.trackId.toString())
+        )
+        db.close()
+    }
+
+    fun deletePlaylistTrack(playlistId: Int, trackId: Int) {
+        val db = this.writableDatabase
+        db.delete(
+            TABLE_PLAYLIST_TRACK,
+            "$PLAYLIST_TRACK_PLAYLIST_ID=? AND $PLAYLIST_TRACK_TRACK_ID=?",
+            arrayOf(playlistId.toString(), trackId.toString())
+        )
+        db.close()
+    }
+
+
+    // CRUD Operations for Followers
+    fun addFollower(follower: Follower) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(FOLLOWER_USER_ID, follower.userId)
+            put(FOLLOWER_ARTIST_ID, follower.artistId)
+        }
+        db.insert(TABLE_FOLLOWER, null, values)
+        db.close()
+    }
+
+    fun getFollower(userId: Int, artistId: Int): Follower? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_FOLLOWER,
+            arrayOf(FOLLOWER_USER_ID, FOLLOWER_ARTIST_ID),
+            "$FOLLOWER_USER_ID=? AND $FOLLOWER_ARTIST_ID=?",
+            arrayOf(userId.toString(), artistId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val follower = Follower(
+                cursor.getInt(0),
+                cursor.getInt(1)
+            )
+            cursor.close()
+            follower
+        } else {
+            cursor?.close()
+            null
+        }
+    }
+
+    fun deleteFollower(userId: Int, artistId: Int) {
+        val db = this.writableDatabase
+        db.delete(
+            TABLE_FOLLOWER,
+            "$FOLLOWER_USER_ID=? AND $FOLLOWER_ARTIST_ID=?",
+            arrayOf(userId.toString(), artistId.toString())
+        )
+        db.close()
+    }
+
+
+    // CRUD Operations for Likes
+    fun addLike(like: Like) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(LIKE_USER_ID, like.userId)
+            put(LIKE_TRACK_ID, like.trackId)
+        }
+        db.insert(TABLE_LIKE, null, values)
+        db.close()
+    }
+
+    fun getLike(userId: Int, trackId: Int): Like? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_LIKE,
+            arrayOf(LIKE_USER_ID, LIKE_TRACK_ID),
+            "$LIKE_USER_ID=? AND $LIKE_TRACK_ID=?",
+            arrayOf(userId.toString(), trackId.toString()),
+            null,
+            null,
+            null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val like = Like(
+                cursor.getInt(0),
+                cursor.getInt(1)
+            )
+            cursor.close()
+            like
+        } else {
+            cursor?.close()
+            null
+        }
+    }
+
+    fun deleteLike(userId: Int, trackId: Int) {
+        val db = this.writableDatabase
+        db.delete(
+            TABLE_LIKE,
+            "$LIKE_USER_ID=? AND $LIKE_TRACK_ID=?",
+            arrayOf(userId.toString(), trackId.toString())
+        )
+        db.close()
+    }
 }
 
