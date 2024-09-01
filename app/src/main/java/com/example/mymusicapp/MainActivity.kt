@@ -8,6 +8,11 @@ import androidx.fragment.app.Fragment
 import com.example.mymusicapp.bottomnavigation.ExploreFragment
 import com.example.mymusicapp.bottomnavigation.HomeFragment
 import com.example.mymusicapp.bottomnavigation.LibraryFragment
+import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.models.PlaylistTrack
+import com.example.mymusicapp.models.Track
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -18,14 +23,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //load DB
-        /*
-        val dbHelper = MusicAppDatabaseHelper(context)
-        val newUser = User(0, "John Doe", "john.doe@example.com", "password123", "1990-01-01", "http://example.com/profile.jpg")
-        dbHelper.addUser(newUser)
 
-        val user = dbHelper.getUser(1)
+        val dbHelper = MusicAppDatabaseHelper(this)
+        addDummyDataToDatabase(dbHelper)
 
-         */
+
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.setOnItemSelectedListener { item ->
@@ -65,5 +67,20 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+    fun addDummyDataToDatabase(dbHelper: MusicAppDatabaseHelper) {
+        // Add dummy user, artist, album, playlist, and track data for testing
+
+        // Add dummy playlist
+        val playlistId = dbHelper.addPlaylist(Playlist(1, 1, "Lofi Loft", "https://via.placeholder.com/150"))
+
+        // Add dummy tracks
+        val albumId = dbHelper.addAlbum(Album(1, 1, "Chill Vibes", "2024-01-01", "https://via.placeholder.com/150"))
+        dbHelper.addTrack(Track(1, albumId.toString().toInt(), "grainy days", "2:43", "path/to/audio"))
+        dbHelper.addTrack(Track(2, albumId.toString().toInt(), "Coffee", "3:15", "path/to/audio"))
+
+        // Link tracks to playlist
+        dbHelper.addPlaylistTrack(PlaylistTrack(playlistId.toString().toInt(), 1, 1))
+        dbHelper.addPlaylistTrack(PlaylistTrack(playlistId.toString().toInt(), 2, 2))
     }
 }

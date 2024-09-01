@@ -95,21 +95,7 @@ class PlaylistFragment : Fragment() {
         Toast.makeText(requireContext(), track.name, Toast.LENGTH_SHORT).show()
     }
 
-    fun addDummyDataToDatabase(dbHelper: MusicAppDatabaseHelper) {
-        // Add dummy user, artist, album, playlist, and track data for testing
 
-        // Add dummy playlist
-        val playlistId = dbHelper.addPlaylist(Playlist(1, 1, "Lofi Loft", "https://via.placeholder.com/150"))
-
-        // Add dummy tracks
-        val albumId = dbHelper.addAlbum(Album(1, 1, "Chill Vibes", "2024-01-01", "https://via.placeholder.com/150"))
-        dbHelper.addTrack(Track(1, albumId.toString().toInt(), "grainy days", "2:43", "path/to/audio"))
-        dbHelper.addTrack(Track(2, albumId.toString().toInt(), "Coffee", "3:15", "path/to/audio"))
-
-        // Link tracks to playlist
-        dbHelper.addPlaylistTrack(PlaylistTrack(playlistId.toString().toInt(), 1, 1))
-        dbHelper.addPlaylistTrack(PlaylistTrack(playlistId.toString().toInt(), 2, 2))
-    }
 }
 
         /*
