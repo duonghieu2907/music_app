@@ -1,7 +1,7 @@
 package com.example.mymusicapp.models
 
 data class PlaylistTrack(
-    val playlistId: Int,
-    val trackId: Int,
+    val playlistId: String,
+    val trackId: String,
     val trackOrder: Int
 )

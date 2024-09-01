@@ -1,6 +1,5 @@
 package com.example.mymusicapp.playlist
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,15 +39,14 @@ class SingleTrackFragment : Fragment() {
         lyricsText = view.findViewById(R.id.lyrics_text)
         songEndTime = view.findViewById(R.id.song_end_time)
 
-        // Get the Track object passed from previous fragment or activity
+        // Get the Track object passed from the previous fragment or activity
         track = arguments?.getParcelable("TRACK") ?: return view
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
-
         // Fetch Album and Artist details
-        val album: Album? = dbHelper.getAlbum(track.albumId)
-        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: 0)
+        val album: Album? = dbHelper.getAlbum(track.albumId)  // Ensure getAlbum accepts String type
+        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")  // Ensure getArtist accepts String type
 
         // Set the UI components with track details
         songTitle.text = track.name
