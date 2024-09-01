@@ -1,4 +1,4 @@
-package com.example.mymusicapp
+package com.example.mymusicapp.playlist
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +9,7 @@ import android.content.Intent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.mymusicapp.playlist.Add2PlaylistActivity
+import com.example.mymusicapp.R
 import com.example.mymusicapp.queue.QueueActivity
 
 class MenuActivity : ComponentActivity() {
