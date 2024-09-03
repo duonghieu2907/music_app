@@ -79,15 +79,15 @@ class MainActivity : AppCompatActivity() {
             Log.d("MainActivity", "Dummy artists added")
 
             // Add dummy albums
-            val albumId1 = dbHelper.addAlbum(Album("1", artistId1.toString(), "Chill Vibes", "2024-01-01", "https://via.placeholder.com/150"))
-            val albumId2 = dbHelper.addAlbum(Album("2", artistId2.toString(), "Smooth Jazz", "2024-05-01", "https://via.placeholder.com/150"))
+            val albumId1 = dbHelper.addAlbum(Album("1", artistId1, "Chill Vibes", "2024-01-01", "https://via.placeholder.com/150"))
+            val albumId2 = dbHelper.addAlbum(Album("2", artistId2, "Smooth Jazz", "2024-05-01", "https://via.placeholder.com/150"))
             Log.d("MainActivity", "Dummy albums " + albumId1.toString() + " added")
 
             // Add dummy tracks
-            dbHelper.addTrack(Track("1", albumId1.toString(), "grainy days", "2:43", "path/to/audio1"))
-            dbHelper.addTrack(Track("2", albumId1.toString(), "Coffee", "3:15", "path/to/audio2"))
-            dbHelper.addTrack(Track("3", albumId2.toString(), "Jazz in the Night", "4:20", "path/to/audio3"))
-            dbHelper.addTrack(Track("4", albumId2.toString(), "Smooth Flow", "3:50", "path/to/audio4"))
+            dbHelper.addTrack(Track("1", albumId1, "grainy days", "2:43", "path/to/audio1"))
+            dbHelper.addTrack(Track("2", albumId1, "Coffee", "3:15", "path/to/audio2"))
+            dbHelper.addTrack(Track("3", albumId2, "Jazz in the Night", "4:20", "path/to/audio3"))
+            dbHelper.addTrack(Track("4", albumId2, "Smooth Flow", "3:50", "path/to/audio4"))
             Log.d("MainActivity", "Dummy tracks added")
 
             // Add dummy playlist
