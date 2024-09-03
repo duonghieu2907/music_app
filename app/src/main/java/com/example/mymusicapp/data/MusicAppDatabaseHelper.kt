@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.content.ContentValues
+import android.util.Log
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Follower
@@ -16,7 +17,7 @@ import com.example.mymusicapp.models.User
 class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "music_app.db"
+        private const val DATABASE_NAME = "music_app1.db"
         private const val DATABASE_VERSION = 1
 
         // User Table
@@ -162,18 +163,24 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
 
     // CRUD Operations for Users
-    fun addUser(user: User) {
+    fun addUser(user: User): String {
         val db = this.writableDatabase
         val values = ContentValues().apply {
+            put(USER_ID, user.userId)
             put(USER_NAME, user.name)
             put(USER_EMAIL, user.email)
             put(USER_PASSWORD, user.password)
             put(USER_DOB, user.dateOfBirth)
             put(USER_PROFILE_IMAGE, user.profileImage)
         }
+
+        // Insert the new user and return the ID
         db.insert(TABLE_USER, null, values)
         db.close()
+
+        return user.userId
     }
+
 
     fun getUser(userId: String): User? {
         val db = this.readableDatabase
@@ -206,16 +213,23 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
 
     // CRUD Operations for Artist
-    fun addArtist(artist: Artist) {
+    fun addArtist(artist: Artist): String {
         val db = this.writableDatabase
         val values = ContentValues().apply {
+            put(ARTIST_ID, artist.artistId)
             put(ARTIST_NAME, artist.name)
             put(ARTIST_GENRE, artist.genre)
             put(ARTIST_IMAGE, artist.image)
         }
+
+        // Insert the new artist and return the artist ID
         db.insert(TABLE_ARTIST, null, values)
         db.close()
+
+        return artist.artistId
     }
+
+
 
     fun getArtist(artistId: String): Artist? {
         val db = this.readableDatabase
@@ -264,17 +278,24 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
 
     // CRUD Operations for Albums
-    fun addAlbum(album: Album) {
+    fun addAlbum(album: Album): String {
         val db = this.writableDatabase
         val values = ContentValues().apply {
+            put(ALBUM_ID, album.albumId)
             put(ALBUM_ARTIST_ID, album.artistId)
             put(ALBUM_NAME, album.name)
             put(ALBUM_RELEASE_DATE, album.releaseDate)
             put(ALBUM_IMAGE, album.image)
         }
+
+        // Insert the new album and return the album ID
         db.insert(TABLE_ALBUM, null, values)
         db.close()
+
+        return album.albumId
     }
+
+
 
     fun getAlbum(albumId: String): Album? {
         val db = this.readableDatabase
@@ -323,17 +344,22 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
 
     // CRUD Operations for Tracks
-    fun addTrack(track: Track) {
+    fun addTrack(track: Track): String {
         val db = this.writableDatabase
         val values = ContentValues().apply {
+            put(TRACK_ID, track.trackId)
             put(TRACK_ALBUM_ID, track.albumId)
             put(TRACK_NAME, track.name)
             put(TRACK_DURATION, track.duration)
             put(TRACK_PATH, track.path)
         }
-        db.insert(TABLE_TRACK, null, values)
+
+        db.insert("Track", null, values)
         db.close()
+
+        return track.trackId
     }
+
 
     fun getTrack(trackId: Int): Track? {
         val db = this.readableDatabase
@@ -382,16 +408,23 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
 
     // CRUD Operations for Playlists
-    fun addPlaylist(playlist: Playlist) {
+    fun addPlaylist(playlist: Playlist): String {
         val db = this.writableDatabase
         val values = ContentValues().apply {
+            put(PLAYLIST_ID, playlist.playlistId)
             put(PLAYLIST_USER_ID, playlist.userId)
             put(PLAYLIST_NAME, playlist.name)
             put(PLAYLIST_IMAGE, playlist.image)
         }
+
+        // Insert the new playlist and return the playlist name
         db.insert(TABLE_PLAYLIST, null, values)
         db.close()
+
+        return playlist.playlistId
     }
+
+
 
     fun getPlaylist(playlistId: String): Playlist? {
         val db = this.readableDatabase
@@ -612,7 +645,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
                 val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
                 val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
-
+                println("Success: " + playlistId + " " + name)
                 // Create a Track object
                 val track = Track(
                     trackId = trackId,

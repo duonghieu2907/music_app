@@ -31,6 +31,7 @@ class PlaylistFragment : Fragment() {
             val fragment = PlaylistFragment()
             val args = Bundle()
             args.putString(ARG_PLAYLIST_ID, playlistId)  // Changed to putString
+            println(playlistId)
             fragment.arguments = args
             return fragment
         }
@@ -74,6 +75,7 @@ class PlaylistFragment : Fragment() {
         val playlist: Playlist? = dbHelper.getPlaylist(playlistId)  // Ensure dbHelper uses String type
 
         if (playlist != null) {
+            println("Success: " + playlistId)
             playlistTitle.text = playlist.name
             playlistSubtitle.text = "Your personalized playlist"
 
