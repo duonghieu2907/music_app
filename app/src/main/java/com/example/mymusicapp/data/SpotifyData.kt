@@ -4,10 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.adamratzman.spotify.SpotifyAppApi
 import com.adamratzman.spotify.models.Artist
+import com.adamratzman.spotify.models.ContextUri
+import com.adamratzman.spotify.models.SpotifyImage
 import com.adamratzman.spotify.models.SpotifyPublicUser
 import com.adamratzman.spotify.spotifyAppApi
-import com.example.mymusicapp.library.PlaylistListItem
 import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,12 +17,12 @@ import java.net.URL
 
 
 class SpotifyData {
-    private val clientID = "95347603f19a497aa51c78b2a3dd81d3"
-    private val clientSecret = "ca5f8fa71e8542a98035ded2caa67efa"
+    private val clientID = "724f1843a262436ca08ec70af0ae88fb"
+    private val clientSecret = "209f1d3f5f6846148d92463a47378848"
+    private val redirectUri = "https://www.facebook.com/"
     private var api: SpotifyAppApi? = null
     suspend fun buildSearchApi() {
         api = spotifyAppApi(clientID, clientSecret).build()
-
     }
 
     suspend fun findArtist(query: String) : Artist? {
@@ -34,7 +36,7 @@ class SpotifyData {
             val simpleAlbum = api?.artists?.getArtistAlbums(query)
             for (i in 0..2) {
                 albums.add(Album(simpleAlbum!![i].id, query,
-                    simpleAlbum[i].name, simpleAlbum[i].releaseDate.toString(), simpleAlbum[i].images[0].url))
+                    simpleAlbum[i].name, simpleAlbum[i].releaseDate.toString(), checkImageReturnUrl(simpleAlbum[i].images)))
             }
 
             println("Success find albums from artist")
@@ -69,11 +71,17 @@ class SpotifyData {
         return api!!.users.getProfile(userQuery)
     }
 
-    suspend fun findPlaylists(): ArrayList<PlaylistListItem>? {
-        val playlists: ArrayList<PlaylistListItem>? = null
+    suspend fun startPlayback(uriOfArt_Alb_Pla: ContextUri, ) {
+
+    }
+    suspend fun findPlaylists(query: String): ArrayList<Playlist>? {
+        val playlists = ArrayList<Playlist>()
 
         try {
-
+            val rawPlaylists = api?.playlists?.getUserPlaylists(query)
+            for(i in 0..<rawPlaylists!!.size) {
+                playlists.add(Playlist(rawPlaylists[i].id, query, rawPlaylists[i].name, checkImageReturnUrl(rawPlaylists[i].images)))
+            }
 
             println("Success")
             return playlists
@@ -112,6 +120,13 @@ class SpotifyData {
                 println("Error loading image: , ${e.message}")
                 null
             }
+        }
+    }
+
+    private fun checkImageReturnUrl(sample : List<SpotifyImage>) : String {
+        return when {
+            sample.isEmpty() -> ""
+            else -> sample.firstOrNull()!!.url
         }
     }
 }

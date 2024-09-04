@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp">
 
     <ImageButton
         android:id = "@+id/playlistImage"
@@ -22,15 +22,37 @@
 
     <TextView
         android:id="@+id/playlistTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Conan Gray"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:fontFamily="@font/gothicbold"
+        android:text="Conan Gray"
         android:textColor="@color/white"
-        app:layout_constraintTop_toTopOf="parent"
+        android:maxLines="1"
+        android:ellipsize="end"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/playlistImage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.1"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/playlistImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.359" />
 
+    <TextView
+        android:id="@+id/subText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/gothicbold"
+        android:text="Conan Gray"
+        android:textColor="@color/MorningBlue"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/playlistImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.687" />
 </androidx.constraintlayout.widget.ConstraintLayout>
