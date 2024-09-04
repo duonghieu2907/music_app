@@ -1,22 +1,31 @@
 package com.example.mymusicapp.playlist
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.*
 
 class PlaylistFragment : Fragment() {
 
+    private lateinit var backButton: ImageView
+    private lateinit var optionsButton: ImageView
+    private lateinit var playlistImage: ImageView
     private lateinit var playlistTitle: TextView
-    private lateinit var playlistSubtitle: TextView
+    private lateinit var playlistCreator: TextView
+
     private lateinit var recyclerViewTracks: RecyclerView
     private lateinit var tracksAdapter: PlaylistTracksAdapter
     private lateinit var dbHelper: MusicAppDatabaseHelper
@@ -26,8 +35,7 @@ class PlaylistFragment : Fragment() {
     companion object {
         private const val ARG_PLAYLIST_ID = "playlist_id"
 
-        // Factory method to create a new instance of PlaylistFragment
-        fun newInstance(playlistId: String): PlaylistFragment {  // Changed parameter to String
+        fun newInstance(playlistId: String): PlaylistFragment {
             val fragment = PlaylistFragment()
             val args = Bundle()
             args.putString(ARG_PLAYLIST_ID, playlistId)  // Changed to putString
@@ -40,12 +48,10 @@ class PlaylistFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Get the playlistId from the arguments
         arguments?.let {
             playlistId = it.getString(ARG_PLAYLIST_ID) ?: ""  // Changed to getString
         }
 
-        // Initialize the database helper
         dbHelper = MusicAppDatabaseHelper(requireContext())
     }
 
@@ -53,31 +59,75 @@ class PlaylistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_single_playlist, container, false)
 
-        // Initialize UI components
+        // Initialize UI
+        backButton = view.findViewById(R.id.backButton)
+        optionsButton = view.findViewById(R.id.optionsButton)
+        playlistImage = view.findViewById(R.id.playlistImage)
         playlistTitle = view.findViewById(R.id.playlistTitle)
-        playlistSubtitle = view.findViewById(R.id.playlistSubtitle)
+        playlistCreator = view.findViewById(R.id.playlistOwner)
         recyclerViewTracks = view.findViewById(R.id.recyclerViewSongs)
 
-        // Set up RecyclerView
+        // Set button click handlers
+        backButton.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        optionsButton.setOnClickListener {
+            val popup = PopupMenu(requireContext(), it)
+            val inflater: MenuInflater = popup.menuInflater
+            inflater.inflate(R.menu.playlist_options_menu, popup.menu)
+            popup.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_edit_playlist -> {
+                        // Implement edit playlist logic
+                        println("Edit")
+                    }
+                    R.id.action_delete_playlist -> {
+                        // Implement delete playlist logic
+                        println("Delete")
+                    }
+                    R.id.action_add_to_queue -> {
+                        // Implement add to queue logic
+                        println("Queue")
+                    }
+                    R.id.action_share_playlist -> {
+                        // Implement share playlist logic
+                        println("Share")
+                    }
+                    else -> false
+                }
+                true
+            }
+            popup.show()
+        }
+
+
+        // RecyclerView
         recyclerViewTracks.layoutManager = LinearLayoutManager(requireContext())
 
-        // Load data from the database
         loadPlaylistData()
 
         return view
     }
 
+
+
     private fun loadPlaylistData() {
         // Fetch playlist details using playlistId
-        val playlist: Playlist? = dbHelper.getPlaylist(playlistId)  // Ensure dbHelper uses String type
+        val playlist: Playlist? = dbHelper.getPlaylist(playlistId)
 
         if (playlist != null) {
             println("Success: " + playlistId)
             playlistTitle.text = playlist.name
-            playlistSubtitle.text = "Your personalized playlist"
+            playlistCreator.text = dbHelper.getUser(playlist.userId)?.name ?:  "Unknown"
+
+            // playlist image
+            Glide.with(this)
+                .load(playlist.image)
+                .placeholder(R.drawable.blacker_gradient)
+                .into(playlistImage)
 
             // Fetch tracks for this playlist
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)  // Ensure this method accepts String

@@ -40,9 +40,8 @@ class PlaylistTracksAdapter(
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         val track = trackList[position]
 
-        // Fetch album and artist details from database or a data source
-        val album: Album? = dbHelper.getAlbum(track.albumId)  // Ensure getAlbum accepts String type
-        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")  // Ensure getArtist accepts String type
+        val album: Album? = dbHelper.getAlbum(track.albumId)
+        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
 
         holder.songTitle.text = track.name
         holder.songArtist.text = artist?.name ?: "Unknown Artist"
@@ -50,7 +49,7 @@ class PlaylistTracksAdapter(
         // Load album image
         Glide.with(holder.itemView.context)
             .load(album?.image)
-            .placeholder(R.drawable.blacker_gradient) // Placeholder image if no image is available
+            .placeholder(R.drawable.blacker_gradient) // Placeholder image
             .into(holder.songImage)
 
         holder.menuButton.setOnClickListener { view ->

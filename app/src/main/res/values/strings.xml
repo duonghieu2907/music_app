@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">My Music App</string>
     <string name="title_activity_player_view">PlayerViewActivity</string>
+    <string-array name="playlist_options">
+        <item>Edit Playlist</item>
+        <item>Delete Playlist</item>
+        <item>Add to Queue</item>
+        <item>Share Playlist</item>
+    </string-array>
 </resources>

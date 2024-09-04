@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_edit_playlist"
+        android:title="Edit Playlist" />
+    <item
+        android:id="@+id/action_delete_playlist"
+        android:title="Delete Playlist" />
+    <item
+        android:id="@+id/action_add_to_queue"
+        android:title="Add to Queue" />
+    <item
+        android:id="@+id/action_share_playlist"
+        android:title="Share Playlist" />
+
+</menu>
