@@ -1,10 +1,9 @@
 package com.example.mymusicapp.data
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.content.ContentValues
-import android.util.Log
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Follower
@@ -167,6 +166,18 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Users
     fun addUser(user: User): String {
         val db = this.writableDatabase
+        val query : String = "SELECT 1 FROM $TABLE_USER WHERE $USER_ID = ?"
+
+        //Make sure that user does exist
+        val cursor = db.rawQuery(query, arrayOf(user.userId))
+        if(cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return ""
+        }
+        cursor.close()
+
+        //Add a new values
         val values = ContentValues().apply {
             put(USER_ID, user.userId)
             put(USER_NAME, user.name)
@@ -217,6 +228,17 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Artist
     fun addArtist(artist: Artist): String {
         val db = this.writableDatabase
+        val query : String = "SELECT 1 FROM $TABLE_ARTIST WHERE $ARTIST_ID = ?"
+
+        //Make sure that album does exist
+        val cursor = db.rawQuery(query, arrayOf(artist.artistId))
+        if(cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return ""
+        }
+        cursor.close()
+
         val values = ContentValues().apply {
             put(ARTIST_ID, artist.artistId)
             put(ARTIST_NAME, artist.name)
@@ -282,6 +304,17 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Albums
     fun addAlbum(album: Album): String {
         val db = this.writableDatabase
+        val query : String = "SELECT $ALBUM_ID FROM $TABLE_ALBUM WHERE $ALBUM_ID = ?"
+
+        //Make sure that album does exist
+        val cursor = db.rawQuery(query, arrayOf(album.albumId))
+        if(cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return ""
+        }
+        cursor.close()
+
         val values = ContentValues().apply {
             put(ALBUM_ID, album.albumId)
             put(ALBUM_ARTIST_ID, album.artistId)
@@ -297,7 +330,23 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         return album.albumId
     }
 
+    fun getAllAlbumId() : ArrayList<String>? {
+        val db = this.readableDatabase
+        val query = "SELECT DISTINCT $ALBUM_ID FROM $TABLE_ALBUM"
+        val cursor = db.rawQuery(query, arrayOf())
+        val allId = ArrayList<String>()
+        val columnIndex = cursor.getColumnIndexOrThrow(ALBUM_ID)
+        var counter = 0
 
+        if(!cursor.moveToFirst()) return null //Check if there is no album
+
+        do {
+            allId.add(cursor.getString(columnIndex))
+            counter++
+        } while (cursor.moveToNext())
+
+        return allId
+    }
 
     fun getAlbum(albumId: String): Album? {
         val db = this.readableDatabase
@@ -348,6 +397,17 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Tracks
     fun addTrack(track: Track): String {
         val db = this.writableDatabase
+        val query : String = "SELECT 1 FROM $TABLE_TRACK WHERE $TRACK_ID = ?"
+
+        //Make sure that album does exist
+        val cursor = db.rawQuery(query, arrayOf(track.trackId))
+        if(cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return ""
+        }
+        cursor.close()
+
         val values = ContentValues().apply {
             put(TRACK_ID, track.trackId)
             put(TRACK_ALBUM_ID, track.albumId)
@@ -412,6 +472,17 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Playlists
     fun addPlaylist(playlist: Playlist): String {
         val db = this.writableDatabase
+        val query : String = "SELECT 1 FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID = ?"
+
+        //Make sure that album does exist
+        val cursor = db.rawQuery(query, arrayOf(playlist.playlistId))
+        if(cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return ""
+        }
+        cursor.close()
+
         val values = ContentValues().apply {
             put(PLAYLIST_ID, playlist.playlistId)
             put(PLAYLIST_USER_ID, playlist.userId)
@@ -475,6 +546,18 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Playlist_Tracks
     fun addPlaylistTrack(playlistTrack: PlaylistTrack) {
         val db = this.writableDatabase
+        val query : String = "SELECT 1 FROM $TABLE_PLAYLIST_TRACK WHERE " +
+                "$PLAYLIST_TRACK_PLAYLIST_ID = ? AND $PLAYLIST_TRACK_TRACK_ID = ?"
+
+        //Make sure that album does exist
+        val cursor = db.rawQuery(query, arrayOf(playlistTrack.playlistId, playlistTrack.trackId))
+        if(cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return
+        }
+        cursor.close()
+
         val values = ContentValues().apply {
             put(PLAYLIST_TRACK_PLAYLIST_ID, playlistTrack.playlistId)
             put(PLAYLIST_TRACK_TRACK_ID, playlistTrack.trackId)
