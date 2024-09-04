@@ -1,6 +1,5 @@
 package com.example.mymusicapp.library
 
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +7,12 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
+import com.example.mymusicapp.models.Playlist
 
-data class PlaylistListItem(val name : String, val imageBit : Bitmap)
 class PlaylistListAdapter(
-    private val playlistListItem : ArrayList<PlaylistListItem>,
+    private val playlistListItem : ArrayList<Playlist>,
     private val setItemOnClickListener: FragmentPlaylistItemOnClickListener? = null
 ) : Adapter<PlaylistListAdapter.ViewHolder>() {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
@@ -33,7 +33,11 @@ class PlaylistListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = playlistListItem[position]
         holder.titleText.text = currentItem.name
-        holder.titleImage.setImageBitmap(currentItem.imageBit)
+        Glide.with(holder.titleImage.context)
+            .load(currentItem.image)
+            .placeholder(R.drawable.blacker_gradient) // Placeholder while loading
+            .error(R.drawable.blacker_gradient) // Error image if URL fails
+            .into(holder.titleImage)
 
         //Implement interface
         holder.itemView.setOnClickListener {
@@ -46,6 +50,6 @@ class PlaylistListAdapter(
     }
 
     interface FragmentPlaylistItemOnClickListener {
-        fun itemSelectionClickListener(item: PlaylistListItem?)
+        fun itemSelectionClickListener(item: Playlist?)
     }
 }

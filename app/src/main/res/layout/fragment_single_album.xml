@@ -70,8 +70,10 @@
         android:id="@+id/recyclerViewSongs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_below="@id/artistName"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="75dp"
         android:padding="16dp" />
 
 </RelativeLayout>

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +70,23 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
     }
 
     override fun setOnItemClickListener(item: Album?) {
-        //Navigate here
-        Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
+        // Ensure that item is not null
+        item?.let {
+            val albumFragment = AlbumFragment.newInstance(item.albumId) //Transfer id
+
+            // Use a bundle to pass data to PlaylistFragment if needed
+            /*val bundle = Bundle()
+            bundle.putSerializable("playlistItem", it)  // Assuming PlaylistListItem is Serializable
+            playlistFragment.arguments = bundle*/
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, albumFragment)  // Replace with your fragment container ID
+                .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                .commit()
+
+            Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+        } ?: run {
+            Toast.makeText(requireContext(), "Item is null!", Toast.LENGTH_SHORT).show()
+        }
     }
 }

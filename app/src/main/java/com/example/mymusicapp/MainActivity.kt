@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         //load DB
 
         dbHelper = MusicAppDatabaseHelper(this)
+        dbHelper.deleteAllPlaylistTrack() //Run this to delete data
         CoroutineScope(Dispatchers.Main).launch {
             addDummyDataToDatabase()
         }
@@ -123,20 +124,28 @@ class MainActivity : AppCompatActivity() {
                     tracksRaw[k].name, tracksRaw[k].duration, tracksRaw[k].path))
             }
 
-            //dbHelper.addTrack(Track("1", albumId1.toString(), "grainy days", "2:43", "path/to/audio1"))
-            //dbHelper.addTrack(Track("2", albumId1.toString(), "Coffee", "3:15", "path/to/audio2"))
-            //dbHelper.addTrack(Track("3", albumId2.toString(), "Jazz in the Night", "4:20", "path/to/audio3"))
-            //dbHelper.addTrack(Track("4", albumId2.toString(), "Smooth Flow", "3:50", "path/to/audio4"))
             Log.d("MainActivity", "Tracks added")
 
             // Add dummy playlist
-            val playlistId = dbHelper.addPlaylist(Playlist("1", "1", "Lofi Loft", "https://via.placeholder.com/150"))
-            Log.d("MainActivity", "Dummy playlist " + playlistId.toString() + " added")
+            val playlistRaw = spotifyData.findPlaylists("duonghieu")
+            for(i in 0..<playlistRaw!!.size) {
+                dbHelper.addPlaylist(Playlist(playlistRaw[i].playlistId, playlistRaw[i].userId, playlistRaw[i].name,
+                    playlistRaw[i].image))
+            }
+
+            Log.d("MainActivity", "Playlist added")
 
             // Link tracks to playlist
-            val tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[0])!!
-            for(i in 0..<tracksRaw.size) {
-                dbHelper.addPlaylistTrack(PlaylistTrack(playlistId.toString(), tracksRaw[i].trackId, i+1))
+            var tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[0])!!
+            val counter = tracksRaw.size/2
+            for(i in 0..<counter) {
+                dbHelper.addPlaylistTrack(PlaylistTrack(playlistRaw[1].playlistId, tracksRaw[i].trackId, i+1))
+            }
+
+
+            tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[1])!!
+            for(i in 0..<tracksRaw.size/2) {
+                dbHelper.addPlaylistTrack(PlaylistTrack(playlistRaw[1].playlistId, tracksRaw[i].trackId, i+ counter +1))
             }
             Log.d("MainActivity", "Tracks linked to playlist")
 
@@ -144,6 +153,8 @@ class MainActivity : AppCompatActivity() {
             Log.e("MainActivity", "Error adding dummy data: ${e.message}")
             e.printStackTrace()
         }
+
+
     }
 
     override fun onDestroy() {
