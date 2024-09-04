@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
-import com.example.mymusicapp.data.SpotifyData
+import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
     override fun onCreateView(
@@ -23,6 +23,7 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_albums, container, false)
 
+        //running background, load layout first
         CoroutineScope(Dispatchers.Main).launch {
             app(view)
         }
@@ -30,6 +31,7 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
         return view
     }
 
+    //Suspend to run background
     private suspend fun app(view: View) {
         //Your Liked Albums
         val yourLikedAlbums : View = view.findViewById(R.id.YourLikedAlbums)
@@ -52,18 +54,21 @@ class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
 
     }
 
-    private suspend fun createAlbumsItem(): ArrayList<AlbumItem> {
-        var sample = ArrayList<AlbumItem>()
-        val spotifyData = SpotifyData()
+    private suspend fun createAlbumsItem(): ArrayList<Album> {
+        var sample = ArrayList<Album>()
+        val db = MusicAppDatabaseHelper(requireContext())
+        val allAlbumId = db.getAllAlbumId()!!
 
-        spotifyData.buildSearchApi()
-        sample = spotifyData.findAlbums()!!
+        //Get the albums from database
+        for(i in 0..<allAlbumId.size) {
+            sample.add(db.getAlbum(allAlbumId[i])!!)
+        }
 
         //return
         return sample
     }
 
-    override fun setOnItemClickListener(item: AlbumItem?) {
+    override fun setOnItemClickListener(item: Album?) {
         //Navigate here
         Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
     }
