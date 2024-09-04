@@ -1,46 +1,39 @@
 package com.example.mymusicapp.player
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.mymusicapp.player.ui.theme.MyMusicAppTheme
 import android.net.Uri
-import android.widget.Button
+import androidx.activity.ComponentActivity
 import com.example.mymusicapp.R
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.PlayerControlView
 
 class PlayerViewActivity : ComponentActivity() {
     private lateinit var exoPlayer: ExoPlayer
+    private lateinit var playerControlView: PlayerControlView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.player_view)
+        setContentView(R.layout.activity_single_song)
 
-        val playerView = findViewById<PlayerView>(R.id.playerView)
-        val playButton = findViewById<Button>(R.id.playButton)
+        playerControlView = findViewById(R.id.playerControlView)
 
         // Initialize ExoPlayer
         exoPlayer = ExoPlayer.Builder(this).build()
-        playerView.player = exoPlayer
+        playerControlView.player = exoPlayer  // Attach the control view to the player
+
+        // Prevent auto-hiding of the controls
+        playerControlView.setShowTimeoutMs(0) // Set to 0 to always show controls
 
         // Set the media item to be played
-        val mediaItem = MediaItem.fromUri(Uri.parse("https://files.freemusicarchive.org/storage-freemusicarchive-org/tribe-of-noise-pro/music/6ec8ccb72e97ef2a98aa92d0f231b36f.mp3"))
+        val mediaItem = MediaItem.fromUri(
+            Uri.parse("https://stream.nct.vn/Unv_Audio407/Style-TaylorSwift-12613800.mp3?st=HQN3Vju0fcNjatL9jDvorQ&e=1726036277&a=1&p=0&r=a0dad11b4823361cef20dccf5ac0758a&t=1725435123477")
+        )
         exoPlayer.setMediaItem(mediaItem)
 
-        playButton.setOnClickListener {
-            exoPlayer.prepare()
-            exoPlayer.play()
-        }
+        // Prepare and start playback
+        exoPlayer.prepare()
+        exoPlayer.playWhenReady = true
     }
 
     override fun onDestroy() {
