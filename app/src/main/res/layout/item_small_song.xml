@@ -36,4 +36,15 @@
             android:textColor="#8A9A9D"
             android:textSize="12sp" />
     </LinearLayout>
+
+    <!-- Add Menu Button -->
+    <ImageView
+        android:id="@+id/menuButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_more_vert"
+        android:contentDescription="More Options"
+        android:clickable="true"
+        android:focusable="true" />
 </LinearLayout>

@@ -59,6 +59,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         private const val PLAYLIST_NAME = "name"
         private const val PLAYLIST_IMAGE = "image"
 
+        //Own Pl table
+        //Like Pl table
         // Playlist_Track Table
         private const val TABLE_PLAYLIST_TRACK = "Playlist_Track"
         private const val PLAYLIST_TRACK_PLAYLIST_ID = "playlist_id"
@@ -70,7 +72,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         private const val FOLLOWER_USER_ID = "user_id"
         private const val FOLLOWER_ARTIST_ID = "artist_id"
 
-        // Like Table
+        // Like Table ?? -> attribute?
         private const val TABLE_LIKE = "Like"
         private const val LIKE_USER_ID = "user_id"
         private const val LIKE_TRACK_ID = "track_id"

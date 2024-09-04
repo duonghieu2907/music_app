@@ -23,6 +23,7 @@ class PlaylistTracksAdapter(
         val songTitle: TextView = itemView.findViewById(R.id.songTitleTextView)
         val songArtist: TextView = itemView.findViewById(R.id.songArtistTextView)
         val songImage: ImageView = itemView.findViewById(R.id.albumArtImageView)
+        val menuButton: ImageView = itemView.findViewById(R.id.menuButton)
 
         init {
             itemView.setOnClickListener {
@@ -51,6 +52,14 @@ class PlaylistTracksAdapter(
             .load(album?.image)
             .placeholder(R.drawable.blacker_gradient) // Placeholder image if no image is available
             .into(holder.songImage)
+
+        holder.menuButton.setOnClickListener { view ->
+            showMenu(view, track)
+        }
+    }
+
+    private fun showMenu(view: View?, track: Track) {
+        //jump to Menu Fragment
     }
 
     override fun getItemCount(): Int {

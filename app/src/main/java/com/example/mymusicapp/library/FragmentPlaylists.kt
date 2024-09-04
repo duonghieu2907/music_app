@@ -66,12 +66,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     override fun itemSelectionClickListener(item: PlaylistListItem?) {
         // Ensure that item is not null
         item?.let {
-            val playlistFragment = PlaylistFragment.newInstance("1")
-
-            // Use a bundle to pass data to PlaylistFragment if needed
-            /*val bundle = Bundle()
-            bundle.putSerializable("playlistItem", it)  // Assuming PlaylistListItem is Serializable
-            playlistFragment.arguments = bundle*/
+            val playlistFragment = PlaylistFragment.newInstance("1") //truyen item id vao
 
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
