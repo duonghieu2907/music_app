@@ -750,6 +750,31 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         return tracks // Return the list of tracks
     }
 
+    fun getTracksByAlbumId(albumId: String): List<Track> {
+        val tracks = mutableListOf<Track>()
+        val db = this.readableDatabase
+
+        val query = "SELECT * FROM $TABLE_TRACK WHERE $TRACK_ALBUM_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(albumId))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
+                val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
+                val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
+
+                val track = Track(id, albumId, name, duration, path)
+                tracks.add(track)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+
+        return tracks
+    }
+
 
 
 
