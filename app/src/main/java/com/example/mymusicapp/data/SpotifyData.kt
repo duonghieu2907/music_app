@@ -3,13 +3,16 @@ package com.example.mymusicapp.data
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.adamratzman.spotify.SpotifyAppApi
+import com.adamratzman.spotify.models.Artist
 import com.adamratzman.spotify.models.SpotifyPublicUser
 import com.adamratzman.spotify.spotifyAppApi
-import com.example.mymusicapp.library.AlbumItem
 import com.example.mymusicapp.library.PlaylistListItem
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
+
 
 class SpotifyData {
     private val clientID = "95347603f19a497aa51c78b2a3dd81d3"
@@ -17,18 +20,24 @@ class SpotifyData {
     private var api: SpotifyAppApi? = null
     suspend fun buildSearchApi() {
         api = spotifyAppApi(clientID, clientSecret).build()
+
     }
 
-    suspend fun findAlbums(): ArrayList<AlbumItem>? {
-        try {
-            val albums = ArrayList<AlbumItem>()
-            val album = api?.albums?.getAlbum("3iPSVi54hsacKKl1xIR2eH")
-            val imageURL: String = album!!.images[0].url
-            val image = loadUrl(imageURL)
-            val item = AlbumItem(album.name, image)
+    suspend fun findArtist(query: String) : Artist? {
+        println("Successfully find artist")
+        return api?.artists?.getArtist(query)
+    }
 
-            albums.add(item)
-            println("Success")
+    suspend fun findAlbumsFromArtist(query: String): ArrayList<Album>? {
+        try {
+            val albums = ArrayList<Album>()
+            val simpleAlbum = api?.artists?.getArtistAlbums(query)
+            for (i in 0..2) {
+                albums.add(Album(simpleAlbum!![i].id, query,
+                    simpleAlbum[i].name, simpleAlbum[i].releaseDate.toString(), simpleAlbum[i].images[0].url))
+            }
+
+            println("Success find albums from artist")
             return albums
         } catch (e: Exception) {
             println("Error getting album: ${e.message}")
@@ -37,7 +46,26 @@ class SpotifyData {
 
     }
 
-    suspend fun getUser(userQuery: String): SpotifyPublicUser? {
+    suspend fun findTracksFromAlbum(query: String): ArrayList<Track>? {
+        val tracks = ArrayList<Track>()
+        val album = api?.albums?.getAlbum(query)
+
+        try {
+            val rawTracks = api?.albums?.getAlbumTracks(query)
+            for(i in 0..<rawTracks!!.size) {
+                tracks.add(Track(rawTracks[i].id, album!!.id, rawTracks[i].name,
+                    convertMilisecond(rawTracks[i].durationMs), rawTracks[i].uri.toString()))
+            }
+            return tracks
+        }
+        catch (e: Exception) {
+            return null
+        }
+
+    }
+
+    suspend fun getUserOnline(userQuery: String): SpotifyPublicUser? {
+        println("Successfully find user")
         return api!!.users.getProfile(userQuery)
     }
 
@@ -45,8 +73,7 @@ class SpotifyData {
         val playlists: ArrayList<PlaylistListItem>? = null
 
         try {
-            val publicUser: SpotifyPublicUser? = getUser("Salmoe")
-            api?.playlists?.getUserPlaylists(publicUser!!.id, 2)
+
 
             println("Success")
             return playlists
@@ -57,6 +84,18 @@ class SpotifyData {
 
     }
 
+    private suspend fun convertMilisecond(Ms: Int) : String {
+        val totalSecond = Ms/1000 //Get total seconds
+        val hours = totalSecond/3600
+        val minutes = (totalSecond%3600)/60
+        val seconds = totalSecond%60
+
+        return when {
+            hours > 0 -> String.format("%01d:%01d:%02d", hours, minutes, seconds)
+            minutes > 0 -> String.format("%01d:%02d", minutes, seconds)
+            else -> String.format("%02d", seconds)
+        }
+    }
     suspend fun loadUrl(Url: String): Bitmap? {
         return withContext(Dispatchers.IO) {
             try {
