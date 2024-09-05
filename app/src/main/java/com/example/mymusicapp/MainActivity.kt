@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    private suspend fun addDummyDataToDatabase() {
+    private suspend fun addDummyDataToDatabase(spotifyData: SpotifyData) {
         try {
             // Add dummy users
             var userRaw = spotifyData.getUserOnline("Salmoe")

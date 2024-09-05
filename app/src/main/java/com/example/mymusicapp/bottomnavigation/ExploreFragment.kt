@@ -1,5 +1,6 @@
 package com.example.mymusicapp.bottomnavigation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -33,11 +34,8 @@ class ExploreFragment : Fragment() {
         val searchButton: TextView = view.findViewById(R.id.search_button)
 
         searchButton.setOnClickListener {
-            val fragment = SearchFragment()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+            val intent = Intent(requireContext(), SearchActivity::class.java)
+            startActivity(intent)
         }
 
         return view
