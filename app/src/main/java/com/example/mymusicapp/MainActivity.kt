@@ -1,5 +1,7 @@
 package com.example.mymusicapp
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -21,11 +23,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var dbHelper: MusicAppDatabaseHelper
+    private var authCode: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,9 +37,17 @@ class MainActivity : AppCompatActivity() {
         //load DB
 
         dbHelper = MusicAppDatabaseHelper(this)
-        dbHelper.deleteAllPlaylistTrack() //Run this to delete data
+
+        //dbHelper.deleteAll() //Run this line to delete everything
+
+        //Run this to update or insert data to database
         CoroutineScope(Dispatchers.Main).launch {
-            addDummyDataToDatabase()
+            runBlocking {
+                val spotifyData = SpotifyData()
+                //spotifyData.buildAuthcode(activity = this@MainActivity)
+                spotifyData.buildApi(authCode)
+                addDummyDataToDatabase(spotifyData)
+            }
         }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
@@ -45,14 +57,17 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(HomeFragment())
                     true
                 }
+
                 R.id.nav_explore -> {
                     loadFragment(ExploreFragment())
                     true
                 }
+
                 R.id.nav_library -> {
                     loadFragment(LibraryFragment())
                     true
                 }
+
                 else -> false
             }
         }
@@ -77,17 +92,33 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
-    private suspend fun addDummyDataToDatabase() {
+
+    private suspend fun addDummyDataToDatabase(spotifyData: SpotifyData) {
         try {
             // Add dummy users
-            val spotifyData = SpotifyData()
-            spotifyData.buildSearchApi()
-
             var userRaw = spotifyData.getUserOnline("Salmoe")
-            dbHelper.addUser(User(userRaw!!.id, userRaw.displayName!!, "", "", "1990-01-01", checkImageReturnUrl(userRaw.images)))
+            dbHelper.addUser(
+                User(
+                    userRaw!!.id,
+                    userRaw.displayName!!,
+                    "",
+                    "",
+                    "1990-01-01",
+                    checkImageReturnUrl(userRaw.images)
+                )
+            )
 
             userRaw = spotifyData.getUserOnline("duonghieu")
-            dbHelper.addUser(User(userRaw!!.id, userRaw.displayName!!, "", "", "1985-05-10", checkImageReturnUrl(userRaw.images)))
+            dbHelper.addUser(
+                User(
+                    userRaw!!.id,
+                    userRaw.displayName!!,
+                    "",
+                    "",
+                    "1985-05-10",
+                    checkImageReturnUrl(userRaw.images)
+                )
+            )
 
             //dbHelper.addUser(User("1", "Alice", "alice@example.com", "password123", "1990-01-01", "https://via.placeholder.com/150"))
             //dbHelper.addUser(User("2", "Bob", "bob@example.com", "securepass", "1985-05-10", "https://via.placeholder.com/150"))
@@ -95,21 +126,35 @@ class MainActivity : AppCompatActivity() {
 
             // Add dummy artists
             var artistRaw = spotifyData.findArtist("06HL4z0CvFAxyc27GXpf02") //Taylor Swift
-            val artistId1 = dbHelper.addArtist(Artist(artistRaw!!.id, artistRaw.name, artistRaw.genres[0], checkImageReturnUrl(artistRaw.images)))
+            val artistId1 = dbHelper.addArtist(
+                Artist(
+                    artistRaw!!.id,
+                    artistRaw.name,
+                    artistRaw.genres[0],
+                    checkImageReturnUrl(artistRaw.images)
+                )
+            )
 
             artistRaw = spotifyData.findArtist("5M3ffmRiOX9Q8Y4jNeR5wu") //Wren Evans
-            val artistId2 = dbHelper.addArtist(Artist(artistRaw!!.id, artistRaw.name, artistRaw.genres[0], checkImageReturnUrl(artistRaw.images)))
+            val artistId2 = dbHelper.addArtist(
+                Artist(
+                    artistRaw!!.id,
+                    artistRaw.name,
+                    artistRaw.genres[0],
+                    checkImageReturnUrl(artistRaw.images)
+                )
+            )
             Log.d("MainActivity", "Artists added")
 
             // Add dummy albums
             var albumsRaw = spotifyData.findAlbumsFromArtist("06HL4z0CvFAxyc27GXpf02")!!
 
-            for (i in 0..< albumsRaw.size) {
+            for (i in 0..<albumsRaw.size) {
                 dbHelper.addAlbum(albumsRaw[i])
             }
 
             albumsRaw = spotifyData.findAlbumsFromArtist("5M3ffmRiOX9Q8Y4jNeR5wu")!!
-            for (i in 0..< albumsRaw.size) {
+            for (i in 0..<albumsRaw.size) {
                 dbHelper.addAlbum(albumsRaw[i])
             }
 
@@ -120,32 +165,52 @@ class MainActivity : AppCompatActivity() {
             for (i in 0..<allAlbumId.size) {
                 val tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[i])!!
 
-                for(k in 0..<tracksRaw.size) dbHelper.addTrack(Track(tracksRaw[k].trackId, allAlbumId[i],
-                    tracksRaw[k].name, tracksRaw[k].duration, tracksRaw[k].path))
+                for (k in 0..<tracksRaw.size) dbHelper.addTrack(
+                    Track(
+                        tracksRaw[k].trackId, allAlbumId[i],
+                        tracksRaw[k].name, tracksRaw[k].duration, tracksRaw[k].path
+                    )
+                )
             }
 
             Log.d("MainActivity", "Tracks added")
 
             // Add dummy playlist
             val playlistRaw = spotifyData.findPlaylists("duonghieu")
-            for(i in 0..<playlistRaw!!.size) {
-                dbHelper.addPlaylist(Playlist(playlistRaw[i].playlistId, playlistRaw[i].userId, playlistRaw[i].name,
-                    playlistRaw[i].image))
+            for (i in 0..<playlistRaw!!.size) {
+                dbHelper.addPlaylist(
+                    Playlist(
+                        playlistRaw[i].playlistId, playlistRaw[i].userId, playlistRaw[i].name,
+                        playlistRaw[i].image
+                    )
+                )
             }
 
             Log.d("MainActivity", "Playlist added")
 
             // Link tracks to playlist
             var tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[0])!!
-            val counter = tracksRaw.size/2
-            for(i in 0..<counter) {
-                dbHelper.addPlaylistTrack(PlaylistTrack(playlistRaw[1].playlistId, tracksRaw[i].trackId, i+1))
+            val counter = tracksRaw.size / 2
+            for (i in 0..<counter) {
+                dbHelper.addPlaylistTrack(
+                    PlaylistTrack(
+                        playlistRaw[1].playlistId,
+                        tracksRaw[i].trackId,
+                        i + 1
+                    )
+                )
             }
 
 
             tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[1])!!
-            for(i in 0..<tracksRaw.size/2) {
-                dbHelper.addPlaylistTrack(PlaylistTrack(playlistRaw[1].playlistId, tracksRaw[i].trackId, i+ counter +1))
+            for (i in 0..<tracksRaw.size / 2) {
+                dbHelper.addPlaylistTrack(
+                    PlaylistTrack(
+                        playlistRaw[1].playlistId,
+                        tracksRaw[i].trackId,
+                        (i + counter + 1)
+                    )
+                )
             }
             Log.d("MainActivity", "Tracks linked to playlist")
 
@@ -154,7 +219,6 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-
     }
 
     override fun onDestroy() {
@@ -162,10 +226,20 @@ class MainActivity : AppCompatActivity() {
         //dbHelper.close()
     }
 
-    private fun checkImageReturnUrl(sample : List<SpotifyImage>) : String {
+    private fun checkImageReturnUrl(sample: List<SpotifyImage>): String {
         return when {
             sample.isEmpty() -> ""
             else -> sample.firstOrNull()!!.url
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == 1001 && resultCode == Activity.RESULT_OK) {
+            authCode = data?.getStringExtra("authorization_code") ?: ""
+        }
+
+
     }
 }
