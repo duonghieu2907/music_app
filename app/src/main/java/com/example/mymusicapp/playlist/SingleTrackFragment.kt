@@ -22,22 +22,18 @@ class SingleTrackFragment : Fragment() {
     private lateinit var songTitle: TextView
     private lateinit var artistName: TextView
     private lateinit var songCover: ImageView
-    private lateinit var lyricsText: TextView
-    private lateinit var songEndTime: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_single_song, container, false)
 
-        // Initialize UI components
         songTitle = view.findViewById(R.id.song_title)
         artistName = view.findViewById(R.id.artist_name)
         songCover = view.findViewById(R.id.song_cover)
 
-        // Get the Track object passed from the previous fragment or activity
+        // Track object from ARG
         track = arguments?.getParcelable("TRACK") ?: return view
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
@@ -46,16 +42,13 @@ class SingleTrackFragment : Fragment() {
         val album: Album? = dbHelper.getAlbum(track.albumId)  // Ensure getAlbum accepts String type
         val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")  // Ensure getArtist accepts String type
 
-        // Set the UI components with track details
         songTitle.text = track.name
         artistName.text = artist?.name ?: "Unknown Artist"
-        lyricsText.text = "No lyrics available"
-        songEndTime.text = track.duration
 
-        // Load album cover image
+        // album cover image
         Glide.with(this)
             .load(album?.image)
-            .placeholder(R.drawable.blacker_gradient) // Placeholder image if no image is available
+            .placeholder(R.drawable.blacker_gradient)
             .into(songCover)
 
         return view
