@@ -26,8 +26,6 @@ class SingleTrackFragment : Fragment() {
     private lateinit var songTitle: TextView
     private lateinit var artistName: TextView
     private lateinit var songCover: ImageView
-    private lateinit var lyricsText: TextView
-    private lateinit var songEndTime: TextView
     private lateinit var playerControlView: PlayerControlView
     private lateinit var exoPlayer: ExoPlayer
 
@@ -56,8 +54,7 @@ class SingleTrackFragment : Fragment() {
         // Set the UI components with track details
         songTitle.text = track.name
         artistName.text = artist?.name ?: "Unknown Artist"
-        lyricsText.text = "No lyrics available"
-        songEndTime.text = track.duration
+
 
         // Load album cover image
         Glide.with(this)

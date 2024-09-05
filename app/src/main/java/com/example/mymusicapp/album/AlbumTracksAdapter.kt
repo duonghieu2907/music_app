@@ -13,12 +13,17 @@ import com.example.mymusicapp.models.*
 class AlbumTracksAdapter(
     private val tracks: List<Track>,
     private val dbHelper: MusicAppDatabaseHelper,
-    private val onMenuClickListener: (Track ) -> Unit
+    private val onItemClick: (Track ) -> Unit
 ) : RecyclerView.Adapter<AlbumTracksAdapter.AlbumTrackViewHolder>() {
 
     inner class AlbumTrackViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val songTitle: TextView = view.findViewById(R.id.songTitle)
         val menuButton: ImageView = view.findViewById(R.id.menuButton)
+        init {
+            itemView.setOnClickListener {
+                onItemClick(tracks[adapterPosition])
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlbumTrackViewHolder {
