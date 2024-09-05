@@ -1,5 +1,6 @@
 package com.example.mymusicapp.playlist
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,9 @@ import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ui.PlayerControlView
 
 class SingleTrackFragment : Fragment() {
 
@@ -24,6 +28,8 @@ class SingleTrackFragment : Fragment() {
     private lateinit var songCover: ImageView
     private lateinit var lyricsText: TextView
     private lateinit var songEndTime: TextView
+    private lateinit var playerControlView: PlayerControlView
+    private lateinit var exoPlayer: ExoPlayer
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +42,7 @@ class SingleTrackFragment : Fragment() {
         songTitle = view.findViewById(R.id.song_title)
         artistName = view.findViewById(R.id.artist_name)
         songCover = view.findViewById(R.id.song_cover)
+        playerControlView = view.findViewById(R.id.playerControlView)
 
         // Get the Track object passed from the previous fragment or activity
         track = arguments?.getParcelable("TRACK") ?: return view
@@ -58,7 +65,30 @@ class SingleTrackFragment : Fragment() {
             .placeholder(R.drawable.blacker_gradient) // Placeholder image if no image is available
             .into(songCover)
 
+        // Initialize ExoPlayer
+        exoPlayer = ExoPlayer.Builder(requireContext()).build()
+        playerControlView.player = exoPlayer  // Attach the control view to the player
+
+        // Prevent auto-hiding of the controls
+        playerControlView.setShowTimeoutMs(0) // Set to 0 to always show controls
+
+        // Load track URL into ExoPlayer
+        val trackUrl =  "https://stream.nct.vn/Unv_Audio407/Style-TaylorSwift-12613800.mp3?st=HQN3Vju0fcNjatL9jDvorQ&e=1726036277&a=1&p=0&r=a0dad11b4823361cef20dccf5ac0758a&t=1725435123477"
+
+        val mediaItem = MediaItem.fromUri(Uri.parse(trackUrl))
+        exoPlayer.addMediaItem(mediaItem)
+
+        // Prepare the player and start playback
+        exoPlayer.prepare()
+        exoPlayer.playWhenReady = true
+
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Release the player when the view is destroyed
+        exoPlayer.release()
     }
 
     companion object {
