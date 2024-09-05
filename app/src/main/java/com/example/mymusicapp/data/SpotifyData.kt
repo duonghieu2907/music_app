@@ -8,6 +8,7 @@ import android.net.Uri
 import com.adamratzman.spotify.SpotifyAppApi
 import com.adamratzman.spotify.SpotifyClientApi
 import com.adamratzman.spotify.SpotifyScope
+import com.adamratzman.spotify.SpotifyUserAuthorization
 import com.adamratzman.spotify.models.Artist
 import com.adamratzman.spotify.models.SpotifyImage
 import com.adamratzman.spotify.models.SpotifyPublicUser
@@ -60,9 +61,9 @@ class SpotifyData {
         activity.startActivityForResult(intent, AUTH_REQUEST_CODE)
     }
     suspend fun buildApi(authCode: String) {
-//      clientApi = spotifyClientApi(clientID, clientSecret, redirectUri)
-//                .authorization(SpotifyUserAuthorization(authorizationCode = authCode))
-//                .build()
+      clientApi = spotifyClientApi(clientID, clientSecret, redirectUri)
+                .authorization(SpotifyUserAuthorization(authorizationCode = authCode))
+                .build()
         api = spotifyAppApi(clientID, clientSecret).build()
     }
 

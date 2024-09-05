@@ -21,8 +21,8 @@ import com.example.mymusicapp.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,11 +41,14 @@ class MainActivity : AppCompatActivity() {
         //Run this to update or insert data to database
         CoroutineScope(Dispatchers.IO).launch {
             val spotifyData = SpotifyData()
-            runBlocking {
-                //spotifyData.buildAuthcode(activity = this@MainActivity)
+            spotifyData.buildAuthcode(activity = this@MainActivity)
+            while (authCode == "") {
+                delay(1000)
             }
+
             spotifyData.buildApi(authCode)
             addDummyDataToDatabase(spotifyData)
+
         }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
