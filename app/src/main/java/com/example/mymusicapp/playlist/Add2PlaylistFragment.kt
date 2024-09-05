@@ -1,23 +1,28 @@
 package com.example.mymusicapp.playlist
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 
-class Add2PlaylistActivity : ComponentActivity() {
+class Add2PlaylistFragment : Fragment() {
 
     private lateinit var playlistRecyclerView: RecyclerView
     private lateinit var playlistAdapter: PlaylistAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_2_playlist)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.activity_add_2_playlist, container, false)
 
         // Initialize RecyclerView
-        playlistRecyclerView = findViewById(R.id.playlistRecyclerView)
-        playlistRecyclerView.layoutManager = LinearLayoutManager(this)
+        playlistRecyclerView = view.findViewById(R.id.playlistRecyclerView)
+        playlistRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Create an adapter and set it to the RecyclerView
         val playlists = listOf(
@@ -29,5 +34,7 @@ class Add2PlaylistActivity : ComponentActivity() {
         )
         playlistAdapter = PlaylistAdapter(playlists)
         playlistRecyclerView.adapter = playlistAdapter
+
+        return view
     }
 }
