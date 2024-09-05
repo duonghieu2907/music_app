@@ -16,7 +16,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FragmentAlbums : Fragment(), FragmentAlbumsAdapter.OnItemClickListener {
+class FragmentAlbums : Fragment(),
+    FragmentAlbumsAdapter.OnItemClickListener{
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
