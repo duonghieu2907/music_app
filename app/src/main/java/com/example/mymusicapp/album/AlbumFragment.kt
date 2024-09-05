@@ -1,4 +1,4 @@
-package com.example.mymusicapp.playlist
+package com.example.mymusicapp.album
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -17,29 +17,30 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.*
+import com.example.mymusicapp.playlist.SingleTrackFragment
 
-class PlaylistFragment : Fragment() {
+class AlbumFragment : Fragment() {
 
     private lateinit var backButton: ImageView
     private lateinit var optionsButton: ImageView
-    private lateinit var playlistImage: ImageView
-    private lateinit var playlistTitle: TextView
-    private lateinit var playlistCreator: TextView
+    private lateinit var albumImage: ImageView
+    private lateinit var albumTitle: TextView
+    private lateinit var albumArtist: TextView
 
     private lateinit var recyclerViewTracks: RecyclerView
-    private lateinit var tracksAdapter: PlaylistTracksAdapter
+    private lateinit var tracksAdapter: AlbumTracksAdapter
     private lateinit var dbHelper: MusicAppDatabaseHelper
 
-    private var playlistId: String = ""  // Changed to String
+    private var albumId: String = ""  // Changed to String
 
     companion object {
-        private const val ARG_PLAYLIST_ID = "playlist_id"
+        private const val ARG_ALBUM_ID = "album_id"
 
-        fun newInstance(playlistId: String): PlaylistFragment {
-            val fragment = PlaylistFragment()
+        fun newInstance(albumId: String): AlbumFragment {
+            val fragment = AlbumFragment()
             val args = Bundle()
-            args.putString(ARG_PLAYLIST_ID, playlistId)  // Changed to putString
-            println(playlistId)
+            args.putString(ARG_ALBUM_ID, albumId)  // Changed to putString
+            println(albumId)
             fragment.arguments = args
             return fragment
         }
@@ -49,7 +50,7 @@ class PlaylistFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            playlistId = it.getString(ARG_PLAYLIST_ID) ?: ""  // Changed to getString
+            albumId = it.getString(ARG_ALBUM_ID) ?: ""  // Changed to getString
         }
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
@@ -59,14 +60,14 @@ class PlaylistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_single_playlist, container, false)
+        val view = inflater.inflate(R.layout.fragment_single_album, container, false)
 
         // Initialize UI
         backButton = view.findViewById(R.id.backButton)
         optionsButton = view.findViewById(R.id.optionsButton)
-        playlistImage = view.findViewById(R.id.playlistImage)
-        playlistTitle = view.findViewById(R.id.playlistTitle)
-        playlistCreator = view.findViewById(R.id.playlistOwner)
+        albumImage = view.findViewById(R.id.albumImage)
+        albumTitle = view.findViewById(R.id.albumTitle)
+        albumArtist = view.findViewById(R.id.artistName)
         recyclerViewTracks = view.findViewById(R.id.recyclerViewSongs)
 
         // Set button click handlers
@@ -77,23 +78,23 @@ class PlaylistFragment : Fragment() {
         optionsButton.setOnClickListener {
             val popup = PopupMenu(requireContext(), it)
             val inflater: MenuInflater = popup.menuInflater
-            inflater.inflate(R.menu.playlist_options_menu, popup.menu)
+            /*inflater.inflate(R.menu.album_options_menu, popup.menu)
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.action_edit_playlist -> {
-                        // Implement edit playlist logic
+                    R.id.action_edit_album -> {
+                        // Implement edit album logic
                         println("Edit")
                     }
-                    R.id.action_delete_playlist -> {
-                        // Implement delete playlist logic
+                    R.id.action_delete_album -> {
+                        // Implement delete album logic
                         println("Delete")
                     }
                     R.id.action_add_to_queue -> {
                         // Implement add to queue logic
                         println("Queue")
                     }
-                    R.id.action_share_playlist -> {
-                        // Implement share playlist logic
+                    R.id.action_share_album -> {
+                        // Implement share album logic
                         println("Share")
                     }
                     else -> false
@@ -101,40 +102,42 @@ class PlaylistFragment : Fragment() {
                 true
             }
             popup.show()
+            */
+
         }
 
 
         // RecyclerView
         recyclerViewTracks.layoutManager = LinearLayoutManager(requireContext())
 
-        loadPlaylistData()
+        loadAlbumData()
 
         return view
     }
 
 
 
-    private fun loadPlaylistData() {
-        // Fetch playlist details using playlistId
-        val playlist: Playlist? = dbHelper.getPlaylist(playlistId)
+    private fun loadAlbumData() {
+        // Fetch album details using albumId
+        val album: Album? = dbHelper.getAlbum(albumId)
 
-        if (playlist != null) {
-            println("Success: " + playlistId)
-            playlistTitle.text = playlist.name
-            playlistCreator.text = dbHelper.getUser(playlist.userId)?.name ?:  "Unknown"
+        if (album != null) {
+            println("Success: " + albumId)
+            albumTitle.text = album.name
+            albumArtist.text = dbHelper.getArtist(album.artistId)?.name ?:  "Unknown"
 
-            // playlist image
+            // album image
             Glide.with(this)
-                .load(playlist.image)
+                .load(album.image)
                 .placeholder(R.drawable.blacker_gradient)
-                .into(playlistImage)
+                .into(albumImage)
 
-            // Fetch tracks for this playlist
-            val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)  // Ensure this method accepts String
-            tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track) }
+            // Fetch tracks for this album
+            val trackList: List<Track> = dbHelper.getTracksByAlbumId(albumId)  // Ensure this method accepts String
+            tracksAdapter = AlbumTracksAdapter(trackList, dbHelper) { track -> openTrack(track) }
             recyclerViewTracks.adapter = tracksAdapter
         } else {
-            Toast.makeText(requireContext(), "Playlist not found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Album not found", Toast.LENGTH_SHORT).show()
         }
     }
 

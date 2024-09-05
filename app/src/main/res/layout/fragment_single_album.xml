@@ -1,0 +1,79 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121111">
+
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="28dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_leftarrow"
+
+        android:contentDescription="Back Button"
+        android:layout_alignParentStart="true"
+        android:scaleType="centerInside" />
+
+    <!-- Options Button -->
+    <ImageView
+        android:id="@+id/optionsButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_more_vert"
+        android:contentDescription="Options Button"
+        android:layout_alignParentEnd="true"
+        android:scaleType="centerInside" />
+
+    <!-- Album Image -->
+    <ImageView
+        android:id="@+id/albumImage"
+        android:layout_width="263dp"
+        android:layout_height="252dp"
+        android:layout_marginTop="60dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/blacker_gradient"
+        android:contentDescription="Album Image"
+        android:scaleType="centerCrop" />
+
+    <!-- Album Title -->
+    <TextView
+        android:id="@+id/albumTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/albumImage"
+        android:layout_marginTop="20dp"
+        android:text="Album Title"
+        android:textSize="34sp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.1" />
+
+    <!-- Artist Name -->
+    <TextView
+        android:id="@+id/artistName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/albumTitle"
+        android:layout_centerHorizontal="true"
+        android:text="Artist Name"
+        android:textSize="13sp"
+        android:textColor="#B3FFFFFF"
+        android:fontFamily="sans-serif" />
+
+    <!-- RecyclerView for Tracks -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSongs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/artistName"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="75dp"
+        android:padding="16dp" />
+
+</RelativeLayout>

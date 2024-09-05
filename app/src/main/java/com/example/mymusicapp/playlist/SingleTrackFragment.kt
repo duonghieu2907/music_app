@@ -36,8 +36,6 @@ class SingleTrackFragment : Fragment() {
         songTitle = view.findViewById(R.id.song_title)
         artistName = view.findViewById(R.id.artist_name)
         songCover = view.findViewById(R.id.song_cover)
-        lyricsText = view.findViewById(R.id.lyrics_text)
-        songEndTime = view.findViewById(R.id.song_end_time)
 
         // Get the Track object passed from the previous fragment or activity
         track = arguments?.getParcelable("TRACK") ?: return view

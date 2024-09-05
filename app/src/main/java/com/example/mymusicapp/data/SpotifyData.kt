@@ -1,26 +1,68 @@
 package com.example.mymusicapp.data
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import com.adamratzman.spotify.SpotifyAppApi
+import com.adamratzman.spotify.SpotifyScope
 import com.adamratzman.spotify.models.Artist
+import com.adamratzman.spotify.models.SpotifyImage
 import com.adamratzman.spotify.models.SpotifyPublicUser
 import com.adamratzman.spotify.spotifyAppApi
-import com.example.mymusicapp.library.PlaylistListItem
+import com.adamratzman.spotify.spotifyClientApi
 import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.URL
+import kotlin.random.Random
 
 
 class SpotifyData {
-    private val clientID = "95347603f19a497aa51c78b2a3dd81d3"
-    private val clientSecret = "ca5f8fa71e8542a98035ded2caa67efa"
+    private val clientID = "724f1843a262436ca08ec70af0ae88fb"
+    private val clientSecret = "209f1d3f5f6846148d92463a47378848"
+    private val redirectUri = "https://www.facebook.com/"
+    //private var api: SpotifyClientApi? = null
     private var api: SpotifyAppApi? = null
-    suspend fun buildSearchApi() {
-        api = spotifyAppApi(clientID, clientSecret).build()
+    private val AUTH_REQUEST_CODE = 1001
+    private fun generateRandomString(length: Int): String {
+        val random = Random
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        val result = StringBuilder(length)
+        for(i in 0..length) {
+            result.append(chars[random.nextInt(chars.length)])
+        }
+        return result.toString()
+    }
+    suspend fun buildAuthcode(activity: Activity) {
+//        val scope: List<SpotifyScope> = listOf(
+//            SpotifyScope.USER_READ_PLAYBACK_STATE,
+//            SpotifyScope.USER_MODIFY_PLAYBACK_STATE,
+//            SpotifyScope.USER_READ_CURRENTLY_PLAYING,
+//            SpotifyScope.APP_REMOTE_CONTROL,
+//            SpotifyScope.STREAMING)
+        var state = generateRandomString(16)
+        val builder = spotifyClientApi(clientID, clientSecret, redirectUri)
+        val authorizationUri = builder.getAuthorizationUrl(
+            SpotifyScope.USER_READ_PLAYBACK_STATE,
+            SpotifyScope.USER_MODIFY_PLAYBACK_STATE,
+            SpotifyScope.USER_READ_CURRENTLY_PLAYING,
+            SpotifyScope.APP_REMOTE_CONTROL,
+            SpotifyScope.STREAMING, state = state)
 
+        delay(1000)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authorizationUri))
+        activity.startActivityForResult(intent, AUTH_REQUEST_CODE)
+    }
+    suspend fun buildApi(authCode: String) {
+//        api = spotifyClientApi(clientID, clientSecret, redirectUri)
+//                .authorization(SpotifyUserAuthorization(authorizationCode = authCode))
+//                .build()
+        api = spotifyAppApi(clientID, clientSecret).build()
     }
 
     suspend fun findArtist(query: String) : Artist? {
@@ -34,7 +76,7 @@ class SpotifyData {
             val simpleAlbum = api?.artists?.getArtistAlbums(query)
             for (i in 0..2) {
                 albums.add(Album(simpleAlbum!![i].id, query,
-                    simpleAlbum[i].name, simpleAlbum[i].releaseDate.toString(), simpleAlbum[i].images[0].url))
+                    simpleAlbum[i].name, simpleAlbum[i].releaseDate.toString(), checkImageReturnUrl(simpleAlbum[i].images)))
             }
 
             println("Success find albums from artist")
@@ -69,11 +111,17 @@ class SpotifyData {
         return api!!.users.getProfile(userQuery)
     }
 
-    suspend fun findPlaylists(): ArrayList<PlaylistListItem>? {
-        val playlists: ArrayList<PlaylistListItem>? = null
+    suspend fun startPlayback() {
+
+    }
+    suspend fun findPlaylists(query: String): ArrayList<Playlist>? {
+        val playlists = ArrayList<Playlist>()
 
         try {
-
+            val rawPlaylists = api?.playlists?.getUserPlaylists(query)
+            for(i in 0..<rawPlaylists!!.size) {
+                playlists.add(Playlist(rawPlaylists[i].id, query, rawPlaylists[i].name, checkImageReturnUrl(rawPlaylists[i].images)))
+            }
 
             println("Success")
             return playlists
@@ -112,6 +160,13 @@ class SpotifyData {
                 println("Error loading image: , ${e.message}")
                 null
             }
+        }
+    }
+
+    private fun checkImageReturnUrl(sample : List<SpotifyImage>) : String {
+        return when {
+            sample.isEmpty() -> ""
+            else -> sample.firstOrNull()!!.url
         }
     }
 }
