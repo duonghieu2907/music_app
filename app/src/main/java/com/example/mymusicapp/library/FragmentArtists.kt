@@ -1,6 +1,5 @@
 package com.example.mymusicapp.library
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Artist
+
 class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,22 +41,22 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         recyclerView.adapter = adapter
     }
 
-    private fun createArtistItem(): ArrayList<ArtistItem> {
-        val sample = ArrayList<ArtistItem>()
+    private fun createArtistItem(): ArrayList<Artist> {
+        val sample = ArrayList<Artist>()
+        val db = MusicAppDatabaseHelper(requireContext()) //Get database
 
-        //1st Sample
-        var bitmap = BitmapFactory.decodeResource(resources, R.drawable.playlistsample)
-        sample.add(ArtistItem("Conan Gray", bitmap))
-
-        //2nd Sample
-        bitmap = BitmapFactory.decodeResource(resources, R.drawable.chase_atlantic)
-        sample.add(ArtistItem("Chase Atlantic", bitmap))
+        //
+        val allArtistId = db.getAllArtistId()!!
+        for(i in 0..<allArtistId.size) {
+            val artist = db.getArtist(allArtistId[i])!!
+            sample.add(Artist(artist.artistId, artist.name, artist.genre, artist.image))
+        }
 
         //return
         return sample
     }
 
-    override fun setOnItemClickListener(item: ArtistItem?) {
+    override fun setOnItemClickListener(item: Artist?) {
         //Navigate here
         Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
     }

@@ -11,9 +11,9 @@ import com.example.mymusicapp.models.Follower
 import com.example.mymusicapp.models.Like
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.PlaylistTrack
+import com.example.mymusicapp.models.SearchResult
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.User
-import com.example.mymusicapp.models.SearchResult
 
 class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -260,7 +260,23 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         return artist.artistId
     }
 
+    fun getAllArtistId() : ArrayList<String>? {
+        val db = this.readableDatabase
+        val query = "SELECT DISTINCT $ARTIST_ID FROM $TABLE_ARTIST"
+        val cursor = db.rawQuery(query, arrayOf())
+        val allId = ArrayList<String>()
+        val columnIndex = cursor.getColumnIndexOrThrow(ARTIST_ID)
+        var counter = 0
 
+        if(!cursor.moveToFirst()) return null //Check if there is no album
+
+        do {
+            allId.add(cursor.getString(columnIndex))
+            counter++
+        } while (cursor.moveToNext())
+
+        return allId
+    }
 
     fun getArtist(artistId: String): Artist? {
         val db = this.readableDatabase
@@ -569,6 +585,16 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Playlist_Tracks
     fun addPlaylistTrack(playlistTrack: PlaylistTrack) {
         val db = this.writableDatabase
+        val query : String = "SELECT 1 FROM $TABLE_PLAYLIST_TRACK WHERE $PLAYLIST_TRACK_PLAYLIST_ID = ?"
+
+        //Make sure that album does exist
+        val cursor = db.rawQuery(query, arrayOf(playlistTrack.playlistId))
+        if(cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return
+        }
+        cursor.close()
 
         val values = ContentValues().apply {
             put(PLAYLIST_TRACK_PLAYLIST_ID, playlistTrack.playlistId)

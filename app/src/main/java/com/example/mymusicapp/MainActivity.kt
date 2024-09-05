@@ -36,17 +36,16 @@ class MainActivity : AppCompatActivity() {
         //load DB
 
         dbHelper = MusicAppDatabaseHelper(this)
-
         //dbHelper.deleteAll() //Run this line to delete everything
 
         //Run this to update or insert data to database
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.IO).launch {
+            val spotifyData = SpotifyData()
             runBlocking {
-                val spotifyData = SpotifyData()
                 //spotifyData.buildAuthcode(activity = this@MainActivity)
-                spotifyData.buildApi(authCode)
-                addDummyDataToDatabase(spotifyData)
             }
+            spotifyData.buildApi(authCode)
+            addDummyDataToDatabase(spotifyData)
         }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    private suspend fun addDummyDataToDatabase() {
+    private suspend fun addDummyDataToDatabase(spotifyData: SpotifyData) {
         try {
             // Add dummy users
             var userRaw = spotifyData.getUserOnline("Salmoe")
@@ -170,7 +169,9 @@ class MainActivity : AppCompatActivity() {
             for (i in 0..<playlistRaw!!.size) {
                 dbHelper.addPlaylist(
                     Playlist(
-                        playlistRaw[i].playlistId, playlistRaw[i].userId, playlistRaw[i].name,
+                        playlistRaw[i].playlistId,
+                        playlistRaw[i].userId,
+                        playlistRaw[i].name,
                         playlistRaw[i].image
                     )
                 )

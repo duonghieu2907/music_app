@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import com.adamratzman.spotify.SpotifyAppApi
+import com.adamratzman.spotify.SpotifyClientApi
 import com.adamratzman.spotify.SpotifyScope
 import com.adamratzman.spotify.models.Artist
 import com.adamratzman.spotify.models.SpotifyImage
@@ -26,7 +27,7 @@ class SpotifyData {
     private val clientID = "724f1843a262436ca08ec70af0ae88fb"
     private val clientSecret = "209f1d3f5f6846148d92463a47378848"
     private val redirectUri = "https://www.facebook.com/"
-    //private var api: SpotifyClientApi? = null
+    private var clientApi: SpotifyClientApi? = null
     private var api: SpotifyAppApi? = null
     private val AUTH_REQUEST_CODE = 1001
     private fun generateRandomString(length: Int): String {
@@ -59,7 +60,7 @@ class SpotifyData {
         activity.startActivityForResult(intent, AUTH_REQUEST_CODE)
     }
     suspend fun buildApi(authCode: String) {
-//        api = spotifyClientApi(clientID, clientSecret, redirectUri)
+//      clientApi = spotifyClientApi(clientID, clientSecret, redirectUri)
 //                .authorization(SpotifyUserAuthorization(authorizationCode = authCode))
 //                .build()
         api = spotifyAppApi(clientID, clientSecret).build()
@@ -112,7 +113,7 @@ class SpotifyData {
     }
 
     suspend fun startPlayback() {
-
+        //use clientApi for playback permission
     }
     suspend fun findPlaylists(query: String): ArrayList<Playlist>? {
         val playlists = ArrayList<Playlist>()

@@ -1,6 +1,5 @@
 package com.example.mymusicapp.library
 
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,15 +7,17 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
+import com.example.mymusicapp.models.Artist
 
-data class ArtistItem(val name: String, val imageBit : Bitmap)
 class FragmentArtistAdapter(
-    private val artistsList : ArrayList<ArtistItem>,
+    private val artistsList : ArrayList<Artist>,
     private val onItemClickListener: OnItemClickListener? = null
 ) : Adapter<FragmentArtistAdapter.ViewHolder>() {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         val artistName : TextView = itemView.findViewById(R.id.playlistTitle)
+        val subTextGenre : TextView = itemView.findViewById(R.id.subText)
         val artistImage : ImageButton = itemView.findViewById(R.id.playlistImage)
     }
 
@@ -32,8 +33,14 @@ class FragmentArtistAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = artistsList[position]
+
         holder.artistName.text = currentItem.name
-        holder.artistImage.setImageBitmap(currentItem.imageBit)
+        holder.subTextGenre.text = currentItem.genre
+        Glide.with(holder.artistImage.context)
+            .load(currentItem.image)
+            .placeholder(R.drawable.blacker_gradient)
+            .error(R.drawable.blacker_gradient)
+            .into(holder.artistImage)
 
         //Implement Listener
         holder.itemView.setOnClickListener {
@@ -42,6 +49,6 @@ class FragmentArtistAdapter(
     }
 
     interface OnItemClickListener {
-        fun setOnItemClickListener(item: ArtistItem?)
+        fun setOnItemClickListener(item: Artist?)
     }
 }
