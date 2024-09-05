@@ -1,27 +1,67 @@
 package com.example.mymusicapp.data
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import com.adamratzman.spotify.SpotifyAppApi
+import com.adamratzman.spotify.SpotifyScope
 import com.adamratzman.spotify.models.Artist
-import com.adamratzman.spotify.models.ContextUri
 import com.adamratzman.spotify.models.SpotifyImage
 import com.adamratzman.spotify.models.SpotifyPublicUser
 import com.adamratzman.spotify.spotifyAppApi
+import com.adamratzman.spotify.spotifyClientApi
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.URL
+import kotlin.random.Random
 
 
 class SpotifyData {
     private val clientID = "724f1843a262436ca08ec70af0ae88fb"
     private val clientSecret = "209f1d3f5f6846148d92463a47378848"
     private val redirectUri = "https://www.facebook.com/"
+    //private var api: SpotifyClientApi? = null
     private var api: SpotifyAppApi? = null
-    suspend fun buildSearchApi() {
+    private val AUTH_REQUEST_CODE = 1001
+    private fun generateRandomString(length: Int): String {
+        val random = Random
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        val result = StringBuilder(length)
+        for(i in 0..length) {
+            result.append(chars[random.nextInt(chars.length)])
+        }
+        return result.toString()
+    }
+    suspend fun buildAuthcode(activity: Activity) {
+//        val scope: List<SpotifyScope> = listOf(
+//            SpotifyScope.USER_READ_PLAYBACK_STATE,
+//            SpotifyScope.USER_MODIFY_PLAYBACK_STATE,
+//            SpotifyScope.USER_READ_CURRENTLY_PLAYING,
+//            SpotifyScope.APP_REMOTE_CONTROL,
+//            SpotifyScope.STREAMING)
+        var state = generateRandomString(16)
+        val builder = spotifyClientApi(clientID, clientSecret, redirectUri)
+        val authorizationUri = builder.getAuthorizationUrl(
+            SpotifyScope.USER_READ_PLAYBACK_STATE,
+            SpotifyScope.USER_MODIFY_PLAYBACK_STATE,
+            SpotifyScope.USER_READ_CURRENTLY_PLAYING,
+            SpotifyScope.APP_REMOTE_CONTROL,
+            SpotifyScope.STREAMING, state = state)
+
+        delay(1000)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authorizationUri))
+        activity.startActivityForResult(intent, AUTH_REQUEST_CODE)
+    }
+    suspend fun buildApi(authCode: String) {
+//        api = spotifyClientApi(clientID, clientSecret, redirectUri)
+//                .authorization(SpotifyUserAuthorization(authorizationCode = authCode))
+//                .build()
         api = spotifyAppApi(clientID, clientSecret).build()
     }
 
@@ -71,7 +111,7 @@ class SpotifyData {
         return api!!.users.getProfile(userQuery)
     }
 
-    suspend fun startPlayback(uriOfArt_Alb_Pla: ContextUri, ) {
+    suspend fun startPlayback() {
 
     }
     suspend fun findPlaylists(query: String): ArrayList<Playlist>? {

@@ -162,13 +162,11 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         onCreate(db)
     }
 
-    private fun deleteAllData(tableName: String) {
-        val db = this.writableDatabase
+    private fun deleteAllData(tableName: String, db: SQLiteDatabase) {
         val deleteQuery = "DELETE FROM $tableName"
         db.execSQL(deleteQuery)
 
         Log.d("DATABASE", "Successfully delete data")
-        db.close()
     }
 
     // CRUD Operations for Users
@@ -629,8 +627,29 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    fun deleteAllPlaylistTrack() {
-        deleteAllData(TABLE_PLAYLIST_TRACK)
+    fun deleteAll() {
+        val db: SQLiteDatabase = this.writableDatabase
+        try {
+            db.beginTransaction()
+            deleteAllData(TABLE_PLAYLIST_TRACK, db)
+            deleteAllData(TABLE_ALBUM, db)
+            deleteAllData(TABLE_PLAYLIST, db)
+            deleteAllData(TABLE_USER, db)
+            deleteAllData(TABLE_ARTIST, db)
+            deleteAllData(TABLE_TRACK, db)
+            deleteAllData(TABLE_FOLLOWER, db)
+            deleteAllData(TABLE_LIKE, db)
+
+            db.setTransactionSuccessful()
+        }
+        catch (e: Exception) {
+            Log.e("MusicAppDatabaseHelper", "Error deleting data")
+        }
+        finally {
+            db.endTransaction()
+        }
+
+        db.close()
     }
 
 
