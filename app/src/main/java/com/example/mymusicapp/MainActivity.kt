@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.adamratzman.spotify.models.SpotifyImage
@@ -84,16 +83,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    private suspend fun addDummyDataToDatabase(spotifyData: SpotifyData) {
+    private suspend fun addDummyDataToDatabase() {
         try {
             // Add dummy users
             var userRaw = spotifyData.getUserOnline("Salmoe")

@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.mymusicapp.R
 
 class ExploreFragment : Fragment() {
     private lateinit var drawerLayout: DrawerLayout
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -26,6 +28,16 @@ class ExploreFragment : Fragment() {
         val avatarIcon = view.findViewById<ImageView>(R.id.avatar_icon)
         avatarIcon.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        val searchButton: TextView = view.findViewById(R.id.search_button)
+
+        searchButton.setOnClickListener {
+            val fragment = SearchFragment()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         return view

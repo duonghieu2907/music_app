@@ -66,7 +66,7 @@
 
     <!-- User who owns the playlist -->
     <TextView
-        android:id="@+id/playlistOwner"
+        android:id="@+id/playlistSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/playlistTitle"
@@ -81,9 +81,7 @@
         android:id="@+id/recyclerViewSongs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/playlistOwner"
-        android:layout_alignParentBottom="true"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="75dp"
+        android:layout_below="@id/playlistTitle"
         android:padding="16dp" />
 </RelativeLayout>

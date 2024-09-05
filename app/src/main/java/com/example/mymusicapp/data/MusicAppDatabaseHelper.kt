@@ -13,6 +13,7 @@ import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.PlaylistTrack
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.User
+import com.example.mymusicapp.models.SearchResult
 
 class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -812,6 +813,108 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
 
+    fun search(keyword: String): List<SearchResult> {
+        val db = this.readableDatabase
+        val searchResults = mutableListOf<SearchResult>()
+        val searchQuery = "$keyword%"
+
+        // Search in Track table with Album image
+        val trackCursor = db.rawQuery(
+            "SELECT t.$TRACK_ID, t.$TRACK_NAME, a.$ALBUM_IMAGE, a.$ALBUM_NAME " +
+                    "FROM $TABLE_TRACK t " +
+                    "LEFT JOIN $TABLE_ALBUM a ON t.$TRACK_ALBUM_ID = a.$ALBUM_ID " +
+                    "WHERE t.$TRACK_NAME LIKE ?",
+            arrayOf(searchQuery)
+        )
+        if (trackCursor.moveToFirst()) {
+            do {
+                searchResults.add(
+                    SearchResult(
+                        id = trackCursor.getString(0),
+                        name = trackCursor.getString(1),
+                        type = "Track",
+                        image = trackCursor.getString(2),  // Album image
+                        subName = trackCursor.getString(3) // Album name
+                    )
+                )
+            } while (trackCursor.moveToNext())
+        }
+        trackCursor.close()
+
+        // Search in Artist table
+        val artistCursor = db.query(
+            TABLE_ARTIST,
+            arrayOf(ARTIST_ID, ARTIST_NAME, ARTIST_IMAGE),
+            "$ARTIST_NAME LIKE ?",
+            arrayOf(searchQuery),
+            null,
+            null,
+            null
+        )
+        if (artistCursor.moveToFirst()) {
+            do {
+                searchResults.add(
+                    SearchResult(
+                        id = artistCursor.getString(0),
+                        name = artistCursor.getString(1),
+                        type = "Artist",
+                        image = artistCursor.getString(2),
+                        subName = null // No subName for artist
+                    )
+                )
+            } while (artistCursor.moveToNext())
+        }
+        artistCursor.close()
+
+        // Search in Album table with Artist name
+        val albumCursor = db.rawQuery(
+            "SELECT a.$ALBUM_ID, a.$ALBUM_NAME, a.$ALBUM_IMAGE, ar.$ARTIST_NAME " +
+                    "FROM $TABLE_ALBUM a " +
+                    "LEFT JOIN $TABLE_ARTIST ar ON a.$ALBUM_ARTIST_ID = ar.$ARTIST_ID " +
+                    "WHERE a.$ALBUM_NAME LIKE ?",
+            arrayOf(searchQuery)
+        )
+        if (albumCursor.moveToFirst()) {
+            do {
+                searchResults.add(
+                    SearchResult(
+                        id = albumCursor.getString(0),
+                        name = albumCursor.getString(1),
+                        type = "Album",
+                        image = albumCursor.getString(2),
+                        subName = albumCursor.getString(3) // Artist name
+                    )
+                )
+            } while (albumCursor.moveToNext())
+        }
+        albumCursor.close()
+
+        // Search in Playlist table with Owner's name
+        val playlistCursor = db.rawQuery(
+            "SELECT p.$PLAYLIST_ID, p.$PLAYLIST_NAME, p.$PLAYLIST_IMAGE, u.$USER_NAME " +
+                    "FROM $TABLE_PLAYLIST p " +
+                    "LEFT JOIN $TABLE_USER u ON p.$PLAYLIST_USER_ID = u.$USER_ID " +
+                    "WHERE p.$PLAYLIST_NAME LIKE ?",
+            arrayOf(searchQuery)
+        )
+        if (playlistCursor.moveToFirst()) {
+            do {
+                searchResults.add(
+                    SearchResult(
+                        id = playlistCursor.getString(0),
+                        name = playlistCursor.getString(1),
+                        type = "Playlist",
+                        image = playlistCursor.getString(2),
+                        subName = playlistCursor.getString(3) // Owner's name
+                    )
+                )
+            } while (playlistCursor.moveToNext())
+        }
+        playlistCursor.close()
+
+        db.close()
+        return searchResults
+    }
 
 
 }
