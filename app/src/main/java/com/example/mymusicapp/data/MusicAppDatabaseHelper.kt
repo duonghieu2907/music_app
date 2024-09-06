@@ -2,7 +2,9 @@ package com.example.mymusicapp.data
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.example.mymusicapp.models.Album
@@ -492,6 +494,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
 
+
     // CRUD Operations for Playlists
     fun addPlaylist(playlist: Playlist): String {
         val db = this.writableDatabase
@@ -581,6 +584,51 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
+    //LikedSong
+    fun addUserLikedSongsPlaylist(userId: String) {
+        val db = this.writableDatabase
+        val playlistId = "userLikedSong"  // Unique ID for the liked songs playlist
+        val playlistName = "Liked Songs"
+
+        val values = ContentValues().apply {
+            put(PLAYLIST_ID, playlistId)
+            put(PLAYLIST_USER_ID, userId)
+            put(PLAYLIST_NAME, playlistName)
+            put(PLAYLIST_IMAGE, "") // Image can be set later
+        }
+
+        db.insert(TABLE_PLAYLIST, null, values)
+        db.close()
+    }
+
+    fun isTrackLiked(trackId: String, playlistId: String = "userLikedSong"): Boolean {
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        return try {
+            // Query to check if the track exists in the specified playlist
+            cursor = db.query(
+                TABLE_PLAYLIST_TRACK,  // Table name
+                arrayOf(PLAYLIST_TRACK_TRACK_ID),  // Columns to return
+                "$PLAYLIST_TRACK_TRACK_ID = ? AND $PLAYLIST_TRACK_PLAYLIST_ID = ?",  // WHERE clause
+                arrayOf(trackId, playlistId),  // Arguments for WHERE clause
+                null,  // GROUP BY
+                null,  // HAVING
+                null   // ORDER BY
+            )
+
+            val isLiked = cursor.moveToFirst()  // If cursor has at least one row, track is liked
+            cursor.close()
+            db.close()
+            isLiked
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            cursor?.close()
+            db.close()
+            false
+        }
+    }
+
+
 
     // CRUD Operations for Playlist_Tracks
     fun addPlaylistTrack(playlistTrack: PlaylistTrack) {
@@ -604,6 +652,23 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.insert(TABLE_PLAYLIST_TRACK, null, values)
         db.close()
     }
+    fun addPlaylistTrack(playlistId: String, trackId: String): Boolean {
+        val db = this.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(PLAYLIST_TRACK_PLAYLIST_ID, playlistId)
+            put(PLAYLIST_TRACK_TRACK_ID, trackId)
+        }
+
+        return try {
+            val result = db.insert(TABLE_PLAYLIST_TRACK, null, contentValues)
+            db.close()
+            result != -1L  // If result is -1, the insertion failed
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            false
+        }
+    }
+
 
     fun getPlaylistTrack(playlistId: Int, trackId: Int): PlaylistTrack? {
         val db = this.readableDatabase
@@ -644,15 +709,26 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    fun deletePlaylistTrack(playlistId: Int, trackId: Int) {
+    fun deletePlaylistTrack(playlistId: String, trackId: String): Boolean {
         val db = this.writableDatabase
-        db.delete(
-            TABLE_PLAYLIST_TRACK,
-            "$PLAYLIST_TRACK_PLAYLIST_ID=? AND $PLAYLIST_TRACK_TRACK_ID=?",
-            arrayOf(playlistId.toString(), trackId.toString())
-        )
-        db.close()
+
+        return try {
+            val result = db.delete(
+                TABLE_PLAYLIST_TRACK,
+                "$PLAYLIST_TRACK_PLAYLIST_ID = ? AND $PLAYLIST_TRACK_TRACK_ID = ?",
+                arrayOf(playlistId, trackId)
+            )
+            db.close()
+            result > 0  // deletion was successful
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            false
+        }
     }
+
+
+
+    ///delete all
 
     fun deleteAll() {
         val db: SQLiteDatabase = this.writableDatabase

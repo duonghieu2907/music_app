@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         dbHelper = MusicAppDatabaseHelper(this)
         //dbHelper.deleteAll() //Run this line to delete everything
 
+        //cur user liked songs? not sure if we should pass the user id in
+        //dbHelper.addUserLikedSongsPlaylist("1")
         //Run this to update or insert data to database
         CoroutineScope(Dispatchers.IO).launch {
             val spotifyData = SpotifyData()

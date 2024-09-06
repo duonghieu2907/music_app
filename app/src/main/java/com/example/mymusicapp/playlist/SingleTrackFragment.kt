@@ -28,7 +28,11 @@ class SingleTrackFragment : Fragment() {
     private lateinit var songCover: ImageView
     private lateinit var playerControlView: PlayerControlView
     private lateinit var exoPlayer: ExoPlayer
+
     private lateinit var moreOptionsButton: ImageView
+
+    private lateinit var likeButton: ImageView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +54,7 @@ class SingleTrackFragment : Fragment() {
         artistName = view.findViewById(R.id.artist_name)
         songCover = view.findViewById(R.id.song_cover)
         playerControlView = view.findViewById(R.id.playerControlView)
+        likeButton = view.findViewById(R.id.like)
 
         // Get the Track object passed from the previous fragment or activity
         track = arguments?.getParcelable("TRACK") ?: return view
@@ -88,7 +93,34 @@ class SingleTrackFragment : Fragment() {
         exoPlayer.prepare()
         exoPlayer.playWhenReady = true
 
+
+
+        //Like button
+        updateLikeButton()
+
+        likeButton.setOnClickListener {
+            toggleLikeStatus()
+        }
+
         return view
+    }
+
+    private fun toggleLikeStatus() {
+        if (dbHelper.isTrackLiked(track.trackId)) {
+            dbHelper.deletePlaylistTrack("userLikedSong", track.trackId)
+        } else {
+            dbHelper.addPlaylistTrack("userLikedSong", track.trackId)
+        }
+
+        updateLikeButton()
+    }
+
+    private fun updateLikeButton() {
+        if (dbHelper.isTrackLiked(track.trackId)) {
+            likeButton.setImageResource(R.drawable.filledlove)  // Track is liked
+        } else {
+            likeButton.setImageResource(R.drawable.love)  // Track is not liked
+        }
     }
 
     override fun onDestroyView() {

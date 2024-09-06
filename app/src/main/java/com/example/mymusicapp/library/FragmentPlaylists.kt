@@ -29,11 +29,11 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     private fun app(view: View) {
         //Implementing here
 
-        //Your liked playlists
+        //Your liked playlists ?? xoóa đi bạn
         val yourLikedPlaylists : View = view.findViewById(R.id.YourLikedPlaylist)
 
         yourLikedPlaylists.setOnClickListener {
-            loadFragment(PlaylistFragment())
+
         }
 
         //Lists
@@ -69,15 +69,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         item?.let {
             val playlistFragment = PlaylistFragment.newInstance(item.playlistId) //Transfer id
 
-            // Use a bundle to pass data to PlaylistFragment if needed
-            /*val bundle = Bundle()
-            bundle.putSerializable("playlistItem", it)  // Assuming PlaylistListItem is Serializable
-            playlistFragment.arguments = bundle*/
-
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
-                .addToBackStack(null)  // Optional: Add this transaction to the back stack
-                .commit()
+            loadFragment(playlistFragment)
 
             Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
         } ?: run {
