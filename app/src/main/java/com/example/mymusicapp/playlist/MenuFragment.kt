@@ -10,10 +10,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.queue.QueueFragment
 import com.example.mymusicapp.playlist.Add2PlaylistFragment
 
 class MenuFragment : Fragment() {
+
+    private lateinit var track: Track
+    private lateinit var dbHelper: MusicAppDatabaseHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -21,21 +28,34 @@ class MenuFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_menu, container, false)
 
+        // Retrieve the Track object from the arguments
+        track = arguments?.getParcelable("TRACK") ?: throw IllegalStateException("Track not passed to MenuFragment")
+
+
         // Find views by ID
         val songCover = view.findViewById<ImageView>(R.id.songCover)
         val songName = view.findViewById<TextView>(R.id.songName)
         val songArtist = view.findViewById<TextView>(R.id.songArtist)
 
+
+        dbHelper = MusicAppDatabaseHelper(requireContext())
+
+        // Fetch Album and Artist details
+        val album: Album? = dbHelper.getAlbum(track.albumId)  // Ensure getAlbum accepts String type
+        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")  // Ensure getArtist accepts String type
+
         // Set the values for the songCover, songName, and songArtist
         val imageUrl = "https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb"
         Glide.with(this)
-            .load(imageUrl)
+            .load(album?.image)
             .placeholder(R.drawable.blacker_gradient)
             .error(R.drawable.blacker_gradient)
             .into(songCover)
 
-        songName.text = "lofi loft" // Replace with the actual song name
-        songArtist.text = "New Artist Name" // Replace with the actual artist name
+
+
+        songName.text = track.name
+        songArtist.text = artist?.name ?: "Unknown Artist"
 
         // Find views by ID for the menu items
         val addPlaylistIcon = view.findViewById<ImageView>(R.id.addPlaylist)
@@ -71,5 +91,15 @@ class MenuFragment : Fragment() {
         fragmentTransaction.replace(R.id.fragment_container, fragment) // Replace with the ID of your container
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
+    }
+
+    companion object {
+        fun newInstance(track: Track): MenuFragment {
+            val fragment = MenuFragment()
+            val args = Bundle()
+            args.putParcelable("TRACK", track) // Pass the Track object
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

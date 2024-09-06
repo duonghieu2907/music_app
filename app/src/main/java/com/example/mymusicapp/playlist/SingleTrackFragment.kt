@@ -28,6 +28,7 @@ class SingleTrackFragment : Fragment() {
     private lateinit var songCover: ImageView
     private lateinit var playerControlView: PlayerControlView
     private lateinit var exoPlayer: ExoPlayer
+    private lateinit var moreOptionsButton: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +36,14 @@ class SingleTrackFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_single_song, container, false)
+
+        // Find the more_options button
+        moreOptionsButton = view.findViewById(R.id.more_options)
+
+        // Set click listener to open MenuFragment
+        moreOptionsButton.setOnClickListener {
+            openMenuFragment()
+        }
 
         // Initialize UI components
         songTitle = view.findViewById(R.id.song_title)
@@ -97,4 +106,16 @@ class SingleTrackFragment : Fragment() {
             return fragment
         }
     }
+
+    private fun openMenuFragment() {
+        val menuFragment = MenuFragment.newInstance(track) // Pass the track object
+
+        // Replace the current fragment with the MenuFragment
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, menuFragment) // Ensure fragment_container is the correct ID
+            .addToBackStack(null) // Optional, to add the fragment to the backstack
+            .commit()
+    }
+
+
 }
