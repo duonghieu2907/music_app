@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.createnew.CreateNewPlaylist
+import com.example.mymusicapp.playlist.PlaylistFragment
 
 class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickListener {
     override fun onCreateView(
@@ -39,7 +40,8 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
         val yourLikedSongs : View = view.findViewById(R.id.YourLikedSongSection)
 
         yourLikedSongs.setOnClickListener {
-            //Change here
+            val playlistFragment = PlaylistFragment.newInstance("userLikedSong") //Transfer id
+            loadFragment(playlistFragment)
         }
 
         //Lists
@@ -69,5 +71,11 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
     override fun setOnItemClickListener(item: PlaylistItem?) {
         //Navigate here
         Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
+    }
+    private fun loadFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
