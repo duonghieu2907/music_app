@@ -11,18 +11,34 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.playlist.MenuFragment
 
 class QueueFragment : Fragment() {
 
     private lateinit var recyclerViewQueue: RecyclerView
     private lateinit var recyclerViewPlaylist: RecyclerView
     private lateinit var queueSongAdapter: QueueSongAdapter
+    private lateinit var backButton: ImageView
+
+    private lateinit var dbHelper: MusicAppDatabaseHelper
+    private lateinit var track: Track
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_queue, container, false)
+
+        backButton = view.findViewById(R.id.back)
+
+        // Set button click handlers
+        backButton.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
 
         // Receive arguments passed to this fragment (if applicable)
         val imageUrl = arguments?.getString("IMAGE_URL") ?: "https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb"
@@ -36,9 +52,28 @@ class QueueFragment : Fragment() {
         val songArtist = view.findViewById<TextView>(R.id.artistSongPlaying)
         val playlistName = view.findViewById<TextView>(R.id.playlistName)
 
-        Glide.with(this).load(imageUrl).into(songCover)
-        songName.text = songNameText
-        songArtist.text = artistNameText
+
+
+
+        // Get the Track object passed from the previous fragment or activity
+        track = arguments?.getParcelable("TRACK") ?: return view
+
+        dbHelper = MusicAppDatabaseHelper(requireContext())
+
+        // Fetch Album and Artist details
+        val album: Album? = dbHelper.getAlbum(track.albumId)  // Ensure getAlbum accepts String type
+        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")  // Ensure getArtist accepts String type
+        // Load album cover image
+        Glide.with(this)
+            .load(album?.image)
+            .placeholder(R.drawable.blacker_gradient) // Placeholder image if no image is available
+            .into(songCover)
+
+
+        songName.text = track.name
+        if (artist != null) {
+            songArtist.text = artist.name
+        }
         playlistName.text = playlistNameText
 
         // Set up RecyclerViews
@@ -59,5 +94,15 @@ class QueueFragment : Fragment() {
         recyclerViewPlaylist.adapter = queueSongAdapter
 
         return view
+    }
+
+    companion object {
+        fun newInstance(track: Track): QueueFragment {
+            val fragment = QueueFragment()
+            val args = Bundle()
+            args.putParcelable("TRACK", track) // Pass the Track object
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

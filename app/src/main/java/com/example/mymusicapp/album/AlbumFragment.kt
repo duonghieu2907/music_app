@@ -1,6 +1,5 @@
 package com.example.mymusicapp.album
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuInflater
@@ -142,7 +141,7 @@ class AlbumFragment : Fragment() {
     }
 
     private fun openTrack(track: Track) {
-        val fragment = SingleTrackFragment.newInstance(track)
+        val fragment = SingleTrackFragment.newInstance(track,null)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
