@@ -130,15 +130,15 @@ class PlaylistFragment : Fragment() {
 
             // Fetch tracks for this playlist
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)  // Ensure this method accepts String
-            tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, playlist) }
+            tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track) }
             recyclerViewTracks.adapter = tracksAdapter
         } else {
             Toast.makeText(requireContext(), "Playlist not found", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun openTrack(track: Track, playlist: Playlist) {
-        val fragment = SingleTrackFragment.newInstance(track, playlist)
+    private fun openTrack(track: Track) {
+        val fragment = SingleTrackFragment.newInstance(track, null)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)

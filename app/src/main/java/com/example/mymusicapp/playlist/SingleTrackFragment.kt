@@ -25,8 +25,6 @@ class SingleTrackFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var track: Track
 
-    private var playlist: Playlist? = null
-
     private lateinit var songTitle: TextView
     private lateinit var artistName: TextView
     private lateinit var songCover: ImageView
@@ -72,10 +70,6 @@ class SingleTrackFragment : Fragment() {
 
         // Get the Track object passed from the previous fragment or activity
         track = arguments?.getParcelable("TRACK") ?: return view
-
-        // Get the Playlist object passed from the previous fragment or activity
-        playlist = arguments?.getParcelable("PLAYLIST")
-
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
@@ -150,19 +144,12 @@ class SingleTrackFragment : Fragment() {
     companion object {
         fun newInstance(track: Track, playlist: Playlist?): SingleTrackFragment {
             val fragment = SingleTrackFragment()
-            val args = Bundle().apply {
-                putParcelable("TRACK", track)
-                // Only add Playlist if it's not null
-                if (playlist != null) {
-                    putParcelable("PLAYLIST", playlist)
-                }
-            }
+            val args = Bundle()
+            args.putParcelable("TRACK", track)
             fragment.arguments = args
             return fragment
         }
     }
-
-
 
     private fun openMenuFragment() {
         val menuFragment = MenuFragment.newInstance(track) // Pass the track object
@@ -175,9 +162,7 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun openQueueFragment() {
-        val queueFragment = QueueFragment.newInstance(track, playlist)
-
-
+        val queueFragment = QueueFragment.newInstance(track)
 
         // Replace the current fragment with the QueueFragment
         requireActivity().supportFragmentManager.beginTransaction()
