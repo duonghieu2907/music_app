@@ -21,12 +21,20 @@ class MenuFragment : Fragment() {
 
     private lateinit var track: Track
     private lateinit var dbHelper: MusicAppDatabaseHelper
+    private lateinit var backButton: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_menu, container, false)
+
+        backButton = view.findViewById(R.id.back)
+
+        // Set button click handlers
+        backButton.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
 
         // Retrieve the Track object from the arguments
         track = arguments?.getParcelable("TRACK") ?: throw IllegalStateException("Track not passed to MenuFragment")
@@ -66,20 +74,12 @@ class MenuFragment : Fragment() {
             openFragment(Add2PlaylistFragment())
         }
 
-        // Find views by ID for the queue items
-        val addQIcon = view.findViewById<ImageView>(R.id.addQ)
-        val add2QText = view.findViewById<TextView>(R.id.add2Q)
 
-        // Set click listeners for the queue items to open QueueFragment
-        val clickListener2 = View.OnClickListener {
-            openFragment(QueueFragment())
-        }
 
         addPlaylistIcon.setOnClickListener(clickListener)
         add2PlaylistText.setOnClickListener(clickListener)
 
-        addQIcon.setOnClickListener(clickListener2)
-        add2QText.setOnClickListener(clickListener2)
+
 
         return view
     }

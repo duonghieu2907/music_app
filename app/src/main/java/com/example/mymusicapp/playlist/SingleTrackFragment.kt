@@ -14,6 +14,8 @@ import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.queue.QueueFragment
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.PlayerControlView
@@ -33,6 +35,8 @@ class SingleTrackFragment : Fragment() {
 
     private lateinit var likeButton: ImageView
 
+    private lateinit var queueButton : ImageView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +51,14 @@ class SingleTrackFragment : Fragment() {
         // Set click listener to open MenuFragment
         moreOptionsButton.setOnClickListener {
             openMenuFragment()
+        }
+
+        // Find the more_options button
+        queueButton = view.findViewById(R.id.queue)
+
+        // Set click listener to open QueueFragment
+        queueButton.setOnClickListener {
+            openQueueFragment()
         }
 
         // Initialize UI components
@@ -130,7 +142,7 @@ class SingleTrackFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track): SingleTrackFragment {
+        fun newInstance(track: Track, playlist: Playlist?): SingleTrackFragment {
             val fragment = SingleTrackFragment()
             val args = Bundle()
             args.putParcelable("TRACK", track)
@@ -145,6 +157,16 @@ class SingleTrackFragment : Fragment() {
         // Replace the current fragment with the MenuFragment
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, menuFragment) // Ensure fragment_container is the correct ID
+            .addToBackStack(null) // Optional, to add the fragment to the backstack
+            .commit()
+    }
+
+    private fun openQueueFragment() {
+        val queueFragment = QueueFragment.newInstance(track)
+
+        // Replace the current fragment with the QueueFragment
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, queueFragment) // Ensure fragment_container is the correct ID
             .addToBackStack(null) // Optional, to add the fragment to the backstack
             .commit()
     }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,12 +14,20 @@ class Add2PlaylistFragment : Fragment() {
 
     private lateinit var playlistRecyclerView: RecyclerView
     private lateinit var playlistAdapter: PlaylistAdapter
+    private lateinit var backButton: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_add_2_playlist, container, false)
+
+        backButton = view.findViewById(R.id.back)
+
+        // Set button click handlers
+        backButton.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
 
         // Initialize RecyclerView
         playlistRecyclerView = view.findViewById(R.id.playlistRecyclerView)
