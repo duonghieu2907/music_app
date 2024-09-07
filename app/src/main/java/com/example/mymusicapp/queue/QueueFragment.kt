@@ -14,6 +14,7 @@ import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.playlist.MenuFragment
 
@@ -26,6 +27,9 @@ class QueueFragment : Fragment() {
 
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var track: Track
+
+    private var playlist: Playlist? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -57,6 +61,10 @@ class QueueFragment : Fragment() {
 
         // Get the Track object passed from the previous fragment or activity
         track = arguments?.getParcelable("TRACK") ?: return view
+        playlist = arguments?.getParcelable("PLAYLIST")
+
+
+
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
@@ -74,7 +82,7 @@ class QueueFragment : Fragment() {
         if (artist != null) {
             songArtist.text = artist.name
         }
-        playlistName.text = playlistNameText
+        playlistName.text = playlist?.name ?: ""
 
         // Set up RecyclerViews
         val songs = listOf(
@@ -97,12 +105,17 @@ class QueueFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track): QueueFragment {
+        fun newInstance(track: Track, playlist: Playlist?): QueueFragment {
             val fragment = QueueFragment()
-            val args = Bundle()
-            args.putParcelable("TRACK", track) // Pass the Track object
+            val args = Bundle().apply {
+                putParcelable("TRACK", track)
+                if (playlist != null) {
+                    putParcelable("PLAYLIST", playlist)
+                }
+            }
             fragment.arguments = args
             return fragment
         }
     }
+
 }
