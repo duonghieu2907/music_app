@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import com.adamratzman.spotify.SpotifyAppApi
 import com.adamratzman.spotify.SpotifyClientApi
 import com.adamratzman.spotify.SpotifyScope
@@ -18,7 +19,6 @@ import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.URL
 import kotlin.random.Random
@@ -27,7 +27,7 @@ import kotlin.random.Random
 class SpotifyData {
     private val clientID = "724f1843a262436ca08ec70af0ae88fb"
     private val clientSecret = "209f1d3f5f6846148d92463a47378848"
-    private val redirectUri = "https://www.facebook.com/"
+    private val redirectUri = "spotifyapp://callback"
     private var clientApi: SpotifyClientApi? = null
     private var api: SpotifyAppApi? = null
     private val AUTH_REQUEST_CODE = 1001
@@ -41,12 +41,6 @@ class SpotifyData {
         return result.toString()
     }
     suspend fun buildAuthcode(activity: Activity) {
-//        val scope: List<SpotifyScope> = listOf(
-//            SpotifyScope.USER_READ_PLAYBACK_STATE,
-//            SpotifyScope.USER_MODIFY_PLAYBACK_STATE,
-//            SpotifyScope.USER_READ_CURRENTLY_PLAYING,
-//            SpotifyScope.APP_REMOTE_CONTROL,
-//            SpotifyScope.STREAMING)
         var state = generateRandomString(16)
         val builder = spotifyClientApi(clientID, clientSecret, redirectUri)
         val authorizationUri = builder.getAuthorizationUrl(
@@ -56,15 +50,21 @@ class SpotifyData {
             SpotifyScope.APP_REMOTE_CONTROL,
             SpotifyScope.STREAMING, state = state)
 
-        delay(1000)
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authorizationUri))
         activity.startActivityForResult(intent, AUTH_REQUEST_CODE)
+        Log.d("BuildAuthCode", "Redirecting")
     }
-    suspend fun buildApi(authCode: String) {
-      clientApi = spotifyClientApi(clientID, clientSecret, redirectUri)
+
+    suspend fun buildClientApi(authCode: String) {
+        clientApi = spotifyClientApi(clientID, clientSecret, redirectUri)
                 .authorization(SpotifyUserAuthorization(authorizationCode = authCode))
                 .build()
+        Log.d("buildClientApi", "Success")
+    }
+
+    suspend fun buildAppApi() {
         api = spotifyAppApi(clientID, clientSecret).build()
+        Log.d("buildClientApi", "Success")
     }
 
     suspend fun findArtist(query: String) : Artist? {
