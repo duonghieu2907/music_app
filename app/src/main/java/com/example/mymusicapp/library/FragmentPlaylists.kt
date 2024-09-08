@@ -53,7 +53,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     private fun createPlaylistItem(): ArrayList<Playlist> {
         var sample = ArrayList<Playlist>()
         val db = MusicAppDatabaseHelper(requireContext())
-        val allPlaylistId = db.getAllPlaylistId()!!
+        val allPlaylistId = db.getAllPlaylistId() ?: return sample
 
         //Get the playlist from database
         for(i in 0..<allPlaylistId.size) {
