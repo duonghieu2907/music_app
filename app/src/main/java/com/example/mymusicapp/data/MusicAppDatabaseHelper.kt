@@ -424,7 +424,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val db = this.writableDatabase
         val query : String = "SELECT 1 FROM $TABLE_TRACK WHERE $TRACK_ID = ?"
 
-        //Make sure that album does exist
+        //Make sure that track does exist
         val cursor = db.rawQuery(query, arrayOf(track.trackId))
         if(cursor.moveToFirst()) {
             cursor.close()
@@ -500,7 +500,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val db = this.writableDatabase
         val query : String = "SELECT 1 FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID = ?"
 
-        //Make sure that album does exist
+        //Make sure that playlist does exist
         val cursor = db.rawQuery(query, arrayOf(playlist.playlistId))
         if(cursor.moveToFirst()) {
             cursor.close()
@@ -635,7 +635,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val db = this.writableDatabase
         val query : String = "SELECT 1 FROM $TABLE_PLAYLIST_TRACK WHERE $PLAYLIST_TRACK_PLAYLIST_ID = ?"
 
-        //Make sure that album does exist
+        //Make sure that playlist track does exist
         val cursor = db.rawQuery(query, arrayOf(playlistTrack.playlistId))
         if(cursor.moveToFirst()) {
             cursor.close()

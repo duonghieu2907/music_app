@@ -1,6 +1,5 @@
 package com.example.mymusicapp
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -28,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var dbHelper: MusicAppDatabaseHelper
-    private var authCode: String = ""
+    private var authCode: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,14 +40,19 @@ class MainActivity : AppCompatActivity() {
         //cur user liked songs? not sure if we should pass the user id in
         //dbHelper.addUserLikedSongsPlaylist("1")
         //Run this to update or insert data to database
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             val spotifyData = SpotifyData()
-            spotifyData.buildAuthcode(activity = this@MainActivity)
-            while (authCode == "") {
-                delay(1000)
+            //spotifyData.buildAuthcode(activity = this@MainActivity)
+
+            while (authCode == null) {
+                delay(1000) //wait until receive authCode
             }
 
-            spotifyData.buildApi(authCode)
+            //authCode received, built clientApi and AppApi
+            //spotifyData.buildClientApi(authCode!!)
+            spotifyData.buildAppApi()
+
+            //Add dummy data
             addDummyDataToDatabase(spotifyData)
 
         }
@@ -217,9 +221,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 1001 && resultCode == RESULT_OK) {
+            authCode = data?.getStringExtra("AUTH_CODE")
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
-        //dbHelper.close()
     }
 
     private fun checkImageReturnUrl(sample: List<SpotifyImage>): String {
@@ -227,15 +236,5 @@ class MainActivity : AppCompatActivity() {
             sample.isEmpty() -> ""
             else -> sample.firstOrNull()!!.url
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(requestCode == 1001 && resultCode == Activity.RESULT_OK) {
-            authCode = data?.getStringExtra("authorization_code") ?: ""
-        }
-
-
     }
 }
