@@ -38,15 +38,15 @@ class MainActivity : AppCompatActivity() {
         //dbHelper.deleteAll() //Run this line to delete everything
 
         //cur user liked songs? not sure if we should pass the user id in
-        //dbHelper.addUserLikedSongsPlaylist("1")
+        dbHelper.addUserLikedSongsPlaylist("1")
         //Run this to update or insert data to database
         CoroutineScope(Dispatchers.Main).launch {
             val spotifyData = SpotifyData()
             //spotifyData.buildAuthcode(activity = this@MainActivity)
 
-            while (authCode == null) {
+            /*while (authCode == null) {
                 delay(1000) //wait until receive authCode
-            }
+            }*/
 
             //authCode received, built clientApi and AppApi
             //spotifyData.buildClientApi(authCode!!)
