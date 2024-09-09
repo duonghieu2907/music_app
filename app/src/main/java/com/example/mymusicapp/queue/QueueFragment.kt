@@ -16,7 +16,7 @@ import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
-import com.example.mymusicapp.playlist.MenuFragment
+import com.example.mymusicapp.models.TrackQueue
 
 class QueueFragment : Fragment() {
 
@@ -85,12 +85,7 @@ class QueueFragment : Fragment() {
         playlistName.text = playlist?.name ?: ""
 
         // Set up RecyclerViews
-        val songs = listOf(
-            QueueSong("Song 1", "Artist 1"),
-            QueueSong("Song 2", "Artist 2"),
-            QueueSong("Song 3", "Artist 3"),
-            // Add more songs here
-        )
+        val songs = TrackQueue
 
         recyclerViewQueue = view.findViewById(R.id.recyclerViewSongsQueue)
         recyclerViewQueue.layoutManager = LinearLayoutManager(requireContext())
