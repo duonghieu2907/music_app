@@ -12,6 +12,7 @@ import com.example.mymusicapp.bottomnavigation.HomeFragment
 import com.example.mymusicapp.bottomnavigation.LibraryFragment
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.data.SpotifyData
+import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.PlaylistTrack
@@ -20,7 +21,6 @@ import com.example.mymusicapp.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             //authCode received, built clientApi and AppApi
             //spotifyData.buildClientApi(authCode!!)
             spotifyData.buildAppApi()
+            //dbHelper.deleteAll() //Run this line to delete everything
 
             //Add dummy data
             addDummyDataToDatabase(spotifyData)
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun addDummyDataToDatabase(spotifyData: SpotifyData) {
         try {
             // Add dummy users
-            var userRaw = spotifyData.getUserOnline("Salmoe")
+            var userRaw = spotifyData.getUserOnline("31j3r46xev5snbqwjqbuwbrm6cwu")
             dbHelper.addUser(
                 User(
                     userRaw!!.id,
@@ -118,45 +119,72 @@ class MainActivity : AppCompatActivity() {
                 )
             )
 
-            //dbHelper.addUser(User("1", "Alice", "alice@example.com", "password123", "1990-01-01", "https://via.placeholder.com/150"))
-            //dbHelper.addUser(User("2", "Bob", "bob@example.com", "securepass", "1985-05-10", "https://via.placeholder.com/150"))
             Log.d("MainActivity", "Users added")
 
-            // Add dummy artists
-            var artistRaw = spotifyData.findArtist("06HL4z0CvFAxyc27GXpf02") //Taylor Swift
-            val artistId1 = dbHelper.addArtist(
-                Artist(
-                    artistRaw!!.id,
-                    artistRaw.name,
-                    artistRaw.genres[0],
-                    checkImageReturnUrl(artistRaw.images)
+            //Playlist
+            val playlistRaw = spotifyData.findPlaylistsFromUser("31j3r46xev5snbqwjqbuwbrm6cwu")
+            val playlistLength = playlistRaw!!.size
+            for (i in 0..<playlistLength) {
+                dbHelper.addPlaylist(
+                    Playlist(
+                        playlistRaw[i].playlistId,
+                        playlistRaw[i].userId,
+                        playlistRaw[i].name,
+                        playlistRaw[i].image
+                    )
                 )
-            )
-
-            artistRaw = spotifyData.findArtist("5M3ffmRiOX9Q8Y4jNeR5wu") //Wren Evans
-            val artistId2 = dbHelper.addArtist(
-                Artist(
-                    artistRaw!!.id,
-                    artistRaw.name,
-                    artistRaw.genres[0],
-                    checkImageReturnUrl(artistRaw.images)
-                )
-            )
-            Log.d("MainActivity", "Artists added")
-
-            // Add dummy albums
-            var albumsRaw = spotifyData.findAlbumsFromArtist("06HL4z0CvFAxyc27GXpf02")!!
-
-            for (i in 0..<albumsRaw.size) {
-                dbHelper.addAlbum(albumsRaw[i])
             }
+            Log.d("mainActivity", "All playlist Added")
 
-            albumsRaw = spotifyData.findAlbumsFromArtist("5M3ffmRiOX9Q8Y4jNeR5wu")!!
-            for (i in 0..<albumsRaw.size) {
-                dbHelper.addAlbum(albumsRaw[i])
+            //Tracks
+            for(i in 0..<playlistLength) {
+                val trackRaw = spotifyData.findTracksFromPlaylist(playlistRaw[i].playlistId)
+                val trackRawLength = trackRaw!!.size
+                for(k in 0..<trackRawLength) {
+                    //Add track
+                    dbHelper.addTrack(
+                        Track(
+                            trackRaw[k].trackId,
+                            trackRaw[k].albumId,
+                            trackRaw[k].name,
+                            trackRaw[k].duration,
+                            trackRaw[k].path
+                        )
+                    )
+
+                    dbHelper.addPlaylistTrack(
+                        PlaylistTrack(
+                            playlistRaw[i].playlistId,
+                            trackRaw[k].trackId,
+                            k+1
+                        )
+                    )
+
+                    //Add albums
+                    val albumRaw = spotifyData.findAlbumFromTracks(trackRaw[k].albumId)
+                    dbHelper.addAlbum(
+                        Album(
+                            albumRaw!!.id,
+                            albumRaw.artists[0].id,
+                            albumRaw.name,
+                            albumRaw.releaseDate.toString(),
+                            checkImageReturnUrl(albumRaw.images)
+                        )
+                    )
+
+                    //Add artists
+                    val artistRaw = spotifyData.findArtist(albumRaw.artists[0].id)
+                    dbHelper.addArtist(
+                        Artist(
+                            artistRaw!!.id,
+                            artistRaw.name,
+                            artistRaw.genres.firstOrNull()?:"Unknown",
+                            checkImageReturnUrl(artistRaw.images)
+                        )
+                    )
+                }
+                Log.d("mainActivity", "track, album, artist $i")
             }
-
-            Log.d("MainActivity", "Albums added")
 
             // Add dummy tracks
             val allAlbumId = dbHelper.getAllAlbumId()!!
@@ -170,49 +198,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             }
-
             Log.d("MainActivity", "Tracks added")
-
-            // Add dummy playlist
-            val playlistRaw = spotifyData.findPlaylists("duonghieu")
-            for (i in 0..<playlistRaw!!.size) {
-                dbHelper.addPlaylist(
-                    Playlist(
-                        playlistRaw[i].playlistId,
-                        playlistRaw[i].userId,
-                        playlistRaw[i].name,
-                        playlistRaw[i].image
-                    )
-                )
-            }
-
-            Log.d("MainActivity", "Playlist added")
-
-            // Link tracks to playlist
-            var tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[0])!!
-            val counter = tracksRaw.size / 2
-            for (i in 0..<counter) {
-                dbHelper.addPlaylistTrack(
-                    PlaylistTrack(
-                        playlistRaw[1].playlistId,
-                        tracksRaw[i].trackId,
-                        i + 1
-                    )
-                )
-            }
-
-
-            tracksRaw = spotifyData.findTracksFromAlbum(allAlbumId[1])!!
-            for (i in 0..<tracksRaw.size / 2) {
-                dbHelper.addPlaylistTrack(
-                    PlaylistTrack(
-                        playlistRaw[1].playlistId,
-                        tracksRaw[i].trackId,
-                        (i + counter + 1)
-                    )
-                )
-            }
-            Log.d("MainActivity", "Tracks linked to playlist")
 
         } catch (e: Exception) {
             Log.e("MainActivity", "Error adding dummy data: ${e.message}")

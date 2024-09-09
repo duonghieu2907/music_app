@@ -633,10 +633,10 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     // CRUD Operations for Playlist_Tracks
     fun addPlaylistTrack(playlistTrack: PlaylistTrack) {
         val db = this.writableDatabase
-        val query : String = "SELECT 1 FROM $TABLE_PLAYLIST_TRACK WHERE $PLAYLIST_TRACK_PLAYLIST_ID = ?"
+        val query : String = "SELECT 1 FROM $TABLE_PLAYLIST_TRACK WHERE $PLAYLIST_TRACK_PLAYLIST_ID = ? AND $PLAYLIST_TRACK_TRACK_ID = ?"
 
         //Make sure that playlist track does exist
-        val cursor = db.rawQuery(query, arrayOf(playlistTrack.playlistId))
+        val cursor = db.rawQuery(query, arrayOf(playlistTrack.playlistId, playlistTrack.trackId))
         if(cursor.moveToFirst()) {
             cursor.close()
             db.close()
