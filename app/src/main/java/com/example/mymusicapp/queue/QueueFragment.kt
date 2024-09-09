@@ -17,12 +17,14 @@ import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
+import com.example.mymusicapp.playlist.PlaylistSongAdapter
 
 class QueueFragment : Fragment() {
 
     private lateinit var recyclerViewQueue: RecyclerView
     private lateinit var recyclerViewPlaylist: RecyclerView
     private lateinit var queueSongAdapter: QueueSongAdapter
+    private lateinit var playlistSongAdapter: PlaylistSongAdapter
     private lateinit var backButton: ImageView
 
     private lateinit var dbHelper: MusicAppDatabaseHelper
@@ -89,12 +91,21 @@ class QueueFragment : Fragment() {
 
         recyclerViewQueue = view.findViewById(R.id.recyclerViewSongsQueue)
         recyclerViewQueue.layoutManager = LinearLayoutManager(requireContext())
-        queueSongAdapter = QueueSongAdapter(songs)
+        queueSongAdapter = QueueSongAdapter(songs, dbHelper)
         recyclerViewQueue.adapter = queueSongAdapter
+
+
+
 
         recyclerViewPlaylist = view.findViewById(R.id.recyclerViewSongsPlaylist)
         recyclerViewPlaylist.layoutManager = LinearLayoutManager(requireContext())
-        recyclerViewPlaylist.adapter = queueSongAdapter
+
+        // Initialize PlaylistSongAdapter with the current track index
+        val playlistTracks = playlist?.let { dbHelper.getTracksByPlaylistId(it.playlistId) }
+        var currentTrackIndex = 0
+        currentTrackIndex = playlistTracks?.indexOfFirst { it.trackId == track.trackId }!!
+        playlistSongAdapter = PlaylistSongAdapter(dbHelper, playlist, currentTrackIndex)
+        recyclerViewPlaylist.adapter = playlistSongAdapter
 
         return view
     }

@@ -49,13 +49,13 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
             drawerLayout.openDrawer(GravityCompat.START)
         }
       
-        //Implement search icon
-        val searchIcon: ImageButton = view.findViewById(R.id.search_icon)
-        searchIcon.setOnClickListener {
-            //Going to search fragment
-            val intent = Intent(context, BrowseLibrary::class.java)
-            startActivity(intent)
-        }
+//        //Implement search icon
+//        val searchIcon: ImageButton = view.findViewById(R.id.search_icon)
+//        searchIcon.setOnClickListener {
+//            //Going to search fragment
+//            val intent = Intent(context, BrowseLibrary::class.java)
+//            startActivity(intent)
+//        }
 
         //Implement item filter
         //Init adapter

@@ -3,6 +3,7 @@ package com.example.mymusicapp.models
 import android.os.Parcel
 import android.os.Parcelable
 
+
 data class Playlist(
     val playlistId: String,
     val userId: String,
@@ -35,5 +36,10 @@ data class Playlist(
         override fun newArray(size: Int): Array<Playlist?> {
             return arrayOfNulls(size)
         }
+    }
+
+    // Function to find the index of the first PlaylistTrack matching the given trackId
+    fun indexOfFirstTrack(tracks: List<PlaylistTrack>, trackId: String): Int {
+        return tracks.indexOfFirst { it.trackId == trackId }
     }
 }

@@ -286,53 +286,7 @@
                 android:layout_marginStart="38dp"
                 android:fontFamily="@font/gothicbold"/>
 
-            <ImageView
-                android:id="@+id/hideSongIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/hide"
-                app:layout_constraintTop_toBottomOf="@id/sleepTimerIcon"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
 
-            <TextView
-                android:id="@+id/hideSong"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hide Song"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:layout_constraintTop_toBottomOf="@id/sleepTimerIcon"
-                app:layout_constraintStart_toEndOf="@id/sleepTimerIcon"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp"
-                android:fontFamily="@font/gothicbold"/>
-
-            <ImageView
-                android:id="@+id/songRadio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/radio_signal"
-                app:layout_constraintTop_toBottomOf="@id/hideSongIcon"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
-
-            <TextView
-                android:id="@+id/goSongRadio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Go to Song Radio"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:layout_constraintTop_toBottomOf="@id/hideSongIcon"
-                app:layout_constraintStart_toEndOf="@id/hideSongIcon"
-                android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp"
-                android:fontFamily="@font/gothicbold"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,6 +40,10 @@ class SingleTrackFragment : Fragment() {
     private lateinit var likeButton: ImageView
     private lateinit var queueButton: ImageView
 
+    private lateinit var playlistName: TextView
+
+    var currentTrackIndex : Int = 0
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,14 +53,29 @@ class SingleTrackFragment : Fragment() {
         // Initialize dbHelper
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
+        // Initialize ExoPlayer
+        exoPlayer = ExoPlayer.Builder(requireContext()).build()
+        playerControlView = view.findViewById(R.id.playerControlView)
+        playerControlView.player = exoPlayer
+        playerControlView.setShowTimeoutMs(0)
+
+        // Add a listener for playback state changes to play the next track when current track finishes
+        exoPlayer.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_ENDED) {
+                    playNextTrackInQueue()
+                }
+            }
+        })
+
         // Initialize UI components
         moreOptionsButton = view.findViewById(R.id.more_options)
         queueButton = view.findViewById(R.id.queue)
         songTitle = view.findViewById(R.id.song_title)
         artistName = view.findViewById(R.id.artist_name)
         songCover = view.findViewById(R.id.song_cover)
-        playerControlView = view.findViewById(R.id.playerControlView)
         likeButton = view.findViewById(R.id.like)
+        playlistName = view.findViewById(R.id.playlist_name)
 
         // Set click listener to open MenuFragment
         moreOptionsButton.setOnClickListener {
@@ -72,53 +91,39 @@ class SingleTrackFragment : Fragment() {
         track = arguments?.getParcelable("TRACK") ?: return view
         playlist = arguments?.getParcelable("PLAYLIST")
 
+        track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
 
-        track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?st=2dYuiSashTipIJfJL7dIkA&e=1726401569&a=1&p=0&r=a9e939d9f6a21270a02af0f99f3a90eb&t=1725820346977"
+        // Check if the track already exists in the queue
+        val trackIndex = TrackQueue.queue.indexOfFirst { it.trackId == track.trackId }
+        if (trackIndex != -1) {
+            // If the track exists, start playing from the first occurrence
+            playTrackAtIndex(trackIndex)
+        } else {
+            // If the track does not exist, add it to the queue
+            TrackQueue.queue.add(track)
 
-        // Add the current track to the queue
-        TrackQueue.queue.add(0, track)
+            // Update currentTrackIndex to the newly added track's index
+            currentTrackIndex = TrackQueue.queue.size - 1
 
-        val testTracks: List<Track> = listOf(
-
-            Track(trackId = "5", albumId = "104", name = "Song Five", duration = "03:30", path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?st=2dYuiSashTipIJfJL7dIkA&e=1726401569&a=1&p=0&r=a9e939d9f6a21270a02af0f99f3a90eb&t=1725820346977"),
-            Track(trackId = "6", albumId = "105", name = "Song Six", duration = "02:55", path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?st=2dYuiSashTipIJfJL7dIkA&e=1726401569&a=1&p=0&r=a9e939d9f6a21270a02af0f99f3a90eb&t=1725820346977")
-        )
-
-        TrackQueue.addTracksToBeginning(testTracks)
+            // Play the newly added track
+            playTrackAtIndex(currentTrackIndex)
+        }
 
 
-        // Fetch Album and Artist details
-        val album: Album? = dbHelper.getAlbum(track.albumId)
-        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
-
-        // Set the UI components with track details
-        songTitle.text = track.name
-        artistName.text = artist?.name ?: "Unknown Artist"
-
-        // Load album cover image
-        Glide.with(this)
-            .load(album?.image)
-            .placeholder(R.drawable.blacker_gradient)
-            .into(songCover)
-
-        // Initialize ExoPlayer
-        exoPlayer = ExoPlayer.Builder(requireContext()).build()
-        playerControlView.player = exoPlayer
-        playerControlView.setShowTimeoutMs(0)
-
-        // Start playing the first track in the queue
-        playTrackAtIndex(0)
-
-        // Add a listener for playback state changes to play the next track when current track finishes
-        exoPlayer.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) {
-                    // Playback finished, play the next track in the queue
-                    playNextTrackInQueue()
-                }
-            }
-        })
-
+//        // Fetch Album and Artist details
+//        val album: Album? = dbHelper.getAlbum(track.albumId)
+//        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
+//
+//        // Set the UI components with track details
+//        songTitle.text = track.name
+//        artistName.text = artist?.name ?: "Unknown Artist"
+//        playlistName.text = playlist?.name ?: ""
+//
+//        // Load album cover image
+//        Glide.with(this)
+//            .load(album?.image)
+//            .placeholder(R.drawable.blacker_gradient)
+//            .into(songCover)
 
         // Like button functionality
         updateLikeButton()
@@ -129,14 +134,19 @@ class SingleTrackFragment : Fragment() {
         return view
     }
 
+
+
     private fun playTrackAtIndex(index: Int) {
+
+        // Set the currentTrackIndex to the given index
+        currentTrackIndex = index
+
         if (index >= TrackQueue.queue.size) return
 
         val currentTrack = TrackQueue.queue[index]
 
         // Check if the track's path is null or empty, and use a default URL if necessary
         val trackUrl = currentTrack.path
-
 
         val mediaItem = MediaItem.fromUri(Uri.parse(trackUrl))
         exoPlayer.setMediaItem(mediaItem)
@@ -155,17 +165,20 @@ class SingleTrackFragment : Fragment() {
             .load(album?.image)
             .placeholder(R.drawable.blacker_gradient)
             .into(songCover)
+
+
     }
+
 
     private fun playNextTrackInQueue() {
         if (TrackQueue.queue.isNotEmpty()) {
-            TrackQueue.queue.removeAt(0)
-            if (TrackQueue.queue.isNotEmpty()) {
-                playTrackAtIndex(0)
+            currentTrackIndex++
+            if (currentTrackIndex < TrackQueue.queue.size) {
+                // Play the next track in the queue
+                playTrackAtIndex(currentTrackIndex)
             } else {
-                // No more tracks in the queue
+                // No more tracks in the queue, stop playback
                 exoPlayer.stop()
-                // Optionally, you can show a message like this:
                 Toast.makeText(requireContext(), "End of the queue", Toast.LENGTH_SHORT).show()
             }
         }
