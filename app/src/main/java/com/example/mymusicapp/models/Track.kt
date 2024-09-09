@@ -8,7 +8,7 @@ data class Track(
     val albumId: String,
     val name: String,
     val duration: String, // Duration stored as string in format "MM:SS"
-    val path: String // Path to the audio file
+    var path: String = "https://stream.nct.vn/Unv_Audio407/Style-TaylorSwift-12613800.mp3?st=HQN3Vju0fcNjatL9jDvorQ&e=1726036277&a=1&p=0&r=a0dad11b4823361cef20dccf5ac0758a&t=1725435123477"     // Default audio file path
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString().toString(),
