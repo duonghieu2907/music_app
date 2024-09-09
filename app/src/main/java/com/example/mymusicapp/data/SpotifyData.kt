@@ -28,6 +28,7 @@ class SpotifyData {
     private val clientID = "724f1843a262436ca08ec70af0ae88fb"
     private val clientSecret = "209f1d3f5f6846148d92463a47378848"
     private val redirectUri = "spotifyapp://callback"
+    private val userId = "31j3r46xev5snbqwjqbuwbrm6cwu"
     private var clientApi: SpotifyClientApi? = null
     private var api: SpotifyAppApi? = null
     private val AUTH_REQUEST_CODE = 1001
@@ -68,7 +69,6 @@ class SpotifyData {
     }
 
     suspend fun findArtist(query: String) : Artist? {
-        println("Successfully find artist")
         return api?.artists?.getArtist(query)
     }
 
@@ -108,6 +108,10 @@ class SpotifyData {
 
     }
 
+    suspend fun findAlbumFromTracks(query: String): com.adamratzman.spotify.models.Album? {
+        return api?.albums?.getAlbum(query)
+    }
+
     suspend fun getUserOnline(userQuery: String): SpotifyPublicUser? {
         println("Successfully find user")
         return api!!.users.getProfile(userQuery)
@@ -116,7 +120,7 @@ class SpotifyData {
     suspend fun startPlayback() {
         //use clientApi for playback permission
     }
-    suspend fun findPlaylists(query: String): ArrayList<Playlist>? {
+    suspend fun findPlaylistsFromUser(query: String): ArrayList<Playlist>? {
         val playlists = ArrayList<Playlist>()
 
         try {
@@ -127,6 +131,28 @@ class SpotifyData {
 
             println("Success")
             return playlists
+        } catch (e: Exception) {
+            println("Error getting album: ${e.message}")
+            return null
+        }
+
+    }
+
+    suspend fun findTracksFromPlaylist(query: String): ArrayList<Track>? {
+        val tracks = ArrayList<Track>()
+
+        try {
+            val rawTracks = api?.playlists?.getPlaylistTracks(query)?:return null
+
+            for(i in 0..<rawTracks.size) {
+                val temp = api?.tracks?.getTrack(rawTracks[i].track?.id!!)
+                tracks.add(Track(rawTracks[i].track?.id!!, rawTracks[i].track?.asTrack!!.album.id,
+                    rawTracks[i].track?.asTrack!!.name, convertMilisecond(rawTracks[i].track?.asTrack!!.durationMs),
+                    rawTracks[i].track?.asTrack!!.uri.toString()))
+            }
+
+            println("Success")
+            return tracks
         } catch (e: Exception) {
             println("Error getting album: ${e.message}")
             return null
