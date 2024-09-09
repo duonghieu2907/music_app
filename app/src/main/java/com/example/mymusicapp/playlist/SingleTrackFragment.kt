@@ -78,6 +78,15 @@ class SingleTrackFragment : Fragment() {
         // Add the current track to the queue
         TrackQueue.queue.add(0, track)
 
+        val testTracks: List<Track> = listOf(
+
+            Track(trackId = "5", albumId = "104", name = "Song Five", duration = "03:30", path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?st=2dYuiSashTipIJfJL7dIkA&e=1726401569&a=1&p=0&r=a9e939d9f6a21270a02af0f99f3a90eb&t=1725820346977"),
+            Track(trackId = "6", albumId = "105", name = "Song Six", duration = "02:55", path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?st=2dYuiSashTipIJfJL7dIkA&e=1726401569&a=1&p=0&r=a9e939d9f6a21270a02af0f99f3a90eb&t=1725820346977")
+        )
+
+        TrackQueue.addTracksToBeginning(testTracks)
+
+
         // Fetch Album and Artist details
         val album: Album? = dbHelper.getAlbum(track.albumId)
         val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")

@@ -18,6 +18,18 @@ object TrackQueue {
     }
 
 
+
+
+    // Function to add a list of tracks to the queue
+    fun addTracks(tracks: List<Track>) {
+        queue.addAll(tracks)
+    }
+
+    // Function to add a list of tracks to the beginning of the queue
+    fun addTracksToBeginning(tracks: List<Track>) {
+        queue.addAll(0, tracks)
+    }
+
     // Function to clear the queue
     fun clearQueue() {
         queue.clear()
