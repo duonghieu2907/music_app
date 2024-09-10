@@ -183,21 +183,25 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun toggleLikeStatus() {
-        if (dbHelper.isTrackLiked(track.trackId)) {
-            dbHelper.deletePlaylistTrack("userLikedSong", track.trackId)
+        if (dbHelper.isTrackLiked(track.trackId, "1")) {
+            dbHelper.deleteLike("1", track.trackId ) // global  curUserID
         } else {
-            dbHelper.addPlaylistTrack("userLikedSong", track.trackId)
+            dbHelper.addLike("1", track.trackId) // global  curUserID
         }
         updateLikeButton()
     }
 
     private fun updateLikeButton() {
-        if (dbHelper.isTrackLiked(track.trackId)) {
-            likeButton.setImageResource(R.drawable.filledlove)
+        // is liked by the user
+        val isLiked = dbHelper.isTrackLiked(track.trackId, "1")  // global  curUserID
+
+        if (isLiked) {
+            likeButton.setImageResource(R.drawable.filledlove)  // Filled heart for liked
         } else {
-            likeButton.setImageResource(R.drawable.love)
+            likeButton.setImageResource(R.drawable.love)  // Empty heart for not liked
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

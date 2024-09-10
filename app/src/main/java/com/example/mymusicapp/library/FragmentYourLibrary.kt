@@ -40,7 +40,7 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
         val yourLikedSongs : View = view.findViewById(R.id.YourLikedSongSection)
 
         yourLikedSongs.setOnClickListener {
-            val playlistFragment = PlaylistFragment.newInstance("userLikedSong") //Transfer id
+            val playlistFragment = PlaylistFragment.newInstance("userLikedSongs") //Transfer id
             loadFragment(playlistFragment)
         }
 

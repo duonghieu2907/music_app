@@ -33,7 +33,7 @@ class PlaylistFragment : Fragment() {
 
     companion object {
         private const val ARG_PLAYLIST_ID = "playlist_id"
-
+        private const val LIKED_SONGS_ID = "userLikedSongs" //-> compare arg to seeif it is liked songs or plain playlist
         fun newInstance(playlistId: String): PlaylistFragment {
             val fragment = PlaylistFragment()
             val args = Bundle()
@@ -105,12 +105,37 @@ class PlaylistFragment : Fragment() {
 
         // RecyclerView
         recyclerViewTracks.layoutManager = LinearLayoutManager(requireContext())
+        //tracksAdapter = PlaylistTracksAdapter(requireContext(), mutableListOf()) // Initialize with an empty list
+        //recyclerViewTracks.adapter = tracksAdapter
 
-        loadPlaylistData()
+        // Load data based on the playlist type
+        if (playlistId == LIKED_SONGS_ID) {
+            loadLikedSongs()
+        } else {
+            loadPlaylistData()
+        }
 
         return view
     }
 
+    private fun loadLikedSongs() {
+        playlistTitle.text = "Liked Songs"
+        playlistCreator.visibility = View.GONE
+
+        Glide.with(this)
+            .load(R.drawable.liked_songs_cover)
+            .into(playlistImage)
+
+        val trackList: List<Track> = dbHelper.getUserLikedTracks("1")  // curUserID
+        val likedSongsPlaylist = Playlist(
+            playlistId = "userLikedSongs",
+            userId = "1",  // curUserID
+            name = "Liked Songs",
+            image = ""
+        )
+        tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, likedSongsPlaylist) }
+        recyclerViewTracks.adapter = tracksAdapter
+    }
 
 
     private fun loadPlaylistData() {
