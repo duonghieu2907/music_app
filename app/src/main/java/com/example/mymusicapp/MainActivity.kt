@@ -3,6 +3,7 @@ package com.example.mymusicapp
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -222,5 +223,16 @@ class MainActivity : AppCompatActivity() {
             sample.isEmpty() -> ""
             else -> sample.firstOrNull()!!.url
         }
+    }
+
+
+    fun hideBottomNavigation() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNav.visibility = View.GONE
+    }
+
+    fun showBottomNavigation() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNav.visibility = View.VISIBLE
     }
 }

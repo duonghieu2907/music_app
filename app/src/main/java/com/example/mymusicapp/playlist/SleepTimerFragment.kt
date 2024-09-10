@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.fragment.app.Fragment
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 
 class SleepTimerFragment : Fragment() {
@@ -25,5 +26,19 @@ class SleepTimerFragment : Fragment() {
 
 
         return TODO("Provide the return value")
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Show the navigation bar when this fragment is destroyed
+        (requireActivity() as MainActivity).showBottomNavigation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Show the bottom navigation bar when this fragment is resumed
+        (requireActivity() as MainActivity).hideBottomNavigation()
     }
 }

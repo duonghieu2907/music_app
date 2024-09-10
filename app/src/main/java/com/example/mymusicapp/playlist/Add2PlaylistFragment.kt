@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Playlist
@@ -84,5 +85,19 @@ class Add2PlaylistFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Show the navigation bar when this fragment is destroyed
+        (requireActivity() as MainActivity).showBottomNavigation()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        // Show the bottom navigation bar when this fragment is resumed
+        (requireActivity() as MainActivity).hideBottomNavigation()
     }
 }

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
@@ -37,6 +38,9 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.activity_queue, container, false)
+
+        // Hide the navigation bar when this fragment is created
+        (requireActivity() as MainActivity).hideBottomNavigation()
 
         // Set up UI elements and receive arguments...
         backButton = view.findViewById(R.id.back)
@@ -124,5 +128,20 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         val marginBottomPx = (marginBottomDp * resources.displayMetrics.density).toInt()
         layoutParams.bottomMargin = marginBottomPx
         footer.layoutParams = layoutParams
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Show the navigation bar when this fragment is destroyed
+        (requireActivity() as MainActivity).showBottomNavigation()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        // Show the bottom navigation bar when this fragment is resumed
+        (requireActivity() as MainActivity).hideBottomNavigation()
     }
 }
