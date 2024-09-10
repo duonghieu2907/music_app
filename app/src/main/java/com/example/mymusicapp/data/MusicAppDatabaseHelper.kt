@@ -682,8 +682,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    //LikedSong -> to be removed
-    fun addUserLikedSongsPlaylist(userId: String) {
+    //LikedSong -> outdated, to be removed
+    /*fun addUserLikedSongsPlaylist(userId: String) {
         val db = this.writableDatabase
         val playlistId = "userLikedSong"  // Unique ID for the liked songs playlist
         val playlistName = "Liked Songs"
@@ -724,6 +724,51 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             db.close()
             false
         }
+    }
+*/
+    //new liked song functions:
+    fun getUserLikedTracks(userId: String): List<Track> {
+        val likedTracks = mutableListOf<Track>()
+        val db = this.readableDatabase
+
+        // fetch liked tracks for the given userId
+        val query = """
+            SELECT * FROM $TABLE_TRACK 
+            WHERE $TRACK_ID IN (
+                SELECT $LIKE_TRACK_ID FROM "$TABLE_LIKE" WHERE $LIKE_USER_ID = ?
+            )
+        """
+
+        val cursor = db.rawQuery(query, arrayOf(userId))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val trackId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
+                val albumId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ALBUM_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
+                val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
+                val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
+
+                val track = Track(trackId, albumId, name, duration, path)
+                likedTracks.add(track)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+
+        return likedTracks
+    }
+    fun isTrackLiked(trackId: String, userId: String): Boolean {
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_LIKE WHERE $LIKE_USER_ID = ? AND $LIKE_TRACK_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId, trackId))
+
+        val isLiked = cursor.count > 0
+        cursor.close()
+        db.close()
+
+        return isLiked
     }
 
 
@@ -880,8 +925,17 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.insert(TABLE_LIKE, null, values)
         db.close()
     }
+    fun addLike(userId: String, trackId: String) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(LIKE_USER_ID, userId)
+            put(LIKE_TRACK_ID, trackId)
+        }
+        db.insert(TABLE_LIKE, null, values)
+        db.close()
+    }
 
-    fun getLike(userId: Int, trackId: Int): Like? {
+    fun getLike(userId: String, trackId: String): Like? {
         val db = this.readableDatabase
         val cursor = db.query(
             TABLE_LIKE,
@@ -905,12 +959,12 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         }
     }
 
-    fun deleteLike(userId: Int, trackId: Int) {
+    fun deleteLike(userId: String, trackId: String) {
         val db = this.writableDatabase
         db.delete(
             TABLE_LIKE,
             "$LIKE_USER_ID=? AND $LIKE_TRACK_ID=?",
-            arrayOf(userId.toString(), trackId.toString())
+            arrayOf(userId, trackId)
         )
         db.close()
     }
