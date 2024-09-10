@@ -1,5 +1,6 @@
 package com.example.mymusicapp.data
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -62,8 +63,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         private const val PLAYLIST_NAME = "name"
         private const val PLAYLIST_IMAGE = "image"
 
-        //Own Pl table
-        //Like Pl table
+
         // Playlist_Track Table
         private const val TABLE_PLAYLIST_TRACK = "Playlist_Track"
         private const val PLAYLIST_TRACK_PLAYLIST_ID = "playlist_id"
@@ -75,10 +75,21 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         private const val FOLLOWER_USER_ID = "user_id"
         private const val FOLLOWER_ARTIST_ID = "artist_id"
 
-        // Like Table ?? -> attribute?
+        // Like Table ??
         private const val TABLE_LIKE = "Like"
         private const val LIKE_USER_ID = "user_id"
         private const val LIKE_TRACK_ID = "track_id"
+
+        // Follow playlist
+        const val TABLE_FOLLOWED_PLAYLISTS = "FollowedPlaylists"
+        const val FOLLOWED_USER_ID = "FollowedUserId"
+        const val FOLLOWED_PLAYLIST_ID = "FollowedPlaylistId"
+
+        // Liked Albums
+        const val TABLE_FOLLOWED_ALBUMS = "FollowedAlbums"
+        const val FOLLOWED_ALBUM_USER_ID = "FollowedAlbumUserId"
+        const val FOLLOWED_ALBUM_ID = "FollowedAlbumId"
+
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -141,6 +152,22 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 + "FOREIGN KEY($LIKE_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($LIKE_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
 
+        // New table for users following playlists, albums
+        val createFollowedPlaylistsTable = ("CREATE TABLE $TABLE_FOLLOWED_PLAYLISTS ("
+                + "$FOLLOWED_USER_ID TEXT,"
+                + "$FOLLOWED_PLAYLIST_ID TEXT,"
+                + "PRIMARY KEY($FOLLOWED_USER_ID, $FOLLOWED_PLAYLIST_ID),"
+                + "FOREIGN KEY($FOLLOWED_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
+                + "FOREIGN KEY($FOLLOWED_PLAYLIST_ID) REFERENCES $TABLE_PLAYLIST($PLAYLIST_ID))")
+
+        val createFollowedAlbumsTable = ("CREATE TABLE $TABLE_FOLLOWED_ALBUMS ("
+                + "$FOLLOWED_ALBUM_USER_ID TEXT,"
+                + "$FOLLOWED_ALBUM_ID TEXT,"
+                + "PRIMARY KEY($FOLLOWED_ALBUM_USER_ID, $FOLLOWED_ALBUM_ID),"
+                + "FOREIGN KEY($FOLLOWED_ALBUM_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
+                + "FOREIGN KEY($FOLLOWED_ALBUM_ID) REFERENCES $TABLE_ALBUM($ALBUM_ID))")
+
+
         // Execute the SQL statements
         db.execSQL(createUserTable)
         db.execSQL(createArtistTable)
@@ -148,8 +175,10 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.execSQL(createTrackTable)
         db.execSQL(createPlaylistTable)
         db.execSQL(createPlaylistTrackTable)
-        db.execSQL(createFollowerTable)
-        db.execSQL(createLikeTable)
+        db.execSQL(createFollowerTable) //follow artist
+        db.execSQL(createLikeTable) //like track
+        db.execSQL(createFollowedPlaylistsTable)
+        db.execSQL(createFollowedAlbumsTable)
     }
 
 
@@ -494,6 +523,74 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
 
+    //get tracks function
+
+    fun getTracksByPlaylistId(playlistId: String): List<Track> {
+        val tracks = mutableListOf<Track>()
+        val db = this.readableDatabase
+
+        // Query to get tracks that are part of the specified playlist
+        val query = """
+        SELECT t.$TRACK_ID, t.$TRACK_ALBUM_ID, t.$TRACK_NAME, t.$TRACK_DURATION, t.$TRACK_PATH
+        FROM $TABLE_TRACK t
+        INNER JOIN $TABLE_PLAYLIST_TRACK pt ON t.$TRACK_ID = pt.$PLAYLIST_TRACK_TRACK_ID
+        WHERE pt.$PLAYLIST_TRACK_PLAYLIST_ID = ?
+        ORDER BY pt.$PLAYLIST_TRACK_ORDER ASC
+    """
+        val cursor = db.rawQuery(query, arrayOf(playlistId.toString()))
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val trackId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
+                val albumId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ALBUM_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
+                val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
+                val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
+                println("Success: " + playlistId + " " + name)
+                // Create a Track object
+                val track = Track(
+                    trackId = trackId,
+                    albumId = albumId,
+                    name = name,
+                    duration = duration,
+                    path = path
+                )
+
+                tracks.add(track) // Add the track to the list
+
+            } while (cursor.moveToNext()) // Move to the next result
+        }
+
+        cursor?.close() // Close the cursor after use
+
+        return tracks // Return the list of tracks
+    }
+
+    fun getTracksByAlbumId(albumId: String): List<Track> {
+        val tracks = mutableListOf<Track>()
+        val db = this.readableDatabase
+
+        val query = "SELECT * FROM $TABLE_TRACK WHERE $TRACK_ALBUM_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(albumId))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
+                val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
+                val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
+
+                val track = Track(id, albumId, name, duration, path)
+                tracks.add(track)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+
+        return tracks
+    }
+
 
     // CRUD Operations for Playlists
     fun addPlaylist(playlist: Playlist): String {
@@ -525,7 +622,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
     fun getAllPlaylistId() : ArrayList<String>? {
         val db = this.readableDatabase
-        val query = "SELECT DISTINCT $PLAYLIST_ID FROM $TABLE_PLAYLIST"
+        val query =
+            "SELECT DISTINCT $PLAYLIST_ID FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID <> 'userLikedSong'"
         val cursor = db.rawQuery(query, arrayOf())
         val allId = ArrayList<String>()
         val columnIndex = cursor.getColumnIndexOrThrow(PLAYLIST_ID)
@@ -584,7 +682,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
-    //LikedSong
+    //LikedSong -> to be removed
     fun addUserLikedSongsPlaylist(userId: String) {
         val db = this.writableDatabase
         val playlistId = "userLikedSong"  // Unique ID for the liked songs playlist
@@ -726,37 +824,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         }
     }
 
-
-
-    ///delete all
-
-    fun deleteAll() {
-        val db: SQLiteDatabase = this.writableDatabase
-        try {
-            db.beginTransaction()
-            deleteAllData(TABLE_PLAYLIST_TRACK, db)
-            deleteAllData(TABLE_ALBUM, db)
-            deleteAllData(TABLE_PLAYLIST, db)
-            deleteAllData(TABLE_USER, db)
-            deleteAllData(TABLE_ARTIST, db)
-            deleteAllData(TABLE_TRACK, db)
-            deleteAllData(TABLE_FOLLOWER, db)
-            deleteAllData(TABLE_LIKE, db)
-
-            db.setTransactionSuccessful()
-        }
-        catch (e: Exception) {
-            Log.e("MusicAppDatabaseHelper", "Error deleting data")
-        }
-        finally {
-            db.endTransaction()
-        }
-
-        db.close()
-    }
-
-
-    // CRUD Operations for Followers
+    // CRUD Operations for Followers (artist)
     fun addFollower(follower: Follower) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -802,7 +870,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
 
 
-    // CRUD Operations for Likes
+    // CRUD Operations for Likes (tracks)
     fun addLike(like: Like) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -847,72 +915,130 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
+    //FOLLOWED PLAYLIST
 
-    fun getTracksByPlaylistId(playlistId: String): List<Track> {
-        val tracks = mutableListOf<Track>()
-        val db = this.readableDatabase
-
-        // Query to get tracks that are part of the specified playlist
-        val query = """
-        SELECT t.$TRACK_ID, t.$TRACK_ALBUM_ID, t.$TRACK_NAME, t.$TRACK_DURATION, t.$TRACK_PATH
-        FROM $TABLE_TRACK t
-        INNER JOIN $TABLE_PLAYLIST_TRACK pt ON t.$TRACK_ID = pt.$PLAYLIST_TRACK_TRACK_ID
-        WHERE pt.$PLAYLIST_TRACK_PLAYLIST_ID = ?
-        ORDER BY pt.$PLAYLIST_TRACK_ORDER ASC
-    """
-        val cursor = db.rawQuery(query, arrayOf(playlistId.toString()))
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                val trackId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
-                val albumId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ALBUM_ID))
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
-                val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
-                val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
-                println("Success: " + playlistId + " " + name)
-                // Create a Track object
-                val track = Track(
-                    trackId = trackId,
-                    albumId = albumId,
-                    name = name,
-                    duration = duration,
-                    path = path
-                )
-
-                tracks.add(track) // Add the track to the list
-
-            } while (cursor.moveToNext()) // Move to the next result
+    fun followPlaylist(userId: String, playlistId: String) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(FOLLOWED_USER_ID, userId)
+            put(FOLLOWED_PLAYLIST_ID, playlistId)
         }
-
-        cursor?.close() // Close the cursor after use
-
-        return tracks // Return the list of tracks
+        db.insert(TABLE_FOLLOWED_PLAYLISTS, null, values)
+        db.close()
     }
 
-    fun getTracksByAlbumId(albumId: String): List<Track> {
-        val tracks = mutableListOf<Track>()
+    fun unfollowPlaylist(userId: String, playlistId: String) {
+        val db = this.writableDatabase
+        db.delete(TABLE_FOLLOWED_PLAYLISTS, "$FOLLOWED_USER_ID = ? AND $FOLLOWED_PLAYLIST_ID = ?", arrayOf(userId, playlistId))
+        db.close()
+    }
+
+    @SuppressLint("Range")
+    fun getUserLibraryPlaylists(userId: String): List<Playlist> {
+        val playlists = mutableListOf<Playlist>()
         val db = this.readableDatabase
 
-        val query = "SELECT * FROM $TABLE_TRACK WHERE $TRACK_ALBUM_ID = ?"
-        val cursor = db.rawQuery(query, arrayOf(albumId))
+        // Query for playlists created by the user
+        val userPlaylistsCursor = db.query(
+            TABLE_PLAYLIST,
+            null,
+            "$PLAYLIST_USER_ID = ?",
+            arrayOf(userId),
+            null,
+            null,
+            null
+        )
+
+        while (userPlaylistsCursor.moveToNext()) {
+            // Extract playlist details and add to the list
+            val playlist = Playlist(
+                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_ID)),
+                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_NAME)),
+                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_IMAGE)),
+                userId
+            )
+            playlists.add(playlist)
+        }
+        userPlaylistsCursor.close()
+
+        // Query for playlists followed by the user
+        val followedPlaylistsCursor = db.rawQuery(
+            "SELECT * FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID IN (SELECT $FOLLOWED_PLAYLIST_ID FROM $TABLE_FOLLOWED_PLAYLISTS WHERE $FOLLOWED_USER_ID = ?)",
+            arrayOf(userId)
+        )
+
+        while (followedPlaylistsCursor.moveToNext()) {
+            // Extract playlist details and add to the list
+            val playlist = Playlist(
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_ID)),
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_NAME)),
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_IMAGE)),
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_USER_ID))
+            )
+            playlists.add(playlist)
+        }
+        followedPlaylistsCursor.close()
+
+        db.close()
+        return playlists
+    }
+
+
+    //FOLLOWED ALBUMS
+    fun followAlbum(userId: String, albumId: String): Boolean {
+        val db = this.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(FOLLOWED_ALBUM_USER_ID, userId)
+            put(FOLLOWED_ALBUM_ID, albumId)
+        }
+
+        val result = db.insert(TABLE_FOLLOWED_ALBUMS, null, contentValues)
+        db.close()
+
+        return result != -1L  // Return true if insert was successful
+    }
+
+    fun unfollowAlbum(userId: String, albumId: String): Boolean {
+        val db = this.writableDatabase
+
+        val result = db.delete(
+            TABLE_FOLLOWED_ALBUMS,
+            "$FOLLOWED_ALBUM_USER_ID = ? AND $FOLLOWED_ALBUM_ID = ?",
+            arrayOf(userId, albumId)
+        )
+        db.close()
+
+        return result > 0  // Return true if delete was successful
+    }
+
+    fun getUserFollowedAlbums(userId: String): List<Album> {
+        val db = this.readableDatabase
+        val followedAlbums = mutableListOf<Album>()
+
+        val query = "SELECT * FROM $TABLE_ALBUM WHERE $ALBUM_ID IN (" +
+                "SELECT $FOLLOWED_ALBUM_ID FROM $TABLE_FOLLOWED_ALBUMS WHERE $FOLLOWED_ALBUM_USER_ID = ?)"
+
+        val cursor = db.rawQuery(query, arrayOf(userId))
 
         if (cursor.moveToFirst()) {
             do {
-                val id = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_NAME))
-                val duration = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_DURATION))
-                val path = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_PATH))
-
-                val track = Track(id, albumId, name, duration, path)
-                tracks.add(track)
+                val album = Album(
+                    albumId = cursor.getString(cursor.getColumnIndexOrThrow(ALBUM_ID)),
+                    artistId = cursor.getString(cursor.getColumnIndexOrThrow(ALBUM_ARTIST_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(ALBUM_NAME)),
+                    releaseDate = cursor.getString(cursor.getColumnIndexOrThrow(ALBUM_RELEASE_DATE)),
+                    image = cursor.getString(cursor.getColumnIndexOrThrow(ALBUM_IMAGE))
+                )
+                followedAlbums.add(album)
             } while (cursor.moveToNext())
         }
 
         cursor.close()
         db.close()
 
-        return tracks
+        return followedAlbums
     }
+
 
 
     fun search(keyword: String): List<SearchResult> {
@@ -1018,6 +1144,92 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         return searchResults
     }
 
+    //Sort from A-Z
+    fun sort(type: String, order: String) : ArrayList<Any> {
+        val rawQuery: String
+        val list = ArrayList<Any>()
+        val db = this.readableDatabase
+        order.uppercase()
 
+        //Make query
+        when (type.lowercase()) {
+            "album" -> {
+                rawQuery = "SELECT $ALBUM_ID, $ALBUM_ARTIST_ID, $ALBUM_NAME, $ALBUM_RELEASE_DATE, $ALBUM_IMAGE" +
+                        " FROM $TABLE_ALBUM ORDER BY $ALBUM_NAME " + order
+            }
+
+            "artist" -> {
+                rawQuery = "SELECT $ARTIST_ID, $ARTIST_NAME, $ARTIST_GENRE, $ARTIST_IMAGE" +
+                        " FROM $TABLE_ARTIST ORDER BY $ARTIST_NAME " + order
+            }
+
+            "playlist" -> {
+                rawQuery = "SELECT $PLAYLIST_ID, $PLAYLIST_USER_ID, $PLAYLIST_NAME, $PLAYLIST_IMAGE" +
+                        " FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID <> 'userLikedSong' ORDER BY $PLAYLIST_NAME " + order
+            }
+            else -> throw IllegalArgumentException("Unknown type: $type")
+        }
+
+        val cursor = db.rawQuery(rawQuery, arrayOf())
+        if(!cursor.moveToFirst()) {
+            cursor.close()
+            throw NoSuchElementException("No element")
+        }
+
+        //Add to a list and return
+        when(type.lowercase()) {
+            "album" -> {
+                do {
+                    list.add(Album(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3), cursor.getString(4)))
+                } while (cursor.moveToNext())
+            }
+
+            "artist" -> {
+                do {
+                    list.add(Artist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3)))
+                } while (cursor.moveToNext())
+            }
+
+            "playlist" -> {
+                do {
+                    list.add(Playlist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3)))
+                } while (cursor.moveToNext())
+            }
+        }
+
+        cursor.close()
+        db.close()
+        return list
+    }
+
+    ///delete all
+
+    fun deleteAll() {
+        val db: SQLiteDatabase = this.writableDatabase
+        try {
+            db.beginTransaction()
+            deleteAllData(TABLE_PLAYLIST_TRACK, db)
+            deleteAllData(TABLE_ALBUM, db)
+            deleteAllData(TABLE_PLAYLIST, db)
+            deleteAllData(TABLE_USER, db)
+            deleteAllData(TABLE_ARTIST, db)
+            deleteAllData(TABLE_TRACK, db)
+            deleteAllData(TABLE_FOLLOWER, db)
+            deleteAllData(TABLE_LIKE, db)
+
+            db.setTransactionSuccessful()
+        }
+        catch (e: Exception) {
+            Log.e("MusicAppDatabaseHelper", "Error deleting data")
+        }
+        finally {
+            db.endTransaction()
+        }
+
+        db.close()
+    }
 }
 
