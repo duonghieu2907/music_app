@@ -9,18 +9,23 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.models.Track
 
 class Add2PlaylistFragment : Fragment() {
 
     private lateinit var playlistRecyclerView: RecyclerView
     private lateinit var playlistAdapter: PlaylistAdapter
     private lateinit var backButton: ImageView
+    private lateinit var track: Track  // Track data to be passed
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_add_2_playlist, container, false)
+
+        // Retrieve the Track object passed as argument
+        track = arguments?.getParcelable("TRACK") ?: throw IllegalStateException("Track not passed to Add2PlaylistFragment")
 
         backButton = view.findViewById(R.id.back)
 
@@ -45,5 +50,15 @@ class Add2PlaylistFragment : Fragment() {
         playlistRecyclerView.adapter = playlistAdapter
 
         return view
+    }
+
+    companion object {
+        fun newInstance(track: Track): Add2PlaylistFragment {
+            val fragment = Add2PlaylistFragment()
+            val args = Bundle()
+            args.putParcelable("TRACK", track)  // Pass the Track object to this fragment
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

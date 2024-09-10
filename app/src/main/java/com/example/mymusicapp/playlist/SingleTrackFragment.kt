@@ -25,7 +25,7 @@ class SingleTrackFragment : Fragment() {
 
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var track: Track
-    private var playlist: Playlist<Any?>? = null
+    private var playlist: Playlist? = null
     private lateinit var backButton: ImageView
 
     private lateinit var songTitle: TextView
@@ -207,7 +207,7 @@ class SingleTrackFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track, playlist: Playlist<Any?>?): SingleTrackFragment {
+        fun newInstance(track: Track, playlist: Playlist?): SingleTrackFragment {
             val fragment = SingleTrackFragment()
             val args = Bundle().apply {
                 putParcelable("TRACK", track)
