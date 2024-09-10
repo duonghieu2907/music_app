@@ -132,6 +132,11 @@ class SingleTrackFragment : Fragment() {
         val artist = dbHelper.getArtist(album?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
 
+        playlistName.text = playlist?.name ?: ""
+
+
+        playlistName.text = playlist?.name ?: ""
+
         Glide.with(this)
             .load(album?.image)
             .placeholder(R.drawable.blacker_gradient)
@@ -165,6 +170,8 @@ class SingleTrackFragment : Fragment() {
         val album = dbHelper.getAlbum(currentTrack.albumId)
         val artist = dbHelper.getArtist(album?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
+
+        playlistName.text = playlist?.name ?: ""
 
         Glide.with(this)
             .load(album?.image)
@@ -225,7 +232,7 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun openMenuFragment() {
-        val menuFragment = MenuFragment.newInstance(track)
+        val menuFragment = MenuFragment.newInstance(track, playlist)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, menuFragment)
             .addToBackStack(null)
