@@ -540,7 +540,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
     fun getAllPlaylistId() : ArrayList<String>? {
         val db = this.readableDatabase
-        val query = "SELECT DISTINCT $PLAYLIST_ID FROM $TABLE_PLAYLIST"
+        val query =
+            "SELECT DISTINCT $PLAYLIST_ID FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID <> 'userLikedSong'"
         val cursor = db.rawQuery(query, arrayOf())
         val allId = ArrayList<String>()
         val columnIndex = cursor.getColumnIndexOrThrow(PLAYLIST_ID)
@@ -1122,7 +1123,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
             "playlist" -> {
                 rawQuery = "SELECT $PLAYLIST_ID, $PLAYLIST_USER_ID, $PLAYLIST_NAME, $PLAYLIST_IMAGE" +
-                        " FROM $TABLE_PLAYLIST ORDER BY $PLAYLIST_NAME " + order
+                        " FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID <> 'userLikedSong' ORDER BY $PLAYLIST_NAME " + order
             }
             else -> throw IllegalArgumentException("Unknown type: $type")
         }

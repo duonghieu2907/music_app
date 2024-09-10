@@ -54,9 +54,6 @@ class FragmentAlbumsAdapter(
             onItemClickListener?.setOnItemClickListener(currentItem)
         }
 
-        holder.itemImage.setOnClickListener {
-            onItemClickListener?.setOnItemClickListener(currentItem)
-        }
     }
 
     interface OnItemClickListener {

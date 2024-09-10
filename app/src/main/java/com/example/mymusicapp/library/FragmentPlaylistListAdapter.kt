@@ -56,10 +56,6 @@ class PlaylistListAdapter(
         holder.itemView.setOnClickListener {
             setItemOnClickListener?.itemSelectionClickListener(currentItem)
         }
-
-        holder.titleImage.setOnClickListener {
-            setItemOnClickListener?.itemSelectionClickListener(currentItem)
-        }
     }
 
     interface FragmentPlaylistItemOnClickListener {

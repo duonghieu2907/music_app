@@ -1,9 +1,11 @@
 package com.example.mymusicapp.library
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,8 @@ import com.example.mymusicapp.playlist.PlaylistFragment
 
 //user's all playlists
 class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOnClickListener {
+    private lateinit var adapter : PlaylistListAdapter
+    private val items = ArrayList<Playlist>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,16 +33,9 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     private fun app(view: View) {
         //Implementing here
 
-        //Your liked playlists ?? xoóa đi bạn
-        val yourLikedPlaylists : View = view.findViewById(R.id.YourLikedPlaylist)
-
-        yourLikedPlaylists.setOnClickListener {
-
-        }
-
-        //Lists
         //Adapter
-        val adapter = PlaylistListAdapter(createPlaylistItem(), this)
+        items.addAll(createPlaylistItem())
+        adapter = PlaylistListAdapter(items, this)
 
         //LayoutManager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -48,6 +45,37 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
 
+        //Sort By
+        //Init all sort
+        val allSort = ArrayList<String>()
+        allSort.add("Recently played")
+        allSort.add("A-Z")
+        allSort.add("Z-A")
+
+        //Init setOnClickListener
+        val sortBut = view.findViewById<TextView>(R.id.sortButtonPlaylist)
+        sortBut.setOnClickListener {
+            when (sortBut.text.toString()) {
+                allSort[0] -> {
+                    //set effect for the button
+                    sortBut.text = allSort[1]
+                    updateAdapter(sort("ASC"))
+                }
+                allSort[1] -> {
+                    sortBut.text = allSort[2]
+                    updateAdapter(sort("DESC"))
+                }
+                allSort[2] -> {
+                    sortBut.text = allSort[0]
+                }
+            }
+        }
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateAdapter(list : ArrayList<Playlist>) {
+        items.clear()
+        items.addAll(list)
+        adapter.notifyDataSetChanged()
     }
 
     private fun createPlaylistItem(): ArrayList<Playlist> {
@@ -77,13 +105,16 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         }
     }
 
-
-
-
     private fun loadFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun sort(order : String): ArrayList<Playlist> {
+        val db = MusicAppDatabaseHelper(requireContext())
+        val sample: ArrayList<Playlist> = db.sort("playlist", order) as? ArrayList<Playlist>?: ArrayList()
+        return sample
     }
 }
