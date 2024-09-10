@@ -1018,6 +1018,67 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         return searchResults
     }
 
+    //Sort from A-Z
+    fun sort(type: String, order: String) : ArrayList<Any> {
+        val rawQuery: String
+        val list = ArrayList<Any>()
+        val db = this.readableDatabase
+        order.uppercase()
+
+        //Make query
+        when (type.lowercase()) {
+            "album" -> {
+                rawQuery = "SELECT $ALBUM_ID, $ALBUM_ARTIST_ID, $ALBUM_NAME, $ALBUM_RELEASE_DATE, $ALBUM_IMAGE" +
+                        " FROM $TABLE_ALBUM ORDER BY $ALBUM_NAME " + order
+            }
+
+            "artist" -> {
+                rawQuery = "SELECT $ARTIST_ID, $ARTIST_NAME, $ARTIST_GENRE, $ARTIST_IMAGE" +
+                        " FROM $TABLE_ARTIST ORDER BY $ARTIST_NAME " + order
+            }
+
+            "playlist" -> {
+                rawQuery = "SELECT $PLAYLIST_ID, $PLAYLIST_USER_ID, $PLAYLIST_NAME, $PLAYLIST_IMAGE" +
+                        " FROM $TABLE_PLAYLIST ORDER BY $PLAYLIST_NAME " + order
+            }
+            else -> throw IllegalArgumentException("Unknown type: $type")
+        }
+
+        val cursor = db.rawQuery(rawQuery, arrayOf())
+        if(!cursor.moveToFirst()) {
+            cursor.close()
+            throw NoSuchElementException("No element")
+        }
+
+        //Add to a list and return
+        when(type.lowercase()) {
+            "album" -> {
+                do {
+                    list.add(Album(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3), cursor.getString(4)))
+                } while (cursor.moveToNext())
+            }
+
+            "artist" -> {
+                do {
+                    list.add(Artist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3)))
+                } while (cursor.moveToNext())
+            }
+
+            "playlist" -> {
+                do {
+                    list.add(Playlist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3)))
+                } while (cursor.moveToNext())
+            }
+        }
+
+        cursor.close()
+        db.close()
+        return list
+    }
+
 
 }
 
