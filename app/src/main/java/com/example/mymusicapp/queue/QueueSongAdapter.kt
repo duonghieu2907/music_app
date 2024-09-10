@@ -14,9 +14,15 @@ import com.example.mymusicapp.models.TrackQueue
 
 data class QueueSong(val name: String, val artist: String)
 
-class QueueSongAdapter(private val songs: TrackQueue) : RecyclerView.Adapter<QueueSongAdapter.SongViewHolder>() {
+class QueueSongAdapter(private val songs: TrackQueue,
+                       private val dbHelper: MusicAppDatabaseHelper
+) : RecyclerView.Adapter<QueueSongAdapter.SongViewHolder>() {
 
-    private lateinit var dbHelper: MusicAppDatabaseHelper
+
+
+
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_queue_song, parent, false)
