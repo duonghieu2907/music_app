@@ -1,5 +1,6 @@
 package com.example.mymusicapp.data
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -62,8 +63,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         private const val PLAYLIST_NAME = "name"
         private const val PLAYLIST_IMAGE = "image"
 
-        //Own Pl table
-        //Like Pl table
+
         // Playlist_Track Table
         private const val TABLE_PLAYLIST_TRACK = "Playlist_Track"
         private const val PLAYLIST_TRACK_PLAYLIST_ID = "playlist_id"
@@ -75,10 +75,16 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         private const val FOLLOWER_USER_ID = "user_id"
         private const val FOLLOWER_ARTIST_ID = "artist_id"
 
-        // Like Table ?? -> attribute?
+        // Like Table ??
         private const val TABLE_LIKE = "Like"
         private const val LIKE_USER_ID = "user_id"
         private const val LIKE_TRACK_ID = "track_id"
+
+        // Follow playlist
+        const val TABLE_FOLLOWED_PLAYLISTS = "FollowedPlaylists"
+        const val FOLLOWED_USER_ID = "FollowedUserId"
+        const val FOLLOWED_PLAYLIST_ID = "FollowedPlaylistId"
+
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -141,6 +147,14 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
                 + "FOREIGN KEY($LIKE_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($LIKE_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
 
+        // New table for users following playlists
+        val createFollowedPlaylistsTable = ("CREATE TABLE $TABLE_FOLLOWED_PLAYLISTS ("
+                + "$FOLLOWED_USER_ID TEXT,"
+                + "$FOLLOWED_PLAYLIST_ID TEXT,"
+                + "PRIMARY KEY($FOLLOWED_USER_ID, $FOLLOWED_PLAYLIST_ID),"
+                + "FOREIGN KEY($FOLLOWED_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
+                + "FOREIGN KEY($FOLLOWED_PLAYLIST_ID) REFERENCES $TABLE_PLAYLIST($PLAYLIST_ID))")
+
         // Execute the SQL statements
         db.execSQL(createUserTable)
         db.execSQL(createArtistTable)
@@ -148,8 +162,9 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.execSQL(createTrackTable)
         db.execSQL(createPlaylistTable)
         db.execSQL(createPlaylistTrackTable)
-        db.execSQL(createFollowerTable)
-        db.execSQL(createLikeTable)
+        db.execSQL(createFollowerTable) //follow artist
+        db.execSQL(createLikeTable) //like track
+        db.execSQL(createFollowedPlaylistsTable)
     }
 
 
@@ -845,6 +860,74 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
             arrayOf(userId.toString(), trackId.toString())
         )
         db.close()
+    }
+
+    //followed playlist
+
+    fun followPlaylist(userId: String, playlistId: String) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(FOLLOWED_USER_ID, userId)
+            put(FOLLOWED_PLAYLIST_ID, playlistId)
+        }
+        db.insert(TABLE_FOLLOWED_PLAYLISTS, null, values)
+        db.close()
+    }
+
+    fun unfollowPlaylist(userId: String, playlistId: String) {
+        val db = this.writableDatabase
+        db.delete(TABLE_FOLLOWED_PLAYLISTS, "$FOLLOWED_USER_ID = ? AND $FOLLOWED_PLAYLIST_ID = ?", arrayOf(userId, playlistId))
+        db.close()
+    }
+
+    @SuppressLint("Range")
+    fun getUserLibraryPlaylists(userId: String): List<Playlist> {
+        val playlists = mutableListOf<Playlist>()
+        val db = this.readableDatabase
+
+        // Query for playlists created by the user
+        val userPlaylistsCursor = db.query(
+            TABLE_PLAYLIST,
+            null,
+            "$PLAYLIST_USER_ID = ?",
+            arrayOf(userId),
+            null,
+            null,
+            null
+        )
+
+        while (userPlaylistsCursor.moveToNext()) {
+            // Extract playlist details and add to the list
+            val playlist = Playlist(
+                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_ID)),
+                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_NAME)),
+                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_IMAGE)),
+                userId
+            )
+            playlists.add(playlist)
+        }
+        userPlaylistsCursor.close()
+
+        // Query for playlists followed by the user
+        val followedPlaylistsCursor = db.rawQuery(
+            "SELECT * FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID IN (SELECT $FOLLOWED_PLAYLIST_ID FROM $TABLE_FOLLOWED_PLAYLISTS WHERE $FOLLOWED_USER_ID = ?)",
+            arrayOf(userId)
+        )
+
+        while (followedPlaylistsCursor.moveToNext()) {
+            // Extract playlist details and add to the list
+            val playlist = Playlist(
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_ID)),
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_NAME)),
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_IMAGE)),
+                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_USER_ID))
+            )
+            playlists.add(playlist)
+        }
+        followedPlaylistsCursor.close()
+
+        db.close()
+        return playlists
     }
 
 
