@@ -14,7 +14,6 @@ import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Track
-import com.example.mymusicapp.queue.QueueFragment
 import com.example.mymusicapp.playlist.Add2PlaylistFragment
 
 class MenuFragment : Fragment() {
@@ -39,18 +38,16 @@ class MenuFragment : Fragment() {
         // Retrieve the Track object from the arguments
         track = arguments?.getParcelable("TRACK") ?: throw IllegalStateException("Track not passed to MenuFragment")
 
-
         // Find views by ID
         val songCover = view.findViewById<ImageView>(R.id.songCover)
         val songName = view.findViewById<TextView>(R.id.songName)
         val songArtist = view.findViewById<TextView>(R.id.songArtist)
 
-
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
         // Fetch Album and Artist details
-        val album: Album? = dbHelper.getAlbum(track.albumId)  // Ensure getAlbum accepts String type
-        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")  // Ensure getArtist accepts String type
+        val album: Album? = dbHelper.getAlbum(track.albumId)
+        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
 
         // Set the values for the songCover, songName, and songArtist
         val imageUrl = "https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb"
@@ -59,8 +56,6 @@ class MenuFragment : Fragment() {
             .placeholder(R.drawable.blacker_gradient)
             .error(R.drawable.blacker_gradient)
             .into(songCover)
-
-
 
         songName.text = track.name
         songArtist.text = artist?.name ?: "Unknown Artist"
@@ -71,15 +66,11 @@ class MenuFragment : Fragment() {
 
         // Set click listeners for the menu items to open Add2PlaylistFragment
         val clickListener = View.OnClickListener {
-            openFragment(Add2PlaylistFragment())
+            openFragment(Add2PlaylistFragment.newInstance(track))  // Pass the track data when opening Add2PlaylistFragment
         }
-
-
 
         addPlaylistIcon.setOnClickListener(clickListener)
         add2PlaylistText.setOnClickListener(clickListener)
-
-
 
         return view
     }
@@ -97,7 +88,7 @@ class MenuFragment : Fragment() {
         fun newInstance(track: Track): MenuFragment {
             val fragment = MenuFragment()
             val args = Bundle()
-            args.putParcelable("TRACK", track) // Pass the Track object
+            args.putParcelable("TRACK", track)  // Pass the Track object to this fragment
             fragment.arguments = args
             return fragment
         }

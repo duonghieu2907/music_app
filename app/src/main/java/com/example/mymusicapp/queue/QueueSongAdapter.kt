@@ -50,6 +50,12 @@ class QueueSongAdapter(private val songs: TrackQueue,
         holder.queueMenuImageView.setOnClickListener {
             // Handle menu click action
         }
+
+        // Set click listener
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.onItemClick(position)
+        }
+
     }
 
     override fun getItemCount() = songs.queue.size
@@ -60,4 +66,17 @@ class QueueSongAdapter(private val songs: TrackQueue,
         val queueButtonImageView: ImageView = itemView.findViewById(R.id.queueButton1) // Reference to queue button
         val queueMenuImageView: ImageView = itemView.findViewById(R.id.queueMenu1) // Reference to queue menu
     }
+
+
+
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
+    }
+
+    private var onItemClickListener: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        onItemClickListener = listener
+    }
+
 }
