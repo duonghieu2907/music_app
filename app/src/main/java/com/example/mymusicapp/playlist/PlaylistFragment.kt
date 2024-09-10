@@ -121,8 +121,19 @@ class PlaylistFragment : Fragment() {
     private fun loadLikedSongs() {
         playlistTitle.text = "Liked Songs"
         playlistCreator.visibility = View.GONE
+
+        Glide.with(this)
+            .load(R.drawable.liked_songs_cover)
+            .into(playlistImage)
+
         val trackList: List<Track> = dbHelper.getUserLikedTracks("1")  // curUserID
-        tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, null) }
+        val likedSongsPlaylist = Playlist(
+            playlistId = "userLikedSongs",
+            userId = "1",  // curUserID
+            name = "Liked Songs",
+            image = ""
+        )
+        tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, likedSongsPlaylist) }
         recyclerViewTracks.adapter = tracksAdapter
     }
 
@@ -138,7 +149,8 @@ class PlaylistFragment : Fragment() {
 
             // playlist image
             Glide.with(this)
-                .load(R.drawable.liked_songs_cover)
+                .load(playlist.image)
+                .placeholder(R.drawable.blacker_gradient)
                 .into(playlistImage)
 
             // Fetch tracks for this playlist
