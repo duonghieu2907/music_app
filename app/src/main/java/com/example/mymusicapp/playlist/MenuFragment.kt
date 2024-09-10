@@ -13,12 +13,15 @@ import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.models.TrackQueue
 import com.example.mymusicapp.playlist.Add2PlaylistFragment
 
 class MenuFragment : Fragment() {
 
     private lateinit var track: Track
+    private  var playlist: Playlist? = null
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var backButton: ImageView
 
@@ -35,8 +38,9 @@ class MenuFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        // Retrieve the Track object from the arguments
-        track = arguments?.getParcelable("TRACK") ?: throw IllegalStateException("Track not passed to MenuFragment")
+        // Fetch the Track and Playlist passed from arguments
+        track = arguments?.getParcelable("TRACK") ?: return view
+        playlist = arguments?.getParcelable("PLAYLIST")
 
         // Find views by ID
         val songCover = view.findViewById<ImageView>(R.id.songCover)
@@ -72,6 +76,39 @@ class MenuFragment : Fragment() {
         addPlaylistIcon.setOnClickListener(clickListener)
         add2PlaylistText.setOnClickListener(clickListener)
 
+
+        // Find views by ID for the menu items
+        val addQIcon = view.findViewById<ImageView>(R.id.addQ)
+        val add2QText = view.findViewById<TextView>(R.id.add2Q)
+
+
+
+        val clickListenerQ = View.OnClickListener {
+            TrackQueue.addTrack(track)
+        }
+
+
+        addQIcon.setOnClickListener(clickListenerQ)
+        add2QText.setOnClickListener(clickListenerQ)
+
+
+        if (playlist != null)
+        {
+        // Find views by ID for the menu items
+        val removeFromPlaylistIcon = view.findViewById<ImageView>(R.id.removePlaylist)
+        val removeFromPlaylist = view.findViewById<TextView>(R.id.removeFromPlaylist)
+
+
+
+        val clickListenerRemoveFromPlaylist = View.OnClickListener {
+            dbHelper.deletePlaylistTrack(playlist!!.playlistId, track.trackId)
+        }
+
+
+        removeFromPlaylistIcon.setOnClickListener(clickListenerRemoveFromPlaylist)
+        removeFromPlaylist.setOnClickListener(clickListenerRemoveFromPlaylist)
+        }
+
         return view
     }
 
@@ -85,10 +122,14 @@ class MenuFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track): MenuFragment {
+        fun newInstance(track: Track, playlist: Playlist?): MenuFragment {
             val fragment = MenuFragment()
-            val args = Bundle()
-            args.putParcelable("TRACK", track)  // Pass the Track object to this fragment
+            val args = Bundle().apply {
+                putParcelable("TRACK", track)
+                if (playlist != null) {
+                    putParcelable("PLAYLIST", playlist)
+                }
+            }
             fragment.arguments = args
             return fragment
         }
