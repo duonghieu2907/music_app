@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Track
@@ -47,8 +48,8 @@ class SingleTrackFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.activity_single_song, container, false)
 
-        // Hide the navigation bar fragment when this fragment is created
-        hideNavigationBarFragment()
+        // Hide the navigation bar when this fragment is created
+        (requireActivity() as MainActivity).hideBottomNavigation()
 
         backButton = view.findViewById(R.id.back)
 
@@ -213,8 +214,8 @@ class SingleTrackFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         exoPlayer.release()
-        // Show the navigation bar fragment when this fragment is destroyed
-        showNavigationBarFragment()
+        // Show the navigation bar when this fragment is destroyed
+        (requireActivity() as MainActivity).showBottomNavigation()
     }
 
     companion object {
@@ -248,18 +249,11 @@ class SingleTrackFragment : Fragment() {
     }
 
 
-    private fun hideNavigationBarFragment() {
-        val navFragment = parentFragmentManager.findFragmentById(R.id.bottom_navigation) // Replace with your Navigation Fragment's container ID
-        if (navFragment != null) {
-            parentFragmentManager.beginTransaction().hide(navFragment).commit()
-        }
-    }
 
-    private fun showNavigationBarFragment() {
-        val navFragment = parentFragmentManager.findFragmentById(R.id.bottom_navigation) // Replace with your Navigation Fragment's container ID
-        if (navFragment != null) {
-            parentFragmentManager.beginTransaction().show(navFragment).commit()
-        }
+    override fun onResume() {
+        super.onResume()
+        // Hide the bottom navigation bar when this fragment is resumed
+        (requireActivity() as MainActivity).hideBottomNavigation()
     }
 
 

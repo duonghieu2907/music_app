@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
@@ -133,5 +134,19 @@ class MenuFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Show the navigation bar when this fragment is destroyed
+        (requireActivity() as MainActivity).showBottomNavigation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Show the bottom navigation bar when this fragment is resumed
+        (requireActivity() as MainActivity).hideBottomNavigation()
     }
 }
