@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.*
 
@@ -62,6 +63,9 @@ class PlaylistFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_single_playlist, container, false)
+
+        // Hide the navigation bar when this fragment is created
+        (requireActivity() as MainActivity).hideBottomNavigation()
 
         // Initialize UI
         backButton = view.findViewById(R.id.backButton)

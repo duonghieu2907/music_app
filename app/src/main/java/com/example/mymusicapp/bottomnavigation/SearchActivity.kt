@@ -10,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.SearchResult
+import com.example.mymusicapp.playlist.PlaylistFragment
+import com.example.mymusicapp.playlist.SingleTrackFragment
 
 class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListener {
 
@@ -55,30 +58,46 @@ class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListe
 
     // Handle item click
     override fun onItemClick(searchResult: SearchResult) {
-        // Show a Toast message with the item's name
-        Toast.makeText(this, "Clicked on: ${searchResult.name}", Toast.LENGTH_SHORT).show()
-
         // Navigate based on the result type
         when (searchResult.type) {
             "Artist" -> {
 //                val intent = Intent(this, ArtistActivity::class.java)
 //                intent.putExtra("artist_id", searchResult.id)
 //                startActivity(intent)
+                Toast.makeText(this, "Clicked on Artist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
             "Album" -> {
-//                val intent = Intent(this, AlbumActivity::class.java)
-//                intent.putExtra("album_id", searchResult.id)
-//                startActivity(intent)
+                val albumFragment = AlbumFragment.newInstance(searchResult.id) //Transfer id
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, albumFragment)  // Replace with your fragment container ID
+                    .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                    .commit()
+
+                Toast.makeText(this, "Clicked on Album: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
             "Playlist" -> {
-//                val intent = Intent(this, PlaylistActivity::class.java)
-//                intent.putExtra("playlist_id", searchResult.id)
-//                startActivity(intent)
+                val playlistFragment = PlaylistFragment.newInstance(searchResult.id) //Transfer id
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
+                    .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                    .commit()
+
+                Toast.makeText(this, "Clicked on Playlist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
             "Track" -> {
-//                val intent = Intent(this, TrackActivity::class.java)
-//                intent.putExtra("track_id", searchResult.id)
-//                startActivity(intent)
+                val fragment = dbHelper.getTrack(searchResult.id)?.let { track ->
+                    SingleTrackFragment.newInstance(
+                        track,
+                        dbHelper.getAlbumIdFromTrackId(searchResult.id)
+                            ?.let { dbHelper.getPlaylist(it) })
+                }
+                if (fragment != null) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+                Toast.makeText(this, "Clicked on Track: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
         }
     }
