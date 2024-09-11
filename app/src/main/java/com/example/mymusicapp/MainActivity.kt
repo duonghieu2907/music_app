@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
                 //To change database, wipe all data in emulator
 
                 //Add dummy data
+                dbHelper.importDatabaseFromFile()
                 addDummyDataToDatabase(spotifyData)
             }
         } catch (e : Exception) {

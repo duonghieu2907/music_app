@@ -15,9 +15,6 @@ import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class FragmentAlbums : Fragment(),
     FragmentAlbumsAdapter.OnItemClickListener{
@@ -55,24 +52,25 @@ class FragmentAlbums : Fragment(),
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.add("Recently added")
-        allSort.add("A-Z")
-        allSort.add("Z-A")
+        allSort.addAll(arrayOf("Recently added", "Newest", "A-Z", "Z-A"))
 
         //Init setOnClickListener
         val sortBut = view.findViewById<TextView>(R.id.sortButtonAlbum)
         sortBut.setOnClickListener {
             when (sortBut.text.toString()) {
                 allSort[0] -> {
-                    //set effect for the button
                     sortBut.text = allSort[1]
-                    updateAdapter(sort("ASC"))
                 }
                 allSort[1] -> {
+                    //set effect for the button
                     sortBut.text = allSort[2]
-                    updateAdapter(sort("DESC"))
+                    updateAdapter(sort("ASC"))
                 }
                 allSort[2] -> {
+                    sortBut.text = allSort[3]
+                    updateAdapter(sort("DESC"))
+                }
+                allSort[3] -> {
                     sortBut.text = allSort[0]
                     updateAdapter(sort("ADDED"))
                 }
@@ -92,15 +90,8 @@ class FragmentAlbums : Fragment(),
         adapter.notifyItemInserted(items.size - 1)
     }
     private fun createAlbumsItem(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = MusicAppDatabaseHelper(requireContext())
-            val allAlbumId = db.getAllAlbumId()!!
-
-            //Get the albums from database
-            for(i in 0..<allAlbumId.size) {
-                addItem(db.getAlbum(allAlbumId[i])!!)
-            }
-        }
+        val db = MusicAppDatabaseHelper(requireContext())
+        updateAdapter(db.getUserFollowedAlbums(curUser))
     }
 
     override fun setOnItemClickListener(item: Album?) {

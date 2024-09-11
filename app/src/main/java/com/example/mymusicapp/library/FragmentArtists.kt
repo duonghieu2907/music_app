@@ -50,24 +50,25 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.add("Recently added")
-        allSort.add("A-Z")
-        allSort.add("Z-A")
+        allSort.addAll(arrayOf("Recently added", "Newest", "A-Z", "Z-A"))
 
         //Init setOnClickListener
         val sortBut = view.findViewById<TextView>(R.id.sortButtonArtist)
         sortBut.setOnClickListener {
             when (sortBut.text.toString()) {
                 allSort[0] -> {
-                    //set effect for the button
                     sortBut.text = allSort[1]
-                    updateAdapter(sort("ASC"))
                 }
                 allSort[1] -> {
+                    //set effect for the button
                     sortBut.text = allSort[2]
-                    updateAdapter(sort("DESC"))
+                    updateAdapter(sort("ASC"))
                 }
                 allSort[2] -> {
+                    sortBut.text = allSort[3]
+                    updateAdapter(sort("DESC"))
+                }
+                allSort[3] -> {
                     sortBut.text = allSort[0]
                     updateAdapter(sort("ADDED"))
                 }
@@ -88,15 +89,8 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     }
 
     private fun createArtistItem() {
-
         val db = MusicAppDatabaseHelper(requireContext()) //Get database
-
-        //put all artists from database to list
-        val allArtistId = db.getAllArtistId()!!
-        for(i in 0..<allArtistId.size) {
-            val artist = db.getArtist(allArtistId[i])!!
-            addItem(Artist(artist.artistId, artist.name, artist.genre, artist.image))
-        }
+        updateAdapter(db.getUserLibraryArtists(curUser))
     }
 
     override fun setOnItemClickListener(item: Artist?) {

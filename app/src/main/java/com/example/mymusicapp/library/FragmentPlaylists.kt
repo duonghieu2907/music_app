@@ -59,6 +59,9 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         val sortBut = view.findViewById<TextView>(R.id.sortButtonPlaylist)
         sortBut.setOnClickListener {
             when (sortBut.text.toString()) {
+                allSort[0] -> {
+                    sortBut.text = allSort[1]
+                }
                 allSort[1] -> {
                     //set effect for the button
                     sortBut.text = allSort[2]
