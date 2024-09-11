@@ -5,13 +5,21 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import android.os.Environment
+import android.util.Log
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Follower
+import com.example.mymusicapp.models.Like
+import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.models.PlaylistTrack
+import com.example.mymusicapp.models.SearchResult
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.models.User
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import com.example.mymusicapp.models.*
 import java.util.UUID
 
 class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -303,6 +311,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
         if(!cursor.moveToFirst()) {
             cursor.close()
+            db.close()
             return null
         } //Check if there is no album
 
@@ -312,6 +321,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         } while (cursor.moveToNext())
 
         cursor.close()
+        db.close()
         return allId
     }
 
@@ -433,6 +443,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
         if(!cursor.moveToFirst()) {
             cursor.close()
+            db.close()
             return null
         } //Check if there is no album
 
@@ -442,6 +453,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         } while (cursor.moveToNext())
 
         cursor.close()
+        db.close()
         return allId
     }
 
@@ -702,6 +714,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         } while (cursor.moveToNext())
 
         cursor.close()
+        db.close()
         return allId
     }
 
@@ -984,6 +997,40 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.close()
     }
 
+    fun getUserLibraryArtists(userId: String): ArrayList<Artist> {
+        val artists = mutableListOf<Artist>()
+        val db = this.readableDatabase
+
+        // Query for playlists created by the user
+        // Join both table and compare with userId, if one of PlaylistUserId or Followed_userId is UserId, then we insert
+        val query = "SELECT A.$ARTIST_ID, A.$ARTIST_NAME, A.$ARTIST_GENRE, A.$ARTIST_IMAGE " +
+                    "FROM $TABLE_ARTIST AS A " +
+                    "LEFT JOIN $TABLE_FOLLOWER AS FA ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
+                    "WHERE $FOLLOWER_USER_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId))
+
+        //If the cursor is empty
+        if(!cursor.moveToFirst()) {
+            Log.d("MusicAppDatabaseHelper", "No artist found")
+            cursor.close()
+            db.close()
+            return artists.toCollection(ArrayList())
+        }
+
+        do {
+            artists.add(Artist(
+                cursor.getString(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getString(3)
+            ))
+        } while (cursor.moveToNext())
+
+        cursor.close()
+        db.close()
+        return artists.toCollection(ArrayList())
+    }
+
     fun getFollower(userId: Int, artistId: Int): Follower? {
         val db = this.readableDatabase
         val cursor = db.query(
@@ -1113,11 +1160,16 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val query = "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
                     "FROM $TABLE_PLAYLIST AS P " +
                     "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON P.$PLAYLIST_ID = FP.$FOLLOWED_PLAYLIST_ID " +
-                    "WHERE $FOLLOWER_USER_ID = ? OR $PLAYLIST_USER_ID = ?"
+                    "WHERE $FOLLOWED_PLAYLIST_USER_ID = ? OR $PLAYLIST_USER_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId, userId))
 
         //If the cursor is empty
-        if(!cursor.moveToFirst()) return playlists.toCollection(ArrayList())
+        if(!cursor.moveToFirst()) {
+            Log.d("MusicAppDatabaseHelper", "No playlist found")
+            cursor.close()
+            db.close()
+            return playlists.toCollection(ArrayList())
+        }
 
         do {
             playlists.add(Playlist(
@@ -1175,7 +1227,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return result > 0  // Return true if delete was successful
     }
 
-    fun getUserFollowedAlbums(userId: String): List<Album> {
+    fun getUserFollowedAlbums(userId: String): ArrayList<Album> {
         val db = this.readableDatabase
         val followedAlbums = mutableListOf<Album>()
 
@@ -1200,7 +1252,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         cursor.close()
         db.close()
 
-        return followedAlbums
+        return followedAlbums.toCollection(ArrayList())
     }
 
     fun addGenrePlaylistIfNotExists(playlistName: String, genre: String, userId: String) {
@@ -1410,6 +1462,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
             }
             else -> {
                 Log.e("MusicAppDatabaseHelper", "Wrong type")
+                db.close()
                 return list
             }
         }
@@ -1417,6 +1470,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val cursor = db.rawQuery(rawQuery, arrayOf())
         if(!cursor.moveToFirst()) {
             cursor.close()
+            db.close()
             Log.e("MusicAppDatabaseHelper", "No element to sort")
             return list
         }
