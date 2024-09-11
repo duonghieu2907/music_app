@@ -49,7 +49,11 @@ class SingleTrackFragment : Fragment() {
         val view = inflater.inflate(R.layout.activity_single_song, container, false)
 
         // Hide the navigation bar when this fragment is created
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
+
 
         backButton = view.findViewById(R.id.back)
 
@@ -215,7 +219,10 @@ class SingleTrackFragment : Fragment() {
         super.onDestroyView()
         exoPlayer.release()
         // Show the navigation bar when this fragment is destroyed
-        (requireActivity() as MainActivity).showBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
     }
 
     companion object {
@@ -253,7 +260,11 @@ class SingleTrackFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         // Hide the bottom navigation bar when this fragment is resumed
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 
 
