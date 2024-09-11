@@ -18,6 +18,7 @@ class SearchResultAdapter(
     interface OnItemClickListener {
         fun onItemClick(searchResult: SearchResult)
     }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val coverImageView: ImageView = view.findViewById(R.id.item_cover)
         val nameTextView: TextView = view.findViewById(R.id.item_name)
@@ -40,19 +41,30 @@ class SearchResultAdapter(
             .error(R.drawable.album_cover_ttpd) // Error image if the load fails
             .into(holder.coverImageView)
 
-        // Handle different types (Artist, Album, Playlist)
+        // Handle different types (Artist, Album, Playlist, Track)
         when (result.type) {
             "Artist" -> {
                 holder.subNameTextView.visibility = View.GONE
                 // Making the image round
                 holder.coverImageView.clipToOutline = true
             }
-            "Album", "Playlist" -> {
-                holder.subNameTextView.text = result.subName // Set artist/owner name
+            "Album" -> {
+                holder.subNameTextView.text = "Album - ${result.subName}" // Set artist name with type "Album"
+                holder.subNameTextView.visibility = View.VISIBLE
+                holder.coverImageView.clipToOutline = false
+            }
+            "Playlist" -> {
+                holder.subNameTextView.text = "Playlist - ${result.subName}" // Set owner name with type "Playlist"
+                holder.subNameTextView.visibility = View.VISIBLE
+                holder.coverImageView.clipToOutline = false
+            }
+            "Track" -> {
+                holder.subNameTextView.text = "Track - ${result.subName}" // Set track details with type "Track"
                 holder.subNameTextView.visibility = View.VISIBLE
                 holder.coverImageView.clipToOutline = false
             }
         }
+
         // Set the item click listener
         holder.itemView.setOnClickListener {
             onItemClickListener.onItemClick(result)
@@ -61,5 +73,3 @@ class SearchResultAdapter(
 
     override fun getItemCount() = searchResults.size
 }
-
-
