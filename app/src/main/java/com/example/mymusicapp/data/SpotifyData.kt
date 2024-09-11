@@ -70,6 +70,7 @@ class SpotifyData {
 
     suspend fun findArtist(query: String) : Artist? {
         return api?.artists?.getArtist(query)
+
     }
 
     suspend fun findAlbumsFromArtist(query: String): ArrayList<Album>? {
@@ -80,7 +81,6 @@ class SpotifyData {
                 albums.add(Album(simpleAlbum!![i].id, query,
                     simpleAlbum[i].name, simpleAlbum[i].releaseDate.toString(), checkImageReturnUrl(simpleAlbum[i].images)))
             }
-
             println("Success find albums from artist")
             return albums
         } catch (e: Exception) {
