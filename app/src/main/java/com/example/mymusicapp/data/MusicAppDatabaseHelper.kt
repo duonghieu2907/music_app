@@ -8,17 +8,15 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.example.mymusicapp.models.Album
-import com.example.mymusicapp.models.Artist
-import com.example.mymusicapp.models.Follower
-import com.example.mymusicapp.models.Like
-import com.example.mymusicapp.models.Playlist
-import com.example.mymusicapp.models.PlaylistTrack
-import com.example.mymusicapp.models.SearchResult
-import com.example.mymusicapp.models.Track
-import com.example.mymusicapp.models.User
+import android.os.Environment
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import com.example.mymusicapp.models.*
 
-class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "music_app1.db"
@@ -1300,6 +1298,52 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.close()
     }
 
+    fun exportDatabaseToFile(): Boolean {
+        val dbFile = context.getDatabasePath(DATABASE_NAME)
+        val exportFile = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            DATABASE_NAME
+        )
 
+        try {
+            FileInputStream(dbFile).use { input ->
+                FileOutputStream(exportFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            return true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return false
+        }
+    }
+
+    /**
+     * Import the database from a file in external storage.
+     * @return true if import is successful, false otherwise.
+     */
+    fun importDatabaseFromFile(): Boolean {
+        val importFile = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            DATABASE_NAME
+        )
+        val dbFile = context.getDatabasePath(DATABASE_NAME)
+
+        if (!importFile.exists()) {
+            return false
+        }
+
+        try {
+            FileInputStream(importFile).use { input ->
+                FileOutputStream(dbFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            return true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return false
+        }
+    }
 }
 

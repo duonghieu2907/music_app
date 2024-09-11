@@ -85,6 +85,8 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             bottomNav.selectedItemId = R.id.nav_home
         }
+
+        dbHelper.exportDatabaseToFile()
     }
 
     private fun loadFragment(fragment: Fragment) {
