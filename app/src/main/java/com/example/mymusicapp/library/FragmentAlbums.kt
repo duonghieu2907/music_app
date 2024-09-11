@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.album.AlbumFragment
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
 import kotlinx.coroutines.CoroutineScope
@@ -22,27 +23,26 @@ class FragmentAlbums : Fragment(),
     FragmentAlbumsAdapter.OnItemClickListener{
     private lateinit var adapter : FragmentAlbumsAdapter
     private val items = ArrayList<Album>()
+    private lateinit var curUser: String
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_albums, container, false)
-
-        //running background, load layout first
-        CoroutineScope(Dispatchers.Main).launch {
-            app(view)
-        }
+        val application = requireActivity().application as Global
+        curUser = application.curUserId
+        app(view)
 
         return view
     }
 
     //Suspend to run background
-    private suspend fun app(view: View) {
+    private fun app(view: View) {
         //Adapter
-        items.addAll(createAlbumsItem())
         adapter = FragmentAlbumsAdapter(items, this)
-
+        createAlbumsItem()
+        updateAdapter(sort("ADDED"))
 
         //Layout manager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -55,7 +55,7 @@ class FragmentAlbums : Fragment(),
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.add("Recently played")
+        allSort.add("Recently added")
         allSort.add("A-Z")
         allSort.add("Z-A")
 
@@ -74,6 +74,7 @@ class FragmentAlbums : Fragment(),
                 }
                 allSort[2] -> {
                     sortBut.text = allSort[0]
+                    updateAdapter(sort("ADDED"))
                 }
             }
         }
@@ -86,18 +87,20 @@ class FragmentAlbums : Fragment(),
         adapter.notifyDataSetChanged()
     }
 
-    private suspend fun createAlbumsItem(): ArrayList<Album> {
-        var sample = ArrayList<Album>()
-        val db = MusicAppDatabaseHelper(requireContext())
-        val allAlbumId = db.getAllAlbumId()!!
+    private fun addItem(album: Album) {
+        items.add(album)
+        adapter.notifyItemInserted(items.size - 1)
+    }
+    private fun createAlbumsItem(){
+        CoroutineScope(Dispatchers.IO).launch {
+            val db = MusicAppDatabaseHelper(requireContext())
+            val allAlbumId = db.getAllAlbumId()!!
 
-        //Get the albums from database
-        for(i in 0..<allAlbumId.size) {
-            sample.add(db.getAlbum(allAlbumId[i])!!)
+            //Get the albums from database
+            for(i in 0..<allAlbumId.size) {
+                addItem(db.getAlbum(allAlbumId[i])!!)
+            }
         }
-
-        //return
-        return sample
     }
 
     override fun setOnItemClickListener(item: Album?) {
@@ -124,7 +127,7 @@ class FragmentAlbums : Fragment(),
 
     private fun sort(order : String): ArrayList<Album> {
         val db = MusicAppDatabaseHelper(requireContext())
-        val sample: ArrayList<Album> = db.sort("album", order) as? ArrayList<Album>?: ArrayList()
+        val sample: ArrayList<Album> = db.sort("album", order, curUser) as? ArrayList<Album>?: ArrayList()
         return sample
     }
 }
