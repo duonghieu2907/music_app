@@ -36,15 +36,12 @@ class PlaylistListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = playlistListItem[position]
-        val artistName = db?.getUser(currentItem.userId)?.name
+        holder.subText.text = db?.getUser(currentItem.userId)?.name ?: "Unknown"
 
         if(currentItem.name == "") {
             holder.titleText.text = "Unknown"
         } else holder.titleText.text = currentItem.name
 
-        if(artistName == null) {
-            holder.subText.text = "Unknown"
-        } else holder.subText.text = artistName
 
         Glide.with(holder.titleImage.context)
             .load(currentItem.image)
