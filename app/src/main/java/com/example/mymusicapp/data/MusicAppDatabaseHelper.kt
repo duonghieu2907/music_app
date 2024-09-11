@@ -1074,10 +1074,10 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val db = this.readableDatabase
 
         // Query for playlists created by the user
-        // Join both table and compare with userId, if one of PlaylistUserId or Followed_userId is UserId, then we insert
+        // Join both table and compare with userId, if Followed_userId is UserId, then we show
         val query = "SELECT A.$ARTIST_ID, A.$ARTIST_NAME, A.$ARTIST_GENRE, A.$ARTIST_IMAGE " +
-                    "FROM $TABLE_ARTIST AS A " +
-                    "LEFT JOIN $TABLE_FOLLOWER AS FA ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
+                    "FROM $TABLE_FOLLOWER AS FA " +
+                    "JOIN $TABLE_ARTIST AS A ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
                     "WHERE $FOLLOWER_USER_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId))
 
@@ -1504,10 +1504,10 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = ALBUM_TIMESTAMP
                 } else tableName = ALBUM_NAME
-                rawQuery =  "SELECT $ALBUM_ID, $ALBUM_ARTIST_ID, $ALBUM_NAME, $ALBUM_RELEASE_DATE, $ALBUM_IMAGE " +
+                rawQuery =  "SELECT A.$ALBUM_ID, A.$ALBUM_ARTIST_ID, A.$ALBUM_NAME, A.$ALBUM_RELEASE_DATE, A.$ALBUM_IMAGE " +
                             "FROM $TABLE_ALBUM AS A " +
                             "LEFT JOIN $TABLE_FOLLOWED_ALBUMS AS FA ON FA.$FOLLOWED_ALBUM_ID = A.$ALBUM_ID " +
-                            "WHERE $FOLLOWED_ALBUM_USER_ID = '$curUserId' " +
+                            "WHERE FA.$FOLLOWED_ALBUM_USER_ID = '$curUserId' " +
                             "ORDER BY $tableName $orderTmp"
             }
 
@@ -1516,8 +1516,10 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = ARTIST_TIMESTAMP
                 } else tableName = ARTIST_NAME
-                rawQuery =  "SELECT $ARTIST_ID, $ARTIST_NAME, $ARTIST_GENRE, $ARTIST_IMAGE " +
-                            "FROM $TABLE_ARTIST " +
+                rawQuery =  "SELECT A.$ARTIST_ID, A.$ARTIST_NAME, A.$ARTIST_GENRE, A.$ARTIST_IMAGE " +
+                            "FROM $TABLE_ARTIST AS A " +
+                            "JOIN $TABLE_FOLLOWER AS FA ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
+                            "WHERE FA.$FOLLOWER_USER_ID = '$curUserId' " +
                             "ORDER BY $tableName $orderTmp"
             }
 
@@ -1529,7 +1531,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                 rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
                             "FROM $TABLE_PLAYLIST AS P " +
                             "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON FP.$FOLLOWED_PLAYLIST_ID = P.$PLAYLIST_ID " +
-                            "WHERE $PLAYLIST_USER_ID = '$curUserId' OR $FOLLOWED_PLAYLIST_USER_ID = '$curUserId' " +
+                            "WHERE P.$PLAYLIST_USER_ID = '$curUserId' OR FP.$FOLLOWED_PLAYLIST_USER_ID = '$curUserId' " +
                             "ORDER BY $tableName $orderTmp"
             }
             else -> {
