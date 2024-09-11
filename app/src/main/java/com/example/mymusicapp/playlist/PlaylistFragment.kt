@@ -134,13 +134,12 @@ class PlaylistFragment : Fragment() {
             playlistTitle.text = playlist!!.name
             playlistCreator.text = dbHelper.getUser(playlist!!.userId)?.name ?: "Unknown"
 
-            // Load playlist image
             Glide.with(this)
                 .load(playlist!!.image)
                 .placeholder(R.drawable.blacker_gradient)
                 .into(playlistImage)
 
-            // Fetch tracks for this playlist
+            // Fetch tracks
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
             tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, playlist!!) }
             recyclerViewTracks.adapter = tracksAdapter

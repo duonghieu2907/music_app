@@ -1007,15 +1007,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
 
     // CRUD Operations for Likes (tracks)
-    fun addLike(like: Like) {
-        val db = this.writableDatabase
-        val values = ContentValues().apply {
-            put(LIKE_USER_ID, like.userId)
-            put(LIKE_TRACK_ID, like.trackId)
-        }
-        db.insert(TABLE_LIKE, null, values)
-        db.close()
-    }
+
     fun addLike(userId: String, trackId: String) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -1026,29 +1018,6 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.close()
     }
 
-    fun getLike(userId: String, trackId: String): Like? {
-        val db = this.readableDatabase
-        val cursor = db.query(
-            TABLE_LIKE,
-            arrayOf(LIKE_USER_ID, LIKE_TRACK_ID),
-            "$LIKE_USER_ID=? AND $LIKE_TRACK_ID=?",
-            arrayOf(userId.toString(), trackId.toString()),
-            null,
-            null,
-            null
-        )
-        return if (cursor != null && cursor.moveToFirst()) {
-            val like = Like(
-                cursor.getString(0),
-                cursor.getString(1)
-            )
-            cursor.close()
-            like
-        } else {
-            cursor?.close()
-            null
-        }
-    }
 
     fun deleteLike(userId: String, trackId: String) {
         val db = this.writableDatabase
@@ -1083,7 +1052,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val query = "SELECT * FROM $TABLE_FOLLOWED_PLAYLISTS WHERE $FOLLOWED_USER_ID = ? AND $FOLLOWED_PLAYLIST_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId, playlistId))
 
-        val isFollowed = cursor.count > 0  // the playlist is followed
+        val isFollowed = cursor.count > 0
 
         cursor?.close()
         db.close()
@@ -1148,7 +1117,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     fun isAlbumFollowed(userId: String, albumId: String): Boolean {
         val db = this.readableDatabase
 
-        val query = "SELECT 1 FROM $TABLE_FOLLOWED_ALBUMS WHERE $FOLLOWED_USER_ID = ? AND $FOLLOWED_ALBUM_ID = ?"
+        val query = "SELECT 1 FROM $TABLE_FOLLOWED_ALBUMS WHERE $FOLLOWED_ALBUM_USER_ID = ? AND $FOLLOWED_ALBUM_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId, albumId))
 
         val isFollowed = cursor.count > 0  // the album is followed
