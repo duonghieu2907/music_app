@@ -505,6 +505,35 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return albumId
     }
 
+    fun getAlbumsByArtistId(artistId: String): List<Album> {
+        val albumsList = ArrayList<Album>()
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_ALBUM,
+            arrayOf(ALBUM_ID, ALBUM_ARTIST_ID, ALBUM_NAME, ALBUM_RELEASE_DATE, ALBUM_IMAGE),
+            "$ALBUM_ARTIST_ID=?",
+            arrayOf(artistId),
+            null,
+            null,
+            "$ALBUM_NAME ASC" // Optional: Sort by album name
+        )
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val album = Album(
+                    cursor.getString(0), // Album ID
+                    cursor.getString(1), // Artist ID
+                    cursor.getString(2), // Album Name
+                    cursor.getString(3), // Release Date
+                    cursor.getString(4)  // Album Image
+                )
+                albumsList.add(album)
+            } while (cursor.moveToNext())
+            cursor.close()
+        }
+        return albumsList
+    }
+
+
     fun updateAlbum(album: Album) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -666,6 +695,46 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
         return tracks
     }
+
+    fun getTop5TracksByArtist(artistId: String): List<Track> {
+        val db = this.readableDatabase
+        val trackList = mutableListOf<Track>()
+
+        val cursor = db.query(
+            "$TABLE_TRACK INNER JOIN $TABLE_ALBUM ON $TABLE_TRACK.$TRACK_ALBUM_ID=$TABLE_ALBUM.$ALBUM_ID",
+            arrayOf(
+                "$TABLE_TRACK.$TRACK_ID",
+                "$TABLE_TRACK.$TRACK_NAME AS track_name", // Rename to avoid ambiguity
+                "$TABLE_TRACK.$TRACK_DURATION",
+                "$TABLE_TRACK.$TRACK_PATH",
+                "$TABLE_TRACK.$TRACK_ALBUM_ID"
+            ),
+            "$TABLE_ALBUM.$ALBUM_ARTIST_ID=?",
+            arrayOf(artistId),
+            null,
+            null,
+            "$TABLE_TRACK.$TRACK_NAME ASC", // Order alphabetically by track name
+            "5" // Limit to 5 tracks
+        )
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                val track = Track(
+                    cursor.getString(0),
+                    cursor.getString(4),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+                )
+                trackList.add(track)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return trackList
+    }
+
 
 
     // CRUD Operations for Playlists
@@ -1005,10 +1074,10 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val db = this.readableDatabase
 
         // Query for playlists created by the user
-        // Join both table and compare with userId, if one of PlaylistUserId or Followed_userId is UserId, then we insert
+        // Join both table and compare with userId, if Followed_userId is UserId, then we show
         val query = "SELECT A.$ARTIST_ID, A.$ARTIST_NAME, A.$ARTIST_GENRE, A.$ARTIST_IMAGE " +
-                    "FROM $TABLE_ARTIST AS A " +
-                    "LEFT JOIN $TABLE_FOLLOWER AS FA ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
+                    "FROM $TABLE_FOLLOWER AS FA " +
+                    "JOIN $TABLE_ARTIST AS A ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
                     "WHERE $FOLLOWER_USER_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId))
 
@@ -1435,10 +1504,10 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = ALBUM_TIMESTAMP
                 } else tableName = ALBUM_NAME
-                rawQuery =  "SELECT $ALBUM_ID, $ALBUM_ARTIST_ID, $ALBUM_NAME, $ALBUM_RELEASE_DATE, $ALBUM_IMAGE " +
+                rawQuery =  "SELECT A.$ALBUM_ID, A.$ALBUM_ARTIST_ID, A.$ALBUM_NAME, A.$ALBUM_RELEASE_DATE, A.$ALBUM_IMAGE " +
                             "FROM $TABLE_ALBUM AS A " +
                             "LEFT JOIN $TABLE_FOLLOWED_ALBUMS AS FA ON FA.$FOLLOWED_ALBUM_ID = A.$ALBUM_ID " +
-                            "WHERE $FOLLOWED_ALBUM_USER_ID = '$curUserId' " +
+                            "WHERE FA.$FOLLOWED_ALBUM_USER_ID = '$curUserId' " +
                             "ORDER BY $tableName $orderTmp"
             }
 
@@ -1447,8 +1516,10 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = ARTIST_TIMESTAMP
                 } else tableName = ARTIST_NAME
-                rawQuery =  "SELECT $ARTIST_ID, $ARTIST_NAME, $ARTIST_GENRE, $ARTIST_IMAGE " +
-                            "FROM $TABLE_ARTIST " +
+                rawQuery =  "SELECT A.$ARTIST_ID, A.$ARTIST_NAME, A.$ARTIST_GENRE, A.$ARTIST_IMAGE " +
+                            "FROM $TABLE_ARTIST AS A " +
+                            "JOIN $TABLE_FOLLOWER AS FA ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
+                            "WHERE FA.$FOLLOWER_USER_ID = '$curUserId' " +
                             "ORDER BY $tableName $orderTmp"
             }
 
@@ -1460,7 +1531,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                 rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
                             "FROM $TABLE_PLAYLIST AS P " +
                             "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON FP.$FOLLOWED_PLAYLIST_ID = P.$PLAYLIST_ID " +
-                            "WHERE $PLAYLIST_USER_ID = '$curUserId' OR $FOLLOWED_PLAYLIST_USER_ID = '$curUserId' " +
+                            "WHERE P.$PLAYLIST_USER_ID = '$curUserId' OR FP.$FOLLOWED_PLAYLIST_USER_ID = '$curUserId' " +
                             "ORDER BY $tableName $orderTmp"
             }
             else -> {

@@ -36,12 +36,9 @@ class FragmentAlbumsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = albumsList[position]
-        val artistName = db?.getArtist(currentItem.artistId)?.name
 
+        holder.subText.text = db?.getArtist(currentItem.artistId)?.name ?: "No artist"
         holder.itemText.text = currentItem.name
-        if(artistName == null) {
-            holder.subText.text = "No artist"
-        } else holder.subText.text = artistName
 
         Glide.with(holder.itemImage.context)
             .load(currentItem.image)

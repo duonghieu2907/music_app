@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.library.ArtistFragment
 import com.example.mymusicapp.models.SearchResult
 import com.example.mymusicapp.playlist.PlaylistFragment
 import com.example.mymusicapp.playlist.SingleTrackFragment
@@ -61,15 +62,19 @@ class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListe
         // Navigate based on the result type
         when (searchResult.type) {
             "Artist" -> {
-//                val intent = Intent(this, ArtistActivity::class.java)
-//                intent.putExtra("artist_id", searchResult.id)
-//                startActivity(intent)
+                val artistFragment = ArtistFragment.newInstance(searchResult.id) // Transfer artist ID
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_search, artistFragment)  // Replace with your fragment container ID
+                    .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                    .commit()
+
                 Toast.makeText(this, "Clicked on Artist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
+
             "Album" -> {
                 val albumFragment = AlbumFragment.newInstance(searchResult.id) //Transfer id
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, albumFragment)  // Replace with your fragment container ID
+                    .replace(R.id.fragment_container_search, albumFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
 
@@ -78,7 +83,7 @@ class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListe
             "Playlist" -> {
                 val playlistFragment = PlaylistFragment.newInstance(searchResult.id) //Transfer id
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
+                    .replace(R.id.fragment_container_search, playlistFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
 
@@ -93,7 +98,7 @@ class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListe
                 }
                 if (fragment != null) {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
+                        .replace(R.id.fragment_container_search, fragment)
                         .addToBackStack(null)
                         .commit()
                 }
