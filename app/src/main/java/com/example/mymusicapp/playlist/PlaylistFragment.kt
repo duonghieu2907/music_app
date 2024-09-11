@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.*
 
@@ -28,10 +29,10 @@ class PlaylistFragment : Fragment() {
     private lateinit var recyclerViewTracks: RecyclerView
     private lateinit var tracksAdapter: PlaylistTracksAdapter
     private var playlist: Playlist? = null
-    private lateinit var curUserID: String
     private lateinit var dbHelper: MusicAppDatabaseHelper
 
-    private var playlistId: String = ""  // Changed to String
+    private var playlistId: String = ""
+    val app = requireActivity().application as Global
 
     companion object {
         private const val ARG_PLAYLIST_ID = "playlist_id"
@@ -39,7 +40,7 @@ class PlaylistFragment : Fragment() {
         fun newInstance(playlistId: String): PlaylistFragment {
             val fragment = PlaylistFragment()
             val args = Bundle()
-            args.putString(ARG_PLAYLIST_ID, playlistId)  // Changed to putString
+            args.putString(ARG_PLAYLIST_ID, playlistId)
             println(playlistId)
             fragment.arguments = args
             return fragment
@@ -50,9 +51,8 @@ class PlaylistFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            playlistId = it.getString(ARG_PLAYLIST_ID) ?: ""  // Changed to getString
+            playlistId = it.getString(ARG_PLAYLIST_ID) ?: ""
         }
-        curUserID = "1" // to be replaced
         dbHelper = MusicAppDatabaseHelper(requireContext())
     }
 
@@ -70,13 +70,13 @@ class PlaylistFragment : Fragment() {
         playlistCreator = view.findViewById(R.id.playlistOwner)
         recyclerViewTracks = view.findViewById(R.id.recyclerViewSongs)
 
-        // Set button click handlers
+        //button
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         optionsButton.setOnClickListener {
-            showOptionsMenu()
+            showOptionsMenu() // depends on the playlist type loaded below
         }
 
         // RecyclerView
@@ -100,10 +100,10 @@ class PlaylistFragment : Fragment() {
             .load(R.drawable.liked_songs_cover)
             .into(playlistImage)
 
-        val trackList: List<Track> = dbHelper.getUserLikedTracks(curUserID)  // Use curUserID
+        val trackList: List<Track> = dbHelper.getUserLikedTracks(app.curUserId)
         val likedSongsPlaylist = Playlist(
             playlistId = LIKED_SONGS_ID,
-            userId = curUserID,
+            userId = app.curUserId,
             name = "Liked Songs",
             image = ""
         )
@@ -112,7 +112,7 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun loadPlaylistData() {
-        // Fetch playlist details using playlistId
+        // Fetch playlist details
         playlist = dbHelper.getPlaylist(playlistId)
 
         if (playlist != null) {
@@ -126,7 +126,7 @@ class PlaylistFragment : Fragment() {
                 .into(playlistImage)
 
             // Fetch tracks for this playlist
-            val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)  // Ensure this method accepts String
+            val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
             tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, playlist!!) }
             recyclerViewTracks.adapter = tracksAdapter
         } else {
@@ -145,7 +145,7 @@ class PlaylistFragment : Fragment() {
             }
 
             // Case 2: Owned playlist
-            playlist != null && playlist!!.userId == curUserID -> {
+            playlist != null && playlist!!.userId == app.curUserId -> {
                 inflater.inflate(R.menu.playlist_options_menu_own, popup.menu)
             }
 
@@ -153,8 +153,7 @@ class PlaylistFragment : Fragment() {
             else -> {
                 inflater.inflate(R.menu.playlist_options_menu_follow, popup.menu)
 
-                // Check if the playlist is already followed by the user
-                val isFollowed = dbHelper.isPlaylistFollowed(curUserID, playlist?.playlistId ?: "")
+                val isFollowed = dbHelper.isPlaylistFollowed(app.curUserId, playlist?.playlistId ?: "")
 
                 // Change menu text based on the follow status
                 popup.menu.findItem(R.id.action_follow_playlist)?.title =
@@ -182,11 +181,11 @@ class PlaylistFragment : Fragment() {
                 }
                 R.id.action_follow_playlist -> {
                     // Follow or unfollow logic
-                    if (dbHelper.isPlaylistFollowed(curUserID, playlist?.playlistId ?: "")) {
-                        dbHelper.unfollowPlaylist(curUserID, playlist?.playlistId ?: "")
+                    if (dbHelper.isPlaylistFollowed(app.curUserId, playlist?.playlistId ?: "")) {
+                        dbHelper.unfollowPlaylist(app.curUserId, playlist?.playlistId ?: "")
                         println("Unfollowed")
                     } else {
-                        dbHelper.followPlaylist(curUserID, playlist?.playlistId ?: "")
+                        dbHelper.followPlaylist(app.curUserId, playlist?.playlistId ?: "")
                         println("Followed")
                     }
                 }

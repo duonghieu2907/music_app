@@ -992,9 +992,9 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val query = "SELECT * FROM $TABLE_FOLLOWED_PLAYLISTS WHERE $FOLLOWED_USER_ID = ? AND $FOLLOWED_PLAYLIST_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId, playlistId))
 
-        val isFollowed = cursor.count > 0  // If the cursor count is greater than 0, it means the playlist is followed
+        val isFollowed = cursor.count > 0  // the playlist is followed
 
-        cursor.close()
+        cursor?.close()
         db.close()
 
         return isFollowed
@@ -1053,6 +1053,20 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
 
     //FOLLOWED ALBUMS
+
+    fun isAlbumFollowed(userId: String, albumId: String): Boolean {
+        val db = this.readableDatabase
+
+        val query = "SELECT 1 FROM $TABLE_FOLLOWED_ALBUMS WHERE $FOLLOWED_USER_ID = ? AND $FOLLOWED_ALBUM_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId, albumId))
+
+        val isFollowed = cursor.count > 0  // the album is followed
+
+        cursor?.close()
+        db.close()
+
+        return isFollowed
+    }
     fun followAlbum(userId: String, albumId: String): Boolean {
         val db = this.writableDatabase
         val contentValues = ContentValues().apply {
@@ -1299,6 +1313,8 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
         db.close()
     }
+
+
 
 
 }

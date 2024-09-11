@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.*
 import com.example.mymusicapp.playlist.SingleTrackFragment
@@ -30,7 +31,8 @@ class AlbumFragment : Fragment() {
     private lateinit var tracksAdapter: AlbumTracksAdapter
     private lateinit var dbHelper: MusicAppDatabaseHelper
 
-    private var albumId: String = ""  // Changed to String
+    private var albumId: String = ""
+    //val app = requireActivity().application as Global
 
     companion object {
         private const val ARG_ALBUM_ID = "album_id"
@@ -38,7 +40,7 @@ class AlbumFragment : Fragment() {
         fun newInstance(albumId: String): AlbumFragment {
             val fragment = AlbumFragment()
             val args = Bundle()
-            args.putString(ARG_ALBUM_ID, albumId)  // Changed to putString
+            args.putString(ARG_ALBUM_ID, albumId)
             println(albumId)
             fragment.arguments = args
             return fragment
@@ -49,7 +51,7 @@ class AlbumFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            albumId = it.getString(ARG_ALBUM_ID) ?: ""  // Changed to getString
+            albumId = it.getString(ARG_ALBUM_ID) ?: ""
         }
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
@@ -77,33 +79,47 @@ class AlbumFragment : Fragment() {
         optionsButton.setOnClickListener {
             val popup = PopupMenu(requireContext(), it)
             val inflater: MenuInflater = popup.menuInflater
-            /*inflater.inflate(R.menu.album_options_menu, popup.menu)
+            inflater.inflate(R.menu.album_options_menu, popup.menu)
+
+            //val isFollowed = dbHelper.isAlbumFollowed(app.curUserId, albumId)  // Assuming you have a method to check
+            val isFollowed = false
+            // Update the Follow/Unfollow menu item based on the follow status
+            popup.menu.findItem(R.id.action_follow_album).title = if (isFollowed) {
+                "Unfollow Album"
+            } else {
+                "Follow Album"
+            }
+
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.action_edit_album -> {
-                        // Implement edit album logic
-                        println("Edit")
-                    }
-                    R.id.action_delete_album -> {
-                        // Implement delete album logic
-                        println("Delete")
-                    }
                     R.id.action_add_to_queue -> {
                         // Implement add to queue logic
-                        println("Queue")
+                        println("Add to Queue")
+                        true
                     }
                     R.id.action_share_album -> {
                         // Implement share album logic
-                        println("Share")
+                        println("Share Album")
+                        true
+                    }
+                    R.id.action_follow_album -> {
+                        if (isFollowed) {
+                            // unfollow album
+                            //dbHelper.unfollowAlbum(app.curUserId, albumId)
+                            Toast.makeText(requireContext(), "Album Unfollowed", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // follow album
+                            //dbHelper.followAlbum(app.curUserId, albumId)
+                            Toast.makeText(requireContext(), "Album Followed", Toast.LENGTH_SHORT).show()
+                        }
+                        true
                     }
                     else -> false
                 }
-                true
             }
             popup.show()
-            */
-
         }
+
 
 
         // RecyclerView
