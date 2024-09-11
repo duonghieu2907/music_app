@@ -18,7 +18,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
     companion object {
         private const val DATABASE_NAME = "music_app1.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 3
 
         // User Table
         private const val TABLE_USER = "User"
@@ -193,6 +193,9 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ALBUM")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ARTIST")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_PLAYLISTS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_ALBUMS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
         onCreate(db)
     }
 
