@@ -75,8 +75,7 @@ class PlaylistFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_single_playlist, container, false)
 
-        // Hide the navigation bar when this fragment is created
-        (requireActivity() as MainActivity).hideBottomNavigation()
+
 
         // Initialize UI
         backButton = view.findViewById(R.id.backButton)
