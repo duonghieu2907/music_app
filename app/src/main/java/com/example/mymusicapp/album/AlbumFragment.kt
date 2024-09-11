@@ -88,8 +88,8 @@ class AlbumFragment : Fragment() {
             val inflater: MenuInflater = popup.menuInflater
             inflater.inflate(R.menu.album_options_menu, popup.menu)
 
-            //val isFollowed = dbHelper.isAlbumFollowed(app.curUserId, albumId)  // Assuming you have a method to check
-            val isFollowed = false
+            val isFollowed = dbHelper.isAlbumFollowed(curUserId, albumId)  // Assuming you have a method to check
+
             // Update the Follow/Unfollow menu item based on the follow status
             popup.menu.findItem(R.id.action_follow_album).title = if (isFollowed) {
                 "Unfollow Album"
