@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.adamratzman.spotify.models.SpotifyImage
 import com.example.mymusicapp.bottomnavigation.ExploreFragment
 import com.example.mymusicapp.bottomnavigation.HomeFragment
@@ -20,7 +21,6 @@ import com.example.mymusicapp.models.PlaylistTrack
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -34,29 +34,32 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //load DB
-
-        dbHelper = MusicAppDatabaseHelper(this)
-        //dbHelper.deleteAll() //Run this line to delete everything
-
-        //cur user liked songs? not sure if we should pass the user id in
-        //dbHelper.addUserLikedSongsPlaylist("1")
-        //Run this to update or insert data to database
-        CoroutineScope(Dispatchers.Main).launch {
-            val spotifyData = SpotifyData()
-            //spotifyData.buildAuthcode(activity = this@MainActivity)
-
-            /*while (authCode == null) {
-                delay(1000) //wait until receive authCode
-            }*/
-
-            //authCode received, built clientApi and AppApi
-            //spotifyData.buildClientApi(authCode!!)
-            spotifyData.buildAppApi()
+        try {
+            dbHelper = MusicAppDatabaseHelper(this)
             //dbHelper.deleteAll() //Run this line to delete everything
 
-            //Add dummy data
-            addDummyDataToDatabase(spotifyData)
+            //cur user liked songs? not sure if we should pass the user id in
+            //dbHelper.addUserLikedSongsPlaylist("1")
+            //Run this to update or insert data to database
+            lifecycleScope.launch(Dispatchers.IO) {
+                val spotifyData = SpotifyData()
+                //spotifyData.buildAuthcode(activity = this@MainActivity)
 
+                /*while (authCode == null) {
+                    delay(1000) //wait until receive authCode
+                }*/
+
+                //authCode received, built clientApi and AppApi
+                //spotifyData.buildClientApi(authCode!!)
+                spotifyData.buildAppApi()
+                //dbHelper.deleteAll() //Run this line to delete all data
+                //To change database, wipe all data in emulator
+
+                //Add dummy data
+                addDummyDataToDatabase(spotifyData)
+            }
+        } catch (e : Exception) {
+            Log.e("mainActivity", "Error during background: $e")
         }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)

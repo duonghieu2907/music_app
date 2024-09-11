@@ -39,7 +39,7 @@
             android:drawableRight="@drawable/sort"
             android:drawablePadding="4dp"
             android:fontFamily="@font/gothicbold"
-            android:text="Recently played"
+            android:text="Recently added"
             android:textColor="@color/lightBlue"
             app:layout_constraintStart_toStartOf="@id/toolSection"
             app:layout_constraintEnd_toEndOf="@id/toolSection"

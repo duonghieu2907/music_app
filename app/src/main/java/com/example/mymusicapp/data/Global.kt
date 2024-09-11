@@ -3,7 +3,7 @@ package com.example.mymusicapp.data
 import android.app.Application
 
 class Global : Application() {
-    var curUserId: String = "1"
+    var curUserId: String = "31j3r46xev5snbqwjqbuwbrm6cwu"
 
     //To access from fragment
     //val app = requireActivity().application as Global
