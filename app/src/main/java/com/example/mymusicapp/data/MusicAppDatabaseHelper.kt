@@ -761,7 +761,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
     }
     fun isTrackLiked(trackId: String, userId: String): Boolean {
         val db = this.readableDatabase
-        val query = "SELECT * FROM $TABLE_LIKE WHERE $LIKE_USER_ID = ? AND $LIKE_TRACK_ID = ?"
+        val query = "SELECT * FROM \"$TABLE_LIKE\" WHERE $LIKE_USER_ID = ? AND $LIKE_TRACK_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId, trackId))
 
         val isLiked = cursor.count > 0
@@ -986,6 +986,20 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         db.delete(TABLE_FOLLOWED_PLAYLISTS, "$FOLLOWED_USER_ID = ? AND $FOLLOWED_PLAYLIST_ID = ?", arrayOf(userId, playlistId))
         db.close()
     }
+
+    fun isPlaylistFollowed(userId: String, playlistId: String): Boolean {
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_FOLLOWED_PLAYLISTS WHERE $FOLLOWED_USER_ID = ? AND $FOLLOWED_PLAYLIST_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId, playlistId))
+
+        val isFollowed = cursor.count > 0  // If the cursor count is greater than 0, it means the playlist is followed
+
+        cursor.close()
+        db.close()
+
+        return isFollowed
+    }
+
 
     @SuppressLint("Range")
     fun getUserLibraryPlaylists(userId: String): List<Playlist> {
@@ -1285,5 +1299,7 @@ class MusicAppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
         db.close()
     }
+
+
 }
 
