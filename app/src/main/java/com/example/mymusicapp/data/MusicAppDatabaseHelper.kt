@@ -26,7 +26,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
     companion object {
         private const val DATABASE_NAME = "music_app1.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 3
 
         // User Table
         private const val TABLE_USER = "User"
@@ -201,6 +201,9 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ALBUM")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ARTIST")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_PLAYLISTS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_ALBUMS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
         onCreate(db)
     }
 
@@ -502,6 +505,35 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return albumId
     }
 
+    fun getAlbumsByArtistId(artistId: String): List<Album> {
+        val albumsList = ArrayList<Album>()
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_ALBUM,
+            arrayOf(ALBUM_ID, ALBUM_ARTIST_ID, ALBUM_NAME, ALBUM_RELEASE_DATE, ALBUM_IMAGE),
+            "$ALBUM_ARTIST_ID=?",
+            arrayOf(artistId),
+            null,
+            null,
+            "$ALBUM_NAME ASC" // Optional: Sort by album name
+        )
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val album = Album(
+                    cursor.getString(0), // Album ID
+                    cursor.getString(1), // Artist ID
+                    cursor.getString(2), // Album Name
+                    cursor.getString(3), // Release Date
+                    cursor.getString(4)  // Album Image
+                )
+                albumsList.add(album)
+            } while (cursor.moveToNext())
+            cursor.close()
+        }
+        return albumsList
+    }
+
+
     fun updateAlbum(album: Album) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -663,6 +695,46 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
         return tracks
     }
+
+    fun getTop5TracksByArtist(artistId: String): List<Track> {
+        val db = this.readableDatabase
+        val trackList = mutableListOf<Track>()
+
+        val cursor = db.query(
+            "$TABLE_TRACK INNER JOIN $TABLE_ALBUM ON $TABLE_TRACK.$TRACK_ALBUM_ID=$TABLE_ALBUM.$ALBUM_ID",
+            arrayOf(
+                "$TABLE_TRACK.$TRACK_ID",
+                "$TABLE_TRACK.$TRACK_NAME AS track_name", // Rename to avoid ambiguity
+                "$TABLE_TRACK.$TRACK_DURATION",
+                "$TABLE_TRACK.$TRACK_PATH",
+                "$TABLE_TRACK.$TRACK_ALBUM_ID"
+            ),
+            "$TABLE_ALBUM.$ALBUM_ARTIST_ID=?",
+            arrayOf(artistId),
+            null,
+            null,
+            "$TABLE_TRACK.$TRACK_NAME ASC", // Order alphabetically by track name
+            "5" // Limit to 5 tracks
+        )
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                val track = Track(
+                    cursor.getString(0),
+                    cursor.getString(4),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+                )
+                trackList.add(track)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return trackList
+    }
+
 
 
     // CRUD Operations for Playlists

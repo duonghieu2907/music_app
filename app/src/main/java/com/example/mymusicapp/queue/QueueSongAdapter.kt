@@ -1,5 +1,6 @@
 package com.example.mymusicapp.queue
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,19 +11,15 @@ import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
+import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
 
 data class QueueSong(val name: String, val artist: String)
 
-class QueueSongAdapter(private val songs: TrackQueue,
-                       private val dbHelper: MusicAppDatabaseHelper
+class QueueSongAdapter(
+                       private val dbHelper: MusicAppDatabaseHelper,
+                       private val onTrackSelected: (Track) -> Unit // Updated lambda parameter
 ) : RecyclerView.Adapter<QueueSongAdapter.SongViewHolder>() {
-
-
-
-
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_queue_song, parent, false)
@@ -30,19 +27,18 @@ class QueueSongAdapter(private val songs: TrackQueue,
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        val currentSong = songs.queue[position]
+        val currentSong = TrackQueue.queue[position]
         holder.songNameTextView.text = currentSong.name
-
 
         // Fetch Album and Artist details
         val album: Album? = dbHelper.getAlbum(currentSong.albumId)
         val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
 
-        if (artist != null) {
-            holder.artistNameTextView.text = artist.name.toString()
-        }
+        holder.artistNameTextView.text = artist?.name ?: "Unknown Artist"
 
-        // You can add listeners or actions to ImageViews if needed
+
+
+
         holder.queueButtonImageView.setOnClickListener {
             // Handle button click action
         }
@@ -51,23 +47,29 @@ class QueueSongAdapter(private val songs: TrackQueue,
             // Handle menu click action
         }
 
-        // Set click listener
         holder.itemView.setOnClickListener {
             onItemClickListener?.onItemClick(position)
+
+            onTrackSelected(currentSong) // Trigger lambda to select the track
+            Log.d("QueueSongAdapter", "Track selected: ${currentSong.name}")
         }
 
+//        // Correct the click listener setup for the remove button
+//        holder.itemView.findViewById<View>(R.id.removeButton)?.setOnClickListener {
+//            Log.d("QueueSongAdapter", "Remove button clicked for track: ${currentSong.name}")
+//            onRemoveTrack(currentSong)
+//        }
     }
 
-    override fun getItemCount() = songs.queue.size
+    override fun getItemCount() = TrackQueue.queue.size
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val songNameTextView: TextView = itemView.findViewById(R.id.tvSongName)
         val artistNameTextView: TextView = itemView.findViewById(R.id.tvArtistName)
-        val queueButtonImageView: ImageView = itemView.findViewById(R.id.queueButton1) // Reference to queue button
-        val queueMenuImageView: ImageView = itemView.findViewById(R.id.queueMenu1) // Reference to queue menu
+        val queueButtonImageView: ImageView = itemView.findViewById(R.id.queueButton1)
+        val queueMenuImageView: ImageView = itemView.findViewById(R.id.queueMenu1)
+        //val removeButtonImageView: ImageView = itemView.findViewById(R.id.removeButton)
     }
-
-
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
@@ -78,5 +80,4 @@ class QueueSongAdapter(private val songs: TrackQueue,
     fun setOnItemClickListener(listener: OnItemClickListener) {
         onItemClickListener = listener
     }
-
 }

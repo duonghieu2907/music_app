@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Playlist
@@ -41,6 +42,7 @@ class SingleTrackFragment : Fragment() {
 
     private lateinit var playlistName: TextView
     var currentTrackIndex: Int = 0
+    private lateinit var curUserId: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,7 +51,11 @@ class SingleTrackFragment : Fragment() {
         val view = inflater.inflate(R.layout.activity_single_song, container, false)
 
         // Hide the navigation bar when this fragment is created
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
+
 
         backButton = view.findViewById(R.id.back)
 
@@ -59,6 +65,10 @@ class SingleTrackFragment : Fragment() {
         }
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
+
+        // Get global user ID
+        val app = requireActivity().application as Global
+        curUserId = app.curUserId
 
         // Initialize ExoPlayer
         exoPlayer = ExoPlayer.Builder(requireContext()).build()
@@ -136,8 +146,6 @@ class SingleTrackFragment : Fragment() {
         playlistName.text = playlist?.name ?: ""
 
 
-        playlistName.text = playlist?.name ?: ""
-
         Glide.with(this)
             .load(album?.image)
             .placeholder(R.drawable.blacker_gradient)
@@ -191,17 +199,17 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun toggleLikeStatus() {
-        if (dbHelper.isTrackLiked(track.trackId, "1")) {
-            dbHelper.deleteLike("1", track.trackId ) // global  curUserID
+        if (dbHelper.isTrackLiked(track.trackId, curUserId)) {
+            dbHelper.deleteLike(curUserId, track.trackId) // Use global curUserId
         } else {
-            dbHelper.addLike("1", track.trackId) // global  curUserID
+            dbHelper.addLike(curUserId, track.trackId) // Use global curUserId
         }
         updateLikeButton()
     }
 
     private fun updateLikeButton() {
         // is liked by the user
-        val isLiked = dbHelper.isTrackLiked(track.trackId, "1")  // global  curUserID
+        val isLiked = dbHelper.isTrackLiked(track.trackId, curUserId)  // Use global curUserId
 
         if (isLiked) {
             likeButton.setImageResource(R.drawable.filledlove)  // Filled heart for liked
@@ -215,7 +223,10 @@ class SingleTrackFragment : Fragment() {
         super.onDestroyView()
         exoPlayer.release()
         // Show the navigation bar when this fragment is destroyed
-        (requireActivity() as MainActivity).showBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
     }
 
     companion object {
@@ -253,7 +264,11 @@ class SingleTrackFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         // Hide the bottom navigation bar when this fragment is resumed
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 
 

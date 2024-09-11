@@ -1,5 +1,6 @@
 package com.example.mymusicapp.queue
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,10 +30,14 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
     private lateinit var queueSongAdapter: QueueSongAdapter
     private lateinit var playlistSongAdapter: PlaylistSongAdapter
     private lateinit var backButton: ImageView
+    private lateinit var clearQueueButton: TextView
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var track: Track
     private lateinit var footer: View // Corrected ConstraintLayout to View type
     private var playlist: Playlist? = null
+
+    private lateinit var removeButton: TextView  // Add this if needed
+    private lateinit var selectedTrack: Track  // Variable to store selected track
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -42,11 +47,38 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         // Hide the navigation bar when this fragment is created
         (requireActivity() as MainActivity).hideBottomNavigation()
 
+        // Initialize the database helper
+        dbHelper = MusicAppDatabaseHelper(requireContext())
+
         // Set up UI elements and receive arguments...
         backButton = view.findViewById(R.id.back)
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+
+        // Initialize removeButton
+        removeButton = view.findViewById(R.id.removeButton)
+        removeButton.setOnClickListener {
+            removeSelectedTrack() // Call the method to remove the selected track
+        }
+
+        // Set up UI elements and receive arguments...
+        clearQueueButton = view.findViewById(R.id.clearQueueButton)
+        clearQueueButton.setOnClickListener {
+            TrackQueue.clearQueue()
+
+            // Reload the fragment
+            val fragmentManager = requireActivity().supportFragmentManager
+            fragmentManager.beginTransaction().apply {
+                // Replace the current fragment with a new instance of QueueFragment
+                replace(R.id.fragment_container, QueueFragment.newInstance(track, playlist))
+                // Optional: Add this to the back stack if you want users to go back
+                // addToBackStack(null)
+                commit()
+            }
+        }
+
+
 
         footer = view.findViewById(R.id.footer)
 
@@ -84,8 +116,13 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         // Set up RecyclerViews for queue and playlist
         recyclerViewQueue = view.findViewById(R.id.recyclerViewSongsQueue)
         recyclerViewQueue.layoutManager = LinearLayoutManager(requireContext())
-        queueSongAdapter = QueueSongAdapter(TrackQueue, dbHelper)
+        queueSongAdapter = QueueSongAdapter(dbHelper) { track ->
+            handleTrackSelection(track) // Set selected track when clicked
+        }
         recyclerViewQueue.adapter = queueSongAdapter
+
+        // Set click listeners for the adapter
+        queueSongAdapter.setOnItemClickListener(this)
 
         recyclerViewPlaylist = view.findViewById(R.id.recyclerViewSongsPlaylist)
         recyclerViewPlaylist.layoutManager = LinearLayoutManager(requireContext())
@@ -93,6 +130,9 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         val playlistTracks = playlist?.let { dbHelper.getTracksByPlaylistId(it.playlistId) }
         val currentTrackIndex = playlistTracks?.indexOfFirst { it.trackId == track.trackId } ?: 0
         playlistSongAdapter = PlaylistSongAdapter(dbHelper, playlist, currentTrackIndex)
+//        { track ->
+//            handleTrackRemoval(track)
+//        }
         recyclerViewPlaylist.adapter = playlistSongAdapter
 
         // Set click listeners for both adapters
@@ -144,4 +184,23 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         // Show the bottom navigation bar when this fragment is resumed
         (requireActivity() as MainActivity).hideBottomNavigation()
     }
+
+
+    private fun handleTrackSelection(track: Track) {
+        selectedTrack = track  // Store the selected track
+        Log.d("QueueFragment", "Selected track: ${track.name}")
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun removeSelectedTrack() {
+        if (::selectedTrack.isInitialized) { // Check if selectedTrack is initialized
+            TrackQueue.removeTrack(selectedTrack) // Remove from TrackQueue
+            queueSongAdapter.notifyDataSetChanged() // Notify adapter of data change
+
+            Log.d("QueueFragment", "Track removed: ${selectedTrack.name}")
+        } else {
+            Log.d("QueueFragment", "No track selected to remove.")
+        }
+    }
+
 }

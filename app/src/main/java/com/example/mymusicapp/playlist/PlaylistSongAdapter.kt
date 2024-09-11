@@ -17,7 +17,8 @@ class PlaylistSongAdapter(
 
     private val dbHelper: MusicAppDatabaseHelper,
     private val playlist: Playlist?,
-    private val currentTrackIndex: Int // To filter the remaining songs in the playlist
+    private val currentTrackIndex: Int, // To filter the remaining songs in the playlist
+//    private val onRemoveClickListener: (Track) -> Unit // Add a listener for remove button clicks
 ) : RecyclerView.Adapter<PlaylistSongAdapter.SongViewHolder>() {
 
     private var songs: List<Track> = emptyList()
@@ -34,6 +35,10 @@ class PlaylistSongAdapter(
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val actualPosition = currentTrackIndex + 1 + position // Start from the next song after current
+
+
+
+
 
         if (actualPosition < songs.size) {
             val currentSong = songs[actualPosition]
@@ -56,6 +61,10 @@ class PlaylistSongAdapter(
                 // Handle menu click action
             }
 
+//            holder.removeButtonImageView.setOnClickListener {
+//                onRemoveClickListener(currentSong) // Notify the fragment about the track to remove
+//            }
+
             holder.itemView.setOnClickListener {
                 onItemClickListener?.onItemClick(position)
             }
@@ -69,6 +78,7 @@ class PlaylistSongAdapter(
         val artistNameTextView: TextView = itemView.findViewById(R.id.tvArtistName)
         val queueButtonImageView: ImageView = itemView.findViewById(R.id.queueButton1) // Reference to queue button
         val queueMenuImageView: ImageView = itemView.findViewById(R.id.queueMenu1) // Reference to queue menu
+        //val removeButtonImageView: ImageView = itemView.findViewById(R.id.removeButton)
     }
 
 
