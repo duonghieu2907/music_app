@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.playlist.PlaylistFragment
@@ -19,12 +20,15 @@ import com.example.mymusicapp.playlist.PlaylistFragment
 class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOnClickListener {
     private lateinit var adapter : PlaylistListAdapter
     private val items = ArrayList<Playlist>()
+    private lateinit var curUser: String
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_playlist, container, false)
+        val application = requireActivity().application as Global
+        curUser = application.curUserId
         app(view)
 
         return view
@@ -34,8 +38,9 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         //Implementing here
 
         //Adapter
-        items.addAll(createPlaylistItem())
         adapter = PlaylistListAdapter(items, this)
+        createPlaylistItem()
+        updateAdapter(sort("ADDED"))
 
         //LayoutManager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -48,25 +53,24 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.add("Recently played")
-        allSort.add("A-Z")
-        allSort.add("Z-A")
+        allSort.addAll(arrayOf("Recently added", "Newest", "A-Z", "Z-A"))
 
         //Init setOnClickListener
         val sortBut = view.findViewById<TextView>(R.id.sortButtonPlaylist)
         sortBut.setOnClickListener {
             when (sortBut.text.toString()) {
-                allSort[0] -> {
+                allSort[1] -> {
                     //set effect for the button
-                    sortBut.text = allSort[1]
+                    sortBut.text = allSort[2]
                     updateAdapter(sort("ASC"))
                 }
-                allSort[1] -> {
-                    sortBut.text = allSort[2]
+                allSort[2] -> {
+                    sortBut.text = allSort[3]
                     updateAdapter(sort("DESC"))
                 }
-                allSort[2] -> {
+                allSort[3] -> {
                     sortBut.text = allSort[0]
+                    updateAdapter(sort("ADDED"))
                 }
             }
         }
@@ -78,18 +82,14 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         adapter.notifyDataSetChanged()
     }
 
-    private fun createPlaylistItem(): ArrayList<Playlist> {
-        var sample = ArrayList<Playlist>()
+    private fun addItem(playlist: Playlist) {
+        items.add(playlist)
+        adapter.notifyItemInserted(items.size - 1)
+    }
+
+    private fun createPlaylistItem(){
         val db = MusicAppDatabaseHelper(requireContext())
-        val allPlaylistId = db.getAllPlaylistId() ?: return sample
-
-        //Get the playlist from database
-        for(i in 0..<allPlaylistId.size) {
-            sample.add(db.getPlaylist(allPlaylistId[i])!!)
-        }
-
-        //return
-        return sample
+        updateAdapter(db.getUserLibraryPlaylists(curUser))
     }
 
     override fun itemSelectionClickListener(item: Playlist?) {
@@ -114,7 +114,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
 
     private fun sort(order : String): ArrayList<Playlist> {
         val db = MusicAppDatabaseHelper(requireContext())
-        val sample: ArrayList<Playlist> = db.sort("playlist", order) as? ArrayList<Playlist>?: ArrayList()
+        val sample: ArrayList<Playlist> = db.sort("playlist", order, curUser) as? ArrayList<Playlist>?: ArrayList()
         return sample
     }
 }

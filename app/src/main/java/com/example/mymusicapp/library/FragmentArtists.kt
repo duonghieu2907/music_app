@@ -11,19 +11,22 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Artist
 
 class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     private lateinit var adapter : FragmentArtistAdapter
     private val items = ArrayList<Artist>()
+    private lateinit var curUser: String
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_artists, container, false)
-
+        val application = requireActivity().application as Global
+        curUser = application.curUserId
         app(view)
 
         return view
@@ -32,8 +35,9 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     private fun app(view: View) {
 
         //Adapter
-        items.addAll(createArtistItem())
         adapter = FragmentArtistAdapter(items, this)
+        createArtistItem()
+        updateAdapter(sort("ADDED"))
 
         //Layout Manager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -46,7 +50,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.add("Recently played")
+        allSort.add("Recently added")
         allSort.add("A-Z")
         allSort.add("Z-A")
 
@@ -65,6 +69,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
                 }
                 allSort[2] -> {
                     sortBut.text = allSort[0]
+                    updateAdapter(sort("ADDED"))
                 }
             }
         }
@@ -77,19 +82,21 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         adapter.notifyDataSetChanged()
     }
 
-    private fun createArtistItem(): ArrayList<Artist> {
-        val sample = ArrayList<Artist>()
+    private fun addItem(artist: Artist) {
+        items.add(artist)
+        adapter.notifyItemInserted(items.size - 1)
+    }
+
+    private fun createArtistItem() {
+
         val db = MusicAppDatabaseHelper(requireContext()) //Get database
 
         //put all artists from database to list
         val allArtistId = db.getAllArtistId()!!
         for(i in 0..<allArtistId.size) {
             val artist = db.getArtist(allArtistId[i])!!
-            sample.add(Artist(artist.artistId, artist.name, artist.genre, artist.image))
+            addItem(Artist(artist.artistId, artist.name, artist.genre, artist.image))
         }
-
-        //return
-        return sample
     }
 
     override fun setOnItemClickListener(item: Artist?) {
@@ -99,7 +106,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
 
     private fun sort(order : String): ArrayList<Artist> {
         val db = MusicAppDatabaseHelper(requireContext())
-        val sample: ArrayList<Artist> = db.sort("artist", order) as? ArrayList<Artist>?: ArrayList()
+        val sample: ArrayList<Artist> = db.sort("artist", order, curUser) as? ArrayList<Artist>?: ArrayList()
         return sample
     }
 }
