@@ -1104,55 +1104,33 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return isFollowed
     }
 
-
-    @SuppressLint("Range")
     fun getUserLibraryPlaylists(userId: String): List<Playlist> {
         val playlists = mutableListOf<Playlist>()
         val db = this.readableDatabase
 
         // Query for playlists created by the user
-        val userPlaylistsCursor = db.query(
-            TABLE_PLAYLIST,
-            null,
-            "$PLAYLIST_USER_ID = ?",
-            arrayOf(userId),
-            null,
-            null,
-            null
-        )
+        // Join both table and compare with userId, if one of PlaylistUserId or Followed_userId is UserId, then we insert
+        val query = "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
+                    "FROM $TABLE_PLAYLIST AS P " +
+                    "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON P.$PLAYLIST_ID = FP.$FOLLOWED_PLAYLIST_ID " +
+                    "WHERE $FOLLOWER_USER_ID = ? OR $PLAYLIST_USER_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId, userId))
 
-        while (userPlaylistsCursor.moveToNext()) {
-            // Extract playlist details and add to the list
-            val playlist = Playlist(
-                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_ID)),
-                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_NAME)),
-                userPlaylistsCursor.getString(userPlaylistsCursor.getColumnIndex(PLAYLIST_IMAGE)),
-                userId
-            )
-            playlists.add(playlist)
-        }
-        userPlaylistsCursor.close()
+        //If the cursor is empty
+        if(!cursor.moveToFirst()) return playlists.toCollection(ArrayList())
 
-        // Query for playlists followed by the user
-        val followedPlaylistsCursor = db.rawQuery(
-            "SELECT * FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID IN (SELECT $FOLLOWED_PLAYLIST_ID FROM $TABLE_FOLLOWED_PLAYLISTS WHERE $FOLLOWED_USER_ID = ?)",
-            arrayOf(userId)
-        )
+        do {
+            playlists.add(Playlist(
+                cursor.getString(0),
+                userId,
+                cursor.getString(1),
+                cursor.getString(2)
+            ))
+        } while (cursor.moveToNext())
 
-        while (followedPlaylistsCursor.moveToNext()) {
-            // Extract playlist details and add to the list
-            val playlist = Playlist(
-                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_ID)),
-                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_NAME)),
-                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_IMAGE)),
-                followedPlaylistsCursor.getString(followedPlaylistsCursor.getColumnIndex(PLAYLIST_USER_ID))
-            )
-            playlists.add(playlist)
-        }
-        followedPlaylistsCursor.close()
-
+        cursor.close()
         db.close()
-        return playlists
+        return playlists.toCollection(ArrayList())
     }
 
 
@@ -1161,7 +1139,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     fun isAlbumFollowed(userId: String, albumId: String): Boolean {
         val db = this.readableDatabase
 
-        val query = "SELECT 1 FROM $TABLE_FOLLOWED_ALBUMS WHERE $FOLLOWED_USER_ID = ? AND $FOLLOWED_ALBUM_ID = ?"
+        val query = "SELECT 1 FROM $TABLE_FOLLOWED_ALBUMS WHERE $FOLLOWED_ALBUM_USER_ID = ? AND $FOLLOWED_ALBUM_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId, albumId))
 
         val isFollowed = cursor.count > 0  // the album is followed
@@ -1386,35 +1364,61 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     }
 
     //Sort from A-Z
-    fun sort(type: String, order: String) : ArrayList<Any> {
+    fun sort(type: String, order: String, curUserId: String) : ArrayList<Any> {
         val rawQuery: String
         val list = ArrayList<Any>()
         val db = this.readableDatabase
+        var tableName: String
         order.uppercase()
+        var orderTmp = order
 
         //Make query
+
         when (type.lowercase()) {
             "album" -> {
-                rawQuery = "SELECT $ALBUM_ID, $ALBUM_ARTIST_ID, $ALBUM_NAME, $ALBUM_RELEASE_DATE, $ALBUM_IMAGE" +
-                        " FROM $TABLE_ALBUM ORDER BY $ALBUM_NAME " + order
+                if(order == "ADDED") {
+                    orderTmp = "DESC"
+                    tableName = ALBUM_TIMESTAMP
+                } else tableName = ALBUM_NAME
+                rawQuery =  "SELECT $ALBUM_ID, $ALBUM_ARTIST_ID, $ALBUM_NAME, $ALBUM_RELEASE_DATE, $ALBUM_IMAGE " +
+                            "FROM $TABLE_ALBUM AS A " +
+                            "LEFT JOIN $TABLE_FOLLOWED_ALBUMS AS FA ON FA.$FOLLOWED_ALBUM_ID = A.$ALBUM_ID " +
+                            "WHERE $FOLLOWED_ALBUM_USER_ID = '$curUserId' " +
+                            "ORDER BY $tableName $orderTmp"
             }
 
             "artist" -> {
-                rawQuery = "SELECT $ARTIST_ID, $ARTIST_NAME, $ARTIST_GENRE, $ARTIST_IMAGE" +
-                        " FROM $TABLE_ARTIST ORDER BY $ARTIST_NAME " + order
+                if(order == "ADDED") {
+                    orderTmp = "DESC"
+                    tableName = ARTIST_TIMESTAMP
+                } else tableName = ARTIST_NAME
+                rawQuery =  "SELECT $ARTIST_ID, $ARTIST_NAME, $ARTIST_GENRE, $ARTIST_IMAGE " +
+                            "FROM $TABLE_ARTIST " +
+                            "ORDER BY $tableName $orderTmp"
             }
 
             "playlist" -> {
-                rawQuery = "SELECT $PLAYLIST_ID, $PLAYLIST_USER_ID, $PLAYLIST_NAME, $PLAYLIST_IMAGE" +
-                        " FROM $TABLE_PLAYLIST WHERE $PLAYLIST_ID <> 'userLikedSong' ORDER BY $PLAYLIST_NAME " + order
+                if(order == "ADDED") {
+                    orderTmp = "DESC"
+                    tableName = PLAYLIST_TIMESTAMP
+                } else tableName = PLAYLIST_NAME
+                rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
+                            "FROM $TABLE_PLAYLIST AS P " +
+                            "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON FP.$FOLLOWED_PLAYLIST_ID = P.$PLAYLIST_ID " +
+                            "WHERE $PLAYLIST_USER_ID = '$curUserId' OR $FOLLOWED_PLAYLIST_USER_ID = '$curUserId' " +
+                            "ORDER BY $tableName $orderTmp"
             }
-            else -> throw IllegalArgumentException("Unknown type: $type")
+            else -> {
+                Log.e("MusicAppDatabaseHelper", "Wrong type")
+                return list
+            }
         }
 
         val cursor = db.rawQuery(rawQuery, arrayOf())
         if(!cursor.moveToFirst()) {
             cursor.close()
-            throw NoSuchElementException("No element")
+            Log.e("MusicAppDatabaseHelper", "No element to sort")
+            return list
         }
 
         //Add to a list and return
@@ -1435,8 +1439,8 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
             "playlist" -> {
                 do {
-                    list.add(Playlist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
-                        cursor.getString(3)))
+                    list.add(Playlist(cursor.getString(0), curUserId, cursor.getString(1),
+                        cursor.getString(2)))
                 } while (cursor.moveToNext())
             }
         }
