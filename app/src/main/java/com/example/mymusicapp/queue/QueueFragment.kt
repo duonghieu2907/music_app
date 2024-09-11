@@ -37,6 +37,7 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
     private var playlist: Playlist? = null
 
     private lateinit var removeButton: TextView  // Add this if needed
+    private lateinit var add2QButton: TextView  // Add this if needed
     private lateinit var selectedTrack: Track  // Variable to store selected track
 
     override fun onCreateView(
@@ -61,6 +62,15 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         removeButton.setOnClickListener {
             removeSelectedTrack() // Call the method to remove the selected track
         }
+
+
+        // Initialize removeButton
+        add2QButton = view.findViewById(R.id.add2QueueButton)
+        add2QButton.setOnClickListener {
+            addSelectedTrack() // Call the method to add the selected track
+        }
+        
+        
 
         // Set up UI elements and receive arguments...
         clearQueueButton = view.findViewById(R.id.clearQueueButton)
@@ -130,9 +140,9 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         val playlistTracks = playlist?.let { dbHelper.getTracksByPlaylistId(it.playlistId) }
         val currentTrackIndex = playlistTracks?.indexOfFirst { it.trackId == track.trackId } ?: 0
         playlistSongAdapter = PlaylistSongAdapter(dbHelper, playlist, currentTrackIndex)
-//        { track ->
-//            handleTrackRemoval(track)
-//        }
+        { track ->
+            handleTrackSelection(track) // Set selected track when clicked
+        }
         recyclerViewPlaylist.adapter = playlistSongAdapter
 
         // Set click listeners for both adapters
@@ -200,6 +210,18 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
             Log.d("QueueFragment", "Track removed: ${selectedTrack.name}")
         } else {
             Log.d("QueueFragment", "No track selected to remove.")
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun addSelectedTrack() {
+        if (::selectedTrack.isInitialized) { // Check if selectedTrack is initialized
+            TrackQueue.addTrack(selectedTrack) // Add from TrackQueue
+            queueSongAdapter.notifyDataSetChanged() // Notify adapter of data change
+
+            Log.d("QueueFragment", "Track added: ${selectedTrack.name}")
+        } else {
+            Log.d("QueueFragment", "No track selected to add.")
         }
     }
 
