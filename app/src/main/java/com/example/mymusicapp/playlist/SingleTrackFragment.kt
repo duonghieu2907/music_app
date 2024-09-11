@@ -35,6 +35,7 @@ class SingleTrackFragment : Fragment() {
     private lateinit var songTitle: TextView
     private lateinit var artistName: TextView
     private lateinit var songCover: ImageView
+    private lateinit var playingFrom: TextView
     private lateinit var playerControlView: PlayerControlView
     private lateinit var exoPlayer: ExoPlayer
 
@@ -91,6 +92,7 @@ class SingleTrackFragment : Fragment() {
         queueButton = view.findViewById(R.id.queue)
         songTitle = view.findViewById(R.id.song_title)
         artistName = view.findViewById(R.id.artist_name)
+        playingFrom = view.findViewById(R.id.playing_from_playlist)
         songCover = view.findViewById(R.id.song_cover)
         likeButton = view.findViewById(R.id.like)
         playlistName = view.findViewById(R.id.playlist_name)
@@ -142,24 +144,29 @@ class SingleTrackFragment : Fragment() {
         exoPlayer.playWhenReady = true
 
         songTitle.text = track.name
-        val album = dbHelper.getAlbum(track.albumId)
-        val artist = dbHelper.getArtist(album?.artistId ?: "")
+        val album1 = dbHelper.getAlbum(track.albumId)
+        val artist = dbHelper.getArtist(album1?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
 
 
         if(playlist != null)
         {
             playlistName.text = playlist?.name
+            playingFrom.text = "PLAYING FROM PLAYLIST"
         }
         else if (album != null)
         {
             playlistName.text = album?.name
+            playingFrom.text = "PLAYING FROM ALBUM"
         }
-        else  playlistName.text = ""
+        else {
+            playlistName.text = ""
+            playingFrom.text = ""
+        }
 
 
         Glide.with(this)
-            .load(album?.image)
+            .load(album1?.image)
             .placeholder(R.drawable.blacker_gradient)
             .into(songCover)
     }
@@ -188,14 +195,30 @@ class SingleTrackFragment : Fragment() {
         exoPlayer.playWhenReady = true
 
         songTitle.text = currentTrack.name
-        val album = dbHelper.getAlbum(currentTrack.albumId)
-        val artist = dbHelper.getArtist(album?.artistId ?: "")
+        val album1 = dbHelper.getAlbum(currentTrack.albumId)
+        val artist = dbHelper.getArtist(album1?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
 
-        playlistName.text = playlist?.name ?: ""
+
+
+
+        if(playlist != null)
+        {
+            playlistName.text = playlist?.name
+            playingFrom.text = "PLAYING FROM PLAYLIST"
+        }
+        else if (album != null)
+        {
+            playlistName.text = album?.name
+            playingFrom.text = "PLAYING FROM ALBUM"
+        }
+        else {
+            playlistName.text = ""
+            playingFrom.text = ""
+        }
 
         Glide.with(this)
-            .load(album?.image)
+            .load(album1?.image)
             .placeholder(R.drawable.blacker_gradient)
             .into(songCover)
     }
@@ -267,7 +290,7 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun openQueueFragment() {
-        val queueFragment = QueueFragment.newInstance(track, playlist)
+        val queueFragment = QueueFragment.newInstance(track, playlist, album)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, queueFragment)
             .addToBackStack(null)

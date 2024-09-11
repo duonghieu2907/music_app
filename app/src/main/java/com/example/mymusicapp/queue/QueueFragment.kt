@@ -21,6 +21,7 @@ import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
 import com.example.mymusicapp.playlist.PlaylistSongAdapter
+import com.example.mymusicapp.playlist.SingleTrackFragment
 
 class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, PlaylistSongAdapter.OnItemClickListener {
 
@@ -35,6 +36,7 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
     private lateinit var track: Track
     private lateinit var footer: View // Corrected ConstraintLayout to View type
     private var playlist: Playlist? = null
+    private var album: Album? = null
 
     private lateinit var removeButton: TextView  // Add this if needed
     private lateinit var add2QButton: TextView  // Add this if needed
@@ -77,8 +79,8 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         add2QButton.setOnClickListener {
             addSelectedTrack() // Call the method to add the selected track
         }
-        
-        
+
+
 
         // Set up UI elements and receive arguments...
         clearQueueButton = view.findViewById(R.id.clearQueueButton)
@@ -89,7 +91,7 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentManager.beginTransaction().apply {
                 // Replace the current fragment with a new instance of QueueFragment
-                replace(R.id.fragment_container, QueueFragment.newInstance(track, playlist))
+                replace(R.id.fragment_container, QueueFragment.newInstance(track, playlist, album))
                 // Optional: Add this to the back stack if you want users to go back
                 // addToBackStack(null)
                 commit()
@@ -110,10 +112,14 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         val songName = view.findViewById<TextView>(R.id.songPlaying)
         val songArtist = view.findViewById<TextView>(R.id.artistSongPlaying)
         val playlistName = view.findViewById<TextView>(R.id.playlistName)
+        val playingFrom = view.findViewById<TextView>(R.id.playingFrom)
 
         // Fetch the Track and Playlist passed from arguments
         track = arguments?.getParcelable("TRACK") ?: return view
         playlist = arguments?.getParcelable("PLAYLIST")
+        album = arguments?.getParcelable("ALBUM")
+
+
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
@@ -128,8 +134,26 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
             .into(songCover)
 
         songName.text = track.name
+
+
         songArtist.text = artist?.name ?: "Unknown Artist"
-        playlistName.text = playlist?.name ?: ""
+
+
+
+        if(playlist != null)
+        {
+            playlistName.text = playlist?.name
+            playingFrom.text = "PLAYING FROM PLAYLIST"
+        }
+        else if (album != null)
+        {
+            playlistName.text = album?.name
+            playingFrom.text = "PLAYING FROM ALBUM"
+        }
+        else {
+            playlistName.text = ""
+            playingFrom.text = ""
+        }
 
         // Set up RecyclerViews for queue and playlist
         recyclerViewQueue = view.findViewById(R.id.recyclerViewSongsQueue)
@@ -163,12 +187,15 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
     }
 
     companion object {
-        fun newInstance(track: Track, playlist: Playlist?): QueueFragment {
+        fun newInstance(track: Track, playlist: Playlist?, album: Album?): QueueFragment {
             val fragment = QueueFragment()
             val args = Bundle().apply {
                 putParcelable("TRACK", track)
                 if (playlist != null) {
                     putParcelable("PLAYLIST", playlist)
+                }
+                if (album != null) {
+                    putParcelable("ALBUM", album)
                 }
             }
             fragment.arguments = args
