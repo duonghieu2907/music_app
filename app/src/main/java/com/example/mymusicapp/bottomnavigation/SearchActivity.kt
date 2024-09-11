@@ -92,9 +92,7 @@ class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListe
             "Track" -> {
                 val fragment = dbHelper.getTrack(searchResult.id)?.let { track ->
                     SingleTrackFragment.newInstance(
-                        track,
-                        dbHelper.getAlbumIdFromTrackId(searchResult.id)
-                            ?.let { dbHelper.getPlaylist(it) })
+                        track, null, null)
                 }
                 if (fragment != null) {
                     supportFragmentManager.beginTransaction()

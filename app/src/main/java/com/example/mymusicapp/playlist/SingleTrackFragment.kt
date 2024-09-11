@@ -14,6 +14,7 @@ import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.TrackQueue
@@ -28,6 +29,7 @@ class SingleTrackFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var track: Track
     private var playlist: Playlist? = null
+    private var album: Album? = null
     private lateinit var backButton: ImageView
 
     private lateinit var songTitle: TextView
@@ -103,6 +105,7 @@ class SingleTrackFragment : Fragment() {
 
         track = arguments?.getParcelable("TRACK") ?: return view
         playlist = arguments?.getParcelable("PLAYLIST")
+        album = arguments?.getParcelable("ALBUM")
 
         track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
 
@@ -143,7 +146,16 @@ class SingleTrackFragment : Fragment() {
         val artist = dbHelper.getArtist(album?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
 
-        playlistName.text = playlist?.name ?: ""
+
+        if(playlist != null)
+        {
+            playlistName.text = playlist?.name
+        }
+        else if (album != null)
+        {
+            playlistName.text = album?.name
+        }
+        else  playlistName.text = ""
 
 
         Glide.with(this)
@@ -230,12 +242,15 @@ class SingleTrackFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track, playlist: Playlist?): SingleTrackFragment {
+        fun newInstance(track: Track, playlist: Playlist?, album: Album?): SingleTrackFragment {
             val fragment = SingleTrackFragment()
             val args = Bundle().apply {
                 putParcelable("TRACK", track)
                 if (playlist != null) {
                     putParcelable("PLAYLIST", playlist)
+                }
+                if (album != null) {
+                    putParcelable("ALBUM", album)
                 }
             }
             fragment.arguments = args

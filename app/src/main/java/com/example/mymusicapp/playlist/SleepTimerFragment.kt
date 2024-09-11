@@ -25,6 +25,12 @@ class SleepTimerFragment : Fragment() {
         val view = inflater.inflate(R.layout.activity_sleep_timer, container, false)
 
 
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
+
         return TODO("Provide the return value")
     }
 
@@ -33,12 +39,20 @@ class SleepTimerFragment : Fragment() {
         super.onDestroyView()
 
         // Show the navigation bar when this fragment is destroyed
-        (requireActivity() as MainActivity).showBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
     }
+
 
     override fun onResume() {
         super.onResume()
-        // Show the bottom navigation bar when this fragment is resumed
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        // Hide the bottom navigation bar when this fragment is resumed
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 }

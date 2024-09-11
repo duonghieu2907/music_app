@@ -1,6 +1,7 @@
 package com.example.mymusicapp.album
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -101,7 +102,11 @@ class AlbumFragment : Fragment() {
                 when (menuItem.itemId) {
                     R.id.action_add_to_queue -> {
                         // Implement add to queue logic
-                        println("Add to Queue")
+
+                        val trackList: List<Track> = dbHelper.getTracksByAlbumId(albumId)  // Ensure this method accepts String
+
+                        TrackQueue.addTracks(trackList)
+                        println("Queue")
                         true
                     }
                     R.id.action_share_album -> {
@@ -156,15 +161,15 @@ class AlbumFragment : Fragment() {
 
             // Fetch tracks for this album
             val trackList: List<Track> = dbHelper.getTracksByAlbumId(albumId)  // Ensure this method accepts String
-            tracksAdapter = AlbumTracksAdapter(trackList, dbHelper) { track -> openTrack(track) }
+            tracksAdapter = AlbumTracksAdapter(trackList, dbHelper) { track -> openTrack(track, album) }
             recyclerViewTracks.adapter = tracksAdapter
         } else {
             Toast.makeText(requireContext(), "Album not found", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun openTrack(track: Track) {
-        val fragment = SingleTrackFragment.newInstance(track,null)
+    private fun openTrack(track: Track, album: Album?) {
+        val fragment = SingleTrackFragment.newInstance(track,null, album)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
