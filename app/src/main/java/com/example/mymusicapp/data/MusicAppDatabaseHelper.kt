@@ -1096,7 +1096,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val query = "SELECT * FROM $TABLE_FOLLOWED_PLAYLISTS WHERE $FOLLOWED_PLAYLIST_USER_ID = ? AND $FOLLOWED_PLAYLIST_ID = ?"
         val cursor = db.rawQuery(query, arrayOf(userId, playlistId))
 
-        val isFollowed = cursor.count > 0
+        val isFollowed = cursor.count > 0  // the playlist is followed
 
         cursor?.close()
         db.close()
@@ -1104,7 +1104,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return isFollowed
     }
 
-    fun getUserLibraryPlaylists(userId: String): List<Playlist> {
+    fun getUserLibraryPlaylists(userId: String): ArrayList<Playlist> {
         val playlists = mutableListOf<Playlist>()
         val db = this.readableDatabase
 
