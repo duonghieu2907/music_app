@@ -32,7 +32,7 @@ class AlbumFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
 
     private var albumId: String = ""
-    //val app = requireActivity().application as Global
+    private lateinit var curUserId: String
 
     companion object {
         private const val ARG_ALBUM_ID = "album_id"
@@ -55,6 +55,13 @@ class AlbumFragment : Fragment() {
         }
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
+        if (isAdded) {
+            val app = requireActivity().application as Global
+            curUserId = app.curUserId
+        } else {
+            // fragment is not attached
+            curUserId = "1"
+        }
     }
 
     override fun onCreateView(
@@ -105,11 +112,11 @@ class AlbumFragment : Fragment() {
                     R.id.action_follow_album -> {
                         if (isFollowed) {
                             // unfollow album
-                            //dbHelper.unfollowAlbum(app.curUserId, albumId)
+                            dbHelper.unfollowAlbum(curUserId, albumId)
                             Toast.makeText(requireContext(), "Album Unfollowed", Toast.LENGTH_SHORT).show()
                         } else {
                             // follow album
-                            //dbHelper.followAlbum(app.curUserId, albumId)
+                            dbHelper.followAlbum(curUserId, albumId)
                             Toast.makeText(requireContext(), "Album Followed", Toast.LENGTH_SHORT).show()
                         }
                         true
