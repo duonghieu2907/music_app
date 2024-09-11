@@ -106,23 +106,24 @@ class FragmentAlbums : Fragment(),
     override fun setOnItemClickListener(item: Album?) {
         // Ensure that item is not null
         item?.let {
-            val albumFragment = AlbumFragment.newInstance(item.albumId) //Transfer id
+            // Check if the current fragment is added to the activity before proceeding
+            if (isAdded) {
+                val albumFragment = AlbumFragment.newInstance(item.albumId) //Transfer id
 
-            // Use a bundle to pass data to PlaylistFragment if needed
-            /*val bundle = Bundle()
-            bundle.putSerializable("playlistItem", it)  // Assuming PlaylistListItem is Serializable
-            playlistFragment.arguments = bundle*/
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, albumFragment)
+                    .addToBackStack(null)
+                    .commit()
 
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, albumFragment)  // Replace with your fragment container ID
-                .addToBackStack(null)  // Optional: Add this transaction to the back stack
-                .commit()
-
-            Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Fragment not attached to activity", Toast.LENGTH_SHORT).show()
+            }
         } ?: run {
             Toast.makeText(requireContext(), "Item is null!", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private fun sort(order : String): ArrayList<Album> {
         val db = MusicAppDatabaseHelper(requireContext())

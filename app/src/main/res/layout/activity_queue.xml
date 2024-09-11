@@ -43,16 +43,16 @@
         android:layout_marginStart="32dp"
         android:fontFamily="@font/gothic"/>
 
-    <ImageView
-        android:id="@+id/chevron_down"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:src="@drawable/chevron_down"
-        app:layout_constraintTop_toTopOf="@id/playlistName"
-        app:layout_constraintBottom_toBottomOf="@id/playlistName"
-        app:layout_constraintStart_toEndOf="@id/playlistName"
-        android:layout_marginStart="8dp" />
+<!--    <ImageView-->
+<!--        android:id="@+id/chevron_down"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:src="@drawable/chevron_down"-->
+<!--        app:layout_constraintTop_toTopOf="@id/playlistName"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/playlistName"-->
+<!--        app:layout_constraintStart_toEndOf="@id/playlistName"-->
+<!--        android:layout_marginStart="8dp" />-->
 
     <TextView
         android:id="@+id/nowPlaying"
