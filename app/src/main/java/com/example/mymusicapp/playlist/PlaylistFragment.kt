@@ -1,6 +1,7 @@
 package com.example.mymusicapp.playlist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -14,7 +15,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import android.widget.Toast
 import com.bumptech.glide.Glide
+
 import com.example.mymusicapp.data.Global
+
+import com.example.mymusicapp.MainActivity
+
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.*
 
@@ -69,6 +74,9 @@ class PlaylistFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_single_playlist, container, false)
+
+        // Hide the navigation bar when this fragment is created
+        (requireActivity() as MainActivity).hideBottomNavigation()
 
         // Initialize UI
         backButton = view.findViewById(R.id.backButton)
@@ -181,6 +189,14 @@ class PlaylistFragment : Fragment() {
                 }
                 R.id.action_add_to_queue -> {
                     // Implement add to queue logic
+
+                    val trackList: List<Track>? = dbHelper.getTracksByPlaylistId(playlistId)
+
+                    if (trackList != null) {
+                        TrackQueue.addTracks(trackList)
+                    } else {
+                        Log.e("PlaylistFragment", "Track list is null for playlistId: $playlistId")
+                    }
                     println("Queue")
                 }
                 R.id.action_share_playlist -> {
