@@ -1,6 +1,7 @@
 package com.example.mymusicapp.playlist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -174,6 +175,14 @@ class PlaylistFragment : Fragment() {
                 }
                 R.id.action_add_to_queue -> {
                     // Implement add to queue logic
+
+                    val trackList: List<Track>? = dbHelper.getTracksByPlaylistId(playlistId)
+
+                    if (trackList != null) {
+                        TrackQueue.addTracks(trackList)
+                    } else {
+                        Log.e("PlaylistFragment", "Track list is null for playlistId: $playlistId")
+                    }
                     println("Queue")
                 }
                 R.id.action_share_playlist -> {
