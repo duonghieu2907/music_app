@@ -69,6 +69,10 @@ class SingleTrackFragment : Fragment() {
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
+
+
+
+
         // Get global user ID
         val app = requireActivity().application as Global
         curUserId = app.curUserId
@@ -105,9 +109,15 @@ class SingleTrackFragment : Fragment() {
             openQueueFragment()
         }
 
-        track = arguments?.getParcelable("TRACK") ?: return view
-        playlist = arguments?.getParcelable("PLAYLIST")
-        album = arguments?.getParcelable("ALBUM")
+        // Fetch track, playlist, and album using IDs
+        val trackId = arguments?.getString("TRACK_ID") ?: return view
+        val playlistId = arguments?.getString("PLAYLIST_ID")
+        val albumId = arguments?.getString("ALBUM_ID")
+
+        // Fetch objects from the database using their IDs
+        track = dbHelper.getTrack(trackId) ?: return view
+        playlist = playlistId?.let { dbHelper.getPlaylist(it) }
+        album = albumId?.let { dbHelper.getAlbum(it) }
 
         track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
 
@@ -265,17 +275,12 @@ class SingleTrackFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track, playlist: Playlist?, album: Album?): SingleTrackFragment {
+        fun newInstance(trackId: String, playlistId: String? = null, albumId: String? = null): SingleTrackFragment {
             val fragment = SingleTrackFragment()
-            val args = Bundle().apply {
-                putParcelable("TRACK", track)
-                if (playlist != null) {
-                    putParcelable("PLAYLIST", playlist)
-                }
-                if (album != null) {
-                    putParcelable("ALBUM", album)
-                }
-            }
+            val args = Bundle()
+            args.putString("TRACK_ID", trackId)
+            playlistId?.let { args.putString("PLAYLIST_ID", it) }
+            albumId?.let { args.putString("ALBUM_ID", it) }
             fragment.arguments = args
             return fragment
         }

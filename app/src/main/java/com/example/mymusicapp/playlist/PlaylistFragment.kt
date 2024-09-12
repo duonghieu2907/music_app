@@ -219,7 +219,7 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun openTrack(track: Track, playlist: Playlist) {
-        val fragment = SingleTrackFragment.newInstance(track, playlist, null)
+        val fragment = SingleTrackFragment.newInstance(track.trackId, playlist.playlistId, null)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
