@@ -45,10 +45,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         val app = requireActivity().application as Global
         curUserId = app.curUserId
 
-        val activity = requireActivity()
-        if (activity is MainActivity) {
-            activity.hideBottomNavigation()
-        }
         // Initialize DBHelper
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
@@ -97,6 +93,13 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         }
 
         return view
+    }
+    override fun onResume() {
+        super.onResume()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
     private fun setupRecyclerView(view: View, artistId: String) {
         // Top 5 tracks RecyclerView setup
