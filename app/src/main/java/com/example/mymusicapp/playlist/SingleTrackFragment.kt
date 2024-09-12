@@ -31,6 +31,7 @@ class SingleTrackFragment : Fragment() {
     private var playlist: Playlist? = null
     private var album: Album? = null
     private lateinit var backButton: ImageView
+    private lateinit var previousButton: ImageView
 
     private lateinit var songTitle: TextView
     private lateinit var artistName: TextView
@@ -67,6 +68,13 @@ class SingleTrackFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
+        previousButton = view.findViewById(R.id.previous_button)
+
+        previousButton.setOnClickListener {
+            playPreviousTrackInQueue()
+        }
+
+
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
 
@@ -89,6 +97,11 @@ class SingleTrackFragment : Fragment() {
                 if (state == Player.STATE_ENDED) {
                     handleQueueCompletion()
                 }
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                // Enable/disable "Previous" button based on current track index
+                previousButton.isEnabled = currentTrackIndex > 0
             }
         })
 
@@ -337,6 +350,17 @@ class SingleTrackFragment : Fragment() {
         val activity = requireActivity()
         if (activity is MainActivity) {
             activity.hideBottomNavigation()
+        }
+    }
+
+
+    private fun playPreviousTrackInQueue() {
+        // Check if we are not at the first track in the queue
+        if (currentTrackIndex > 0) {
+            currentTrackIndex-- // Decrement the index to point to the previous track
+            playTrackAtIndex(currentTrackIndex) // Play the track at the new index
+        } else {
+            Toast.makeText(requireContext(), "Already at the first track in the queue", Toast.LENGTH_SHORT).show()
         }
     }
 
