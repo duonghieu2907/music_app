@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
-import com.example.mymusicapp.bottomnavigation.LibraryFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
@@ -83,11 +82,12 @@ class AlbumFragment : Fragment() {
 
         // Set button click handlers
         backButton.setOnClickListener {
-            val fragment = LibraryFragment.newInstance("Albums")
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+//            val fragment = LibraryFragment.newInstance("Albums")
+//            parentFragmentManager.beginTransaction()
+//                .replace(R.id.fragment_container, fragment)
+//                .addToBackStack(null)
+//                .commit()
         }
 
         optionsButton.setOnClickListener {

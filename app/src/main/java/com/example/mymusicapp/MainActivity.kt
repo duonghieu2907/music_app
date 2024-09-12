@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -38,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         try {
             dbHelper = MusicAppDatabaseHelper(this)
             //dbHelper.deleteAll() //Run this line to delete everything
+            //Run this line of code to export database
+            dbHelper.exportDatabaseToFile()
 
             //Run this to update or insert data to database
             lifecycleScope.launch(Dispatchers.IO) {
@@ -61,8 +62,8 @@ class MainActivity : AppCompatActivity() {
 
                 //dummy to work with playlist
                 dbHelper.addUser(User("3", "Test", "", "", "", ""))
-                insertDummyData()
-                 //addDummyDataToDatabase(spotifyData)
+                //insertDummyData()
+                //addDummyDataToDatabase(spotifyData)
                 
                 
                 //real data -> do not delete
