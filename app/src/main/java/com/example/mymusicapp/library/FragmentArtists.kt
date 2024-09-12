@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
@@ -27,6 +28,12 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         val view : View = inflater.inflate(R.layout.fragment_artists, container, false)
         val application = requireActivity().application as Global
         curUser = application.curUserId
+
+        val activity = requireActivity()
+        if(activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
+
         app(view)
 
         return view

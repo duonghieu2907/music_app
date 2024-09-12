@@ -1,6 +1,7 @@
 package com.example.mymusicapp.playlist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,14 +13,15 @@ import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
+import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.library.ArtistFragment
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
-import com.example.mymusicapp.playlist.Add2PlaylistFragment
 
 class MenuFragment : Fragment() {
 
@@ -60,7 +62,7 @@ class MenuFragment : Fragment() {
         // Fetch track, playlist, and album using IDs
         val trackId = arguments?.getString("TRACK_ID") ?: return view
         val playlistId = arguments?.getString("PLAYLIST_ID")
-        val albumId = arguments?.getString("ALBUM_ID")
+        var albumId = arguments?.getString("ALBUM_ID")
 
         // Fetch objects from the database using their IDs
         track = dbHelper.getTrack(trackId) ?: return view
@@ -70,6 +72,9 @@ class MenuFragment : Fragment() {
         // Fetch Album and Artist details
         val album: Album? = dbHelper.getAlbum(track.albumId)
         val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
+
+        //Assume going from other fragments, which are not from albums
+        if(albumId == null) albumId = album?.albumId
 
         // Set the values for the songCover, songName, and songArtist
         val imageUrl = "https://i.scdn.co/image/ab67616d0000b273356c22ef2466bb450b32e1bb"
@@ -165,6 +170,39 @@ class MenuFragment : Fragment() {
             removeFromPlaylistText.setOnClickListener(clickListenerRemoveFromPlaylist)
         }
 
+        //View artist
+        val viewArtist: ImageView = view.findViewById(R.id.viewArtist)
+        val viewArtistText: TextView = view.findViewById(R.id.viewAnArtist)
+
+        val onArtistClickListener = View.OnClickListener {
+            if(artist?.artistId == null) {
+                Log.e("MenuFragment", "There is no artist")
+                Toast.makeText(requireContext(), "There is no artist", Toast.LENGTH_SHORT).show()
+                return@OnClickListener
+            }
+            val fragment = ArtistFragment.newInstance(artist.artistId)
+            openFragment(fragment)
+        }
+        viewArtist.setOnClickListener(onArtistClickListener)
+        viewArtistText.setOnClickListener(onArtistClickListener)
+
+
+        //View album
+        val viewAlbum: ImageView = view.findViewById(R.id.viewAlbum)
+        val viewAlbumText: TextView = view.findViewById(R.id.viewAnAlbum)
+
+        val onAlbumClickListener = View.OnClickListener {
+            if(albumId == null) {
+                Log.e("MenuFragment", "There is no album")
+                Toast.makeText(requireContext(), "There is no album", Toast.LENGTH_SHORT).show()
+                return@OnClickListener
+            }
+            val fragment = AlbumFragment.newInstance(albumId)
+            openFragment(fragment)
+        }
+
+        viewAlbum.setOnClickListener(onAlbumClickListener)
+        viewAlbumText.setOnClickListener(onAlbumClickListener)
 
         return view
     }

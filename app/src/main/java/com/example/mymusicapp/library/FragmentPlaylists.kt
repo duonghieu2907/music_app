@@ -40,7 +40,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         //Adapter
         adapter = PlaylistListAdapter(items, this)
         createPlaylistItem()
-        updateAdapter(sort("ADDED"))
+        updateAdapter(getNewest())
 
         //LayoutManager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -53,7 +53,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.addAll(arrayOf("Recently added", "Newest", "A-Z", "Z-A"))
+        allSort.addAll(arrayOf("Recently added", "Recently played", "A-Z", "Z-A"))
 
         //Init setOnClickListener
         val sortBut = view.findViewById<TextView>(R.id.sortButtonPlaylist)
