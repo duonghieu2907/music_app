@@ -3,11 +3,9 @@ package com.example.mymusicapp
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -53,20 +51,23 @@ class MainActivity : AppCompatActivity() {
                 //authCode received, built clientApi and AppApi
                 //spotifyData.buildClientApi(authCode!!)
                 //spotifyData.buildAppApi()
+                
                 //dbHelper.deleteAll() //Run this line to delete all data
                 //To change database, wipe all data in emulator
 
-                //Add dummy data
+                //use for back up
                 //dbHelper.exportDatabaseToFile()
-                //addDummyDataToDatabase(spotifyData)
 
-
-                //dbHelper.addUser(User("1", "Official", "", "", "", ""))
-                //Log.d("mainActivity", "Official added")
 
                 //dummy to work with playlist
                 dbHelper.addUser(User("3", "Test", "", "", "", ""))
                 insertDummyData()
+                 //addDummyDataToDatabase(spotifyData)
+                
+                
+                //real data -> do not delete
+                dbHelper.addUser(User("1", "Official", "", "", "", ""))
+                Log.d("mainActivity", "Official added")
 
             }
         } catch (e : Exception) {
