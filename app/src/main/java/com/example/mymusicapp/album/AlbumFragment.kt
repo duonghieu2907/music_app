@@ -83,11 +83,6 @@ class AlbumFragment : Fragment() {
         // Set button click handlers
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
-//            val fragment = LibraryFragment.newInstance("Albums")
-//            parentFragmentManager.beginTransaction()
-//                .replace(R.id.fragment_container, fragment)
-//                .addToBackStack(null)
-//                .commit()
         }
 
         optionsButton.setOnClickListener {

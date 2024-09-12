@@ -53,6 +53,11 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
 
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(ARG_FILTER_NAME, filterName)
+    }
+
     private fun app(view: View) {
         // Reference to drawer layout
         drawerLayout = requireActivity().findViewById(R.id.main)
@@ -110,6 +115,7 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
 
     override fun onSelectionListener(item: LibraryFilterItem?) {
         //Change fragment depends on the item clicks
+        filterName = item?.name?: ""
         when(item?.name) {
             "Playlists" -> loadFragment(FragmentPlaylists())
             "Artists" -> loadFragment(FragmentArtists())
@@ -122,6 +128,7 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
     private fun loadFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_library_container_list, fragment)
+            .addToBackStack(null)
             .commit()
     }
 }

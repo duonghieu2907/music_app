@@ -87,11 +87,6 @@ class PlaylistFragment : Fragment() {
         //button
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
-//            val fragment = LibraryFragment.newInstance("Playlists")
-//            parentFragmentManager.beginTransaction()
-//                .replace(R.id.fragment_container, fragment)
-//                .addToBackStack(null)
-//                .commit()
         }
 
         optionsButton.setOnClickListener {
