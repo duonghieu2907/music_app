@@ -136,6 +136,50 @@ class SingleTrackFragment : Fragment() {
             toggleLikeStatus()
         }
 
+
+
+        songTitle.text = track.name
+        val album1 = dbHelper.getAlbum(track.albumId)
+        val artist = dbHelper.getArtist(album1?.artistId ?: "")
+        artistName.text = artist?.name ?: "Unknown Artist"
+
+
+        if(playlist != null)
+        {
+            playlistName.text = playlist?.name
+            playingFrom.text = "PLAYING FROM PLAYLIST"
+        }
+        else if (album != null)
+        {
+            playlistName.text = album?.name
+            playingFrom.text = "PLAYING FROM ALBUM"
+        }
+        else {
+            playlistName.text = ""
+            playingFrom.text = ""
+        }
+
+
+        Glide.with(this)
+            .load(album1?.image)
+            .placeholder(R.drawable.blacker_gradient)
+            .into(songCover)
+
+
+        previousButton.setOnClickListener {
+            if (playerViewModel.currentTrackIndex > 0) {
+                playerViewModel.currentTrackIndex-- // Decrement index in ViewModel
+                playTrackAtIndex(playerViewModel.currentTrackIndex) // Use updated index
+            } else {
+                Toast.makeText(requireContext(), "Already at the first track in the queue", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+
+
+
+
         return view
     }
 
@@ -201,4 +245,30 @@ class SingleTrackFragment : Fragment() {
             activity.hideBottomNavigation()
         }
     }
+
+    private fun playTrackAtIndex(index: Int) {
+        playerViewModel.currentTrackIndex = index // Update index in ViewModel
+
+        if (index >= TrackQueue.queue.size) return
+
+        val currentTrack = TrackQueue.queue[index]
+
+        // Play the selected track using the ViewModel's ExoPlayer
+        val mediaItem = MediaItem.fromUri(Uri.parse(currentTrack.path))
+        playerViewModel.exoPlayer.setMediaItem(mediaItem)
+        playerViewModel.exoPlayer.prepare()
+        playerViewModel.exoPlayer.playWhenReady = true
+
+        // Update UI
+        songTitle.text = currentTrack.name
+        val album1 = dbHelper.getAlbum(currentTrack.albumId)
+        val artist = dbHelper.getArtist(album1?.artistId ?: "")
+        artistName.text = artist?.name ?: "Unknown Artist"
+
+        Glide.with(this)
+            .load(album1?.image)
+            .placeholder(R.drawable.blacker_gradient)
+            .into(songCover)
+    }
+
 }
