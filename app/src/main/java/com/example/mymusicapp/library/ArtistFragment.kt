@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.playlist.PlaylistTracksAdapter
@@ -20,7 +21,8 @@ import com.example.mymusicapp.playlist.SingleTrackFragment
 
 class ArtistFragment : Fragment(R.layout.fragment_artist) {
     private lateinit var dbHelper: MusicAppDatabaseHelper
-    private var artistId: String? = null
+    private lateinit var artistId: String
+    private lateinit var curUserId: String
 
     companion object {
         fun newInstance(artistId: String): ArtistFragment {
@@ -39,12 +41,14 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         val view = inflater.inflate(R.layout.fragment_artist, container, false)
 
         artistId = arguments?.getString("artist_id") ?: ""
+        val app = requireActivity().application as Global
+        curUserId = app.curUserId
 
         // Initialize DBHelper
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
         // Fetch artist details using the getArtist function
-        val artist = dbHelper.getArtist(artistId!!)
+        val artist = dbHelper.getArtist(artistId)
 
         // Bind the artist data to the UI elements
         artist?.let {
@@ -63,7 +67,29 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         }
 
         // Set up RecyclerView for top 5 tracks and albums
-        setupRecyclerView(view, artistId!!)
+        setupRecyclerView(view, artistId)
+
+        // Initialize UI
+        val backButton = view.findViewById<ImageView>(R.id.backButton)
+        val followButton = view.findViewById<ImageView>(R.id.follow_background)
+        val followText = view.findViewById<TextView>(R.id.follow_text)
+
+        //Check the initial state of follow button
+        var isFollowed = dbHelper.isArtistFollowed(curUserId, artistId)
+        stateOfFollow(isFollowed, followText, followButton)
+
+        //Set up clicking and add to database
+        followButton.setOnClickListener {
+            if(isFollowed) dbHelper.unfollowArtist(curUserId, artistId)
+            else dbHelper.followArtist(curUserId, artistId)
+            isFollowed = !isFollowed
+            stateOfFollow(isFollowed, followText, followButton)
+        }
+
+        // Set up back button
+        backButton.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
 
         return view
         }
@@ -92,6 +118,17 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
             .addToBackStack(null)
             .commit()
         Toast.makeText(requireContext(), track.name, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun stateOfFollow(isFollowed: Boolean, followText: TextView, followButton: ImageView) {
+        if (isFollowed) {
+            followText.text = "Following"
+            followButton.setBackgroundResource(R.drawable.rectangle_item_filter_color)
+        }
+        else {
+            followText.text = "Follow"
+            followButton.setBackgroundResource(R.drawable.rectangle_item_filter_nocolor)
+        }
     }
 }
 

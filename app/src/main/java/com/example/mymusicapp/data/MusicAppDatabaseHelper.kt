@@ -1172,6 +1172,46 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         }
     }
 
+    fun isArtistFollowed(userId: String, artistId: String): Boolean {
+        val db = this.readableDatabase
+
+        val query = "SELECT 1 FROM $TABLE_FOLLOWER WHERE $FOLLOWER_USER_ID = ? AND $FOLLOWER_ARTIST_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId, artistId))
+
+        val isFollowed = cursor.count > 0  // the album is followed
+
+        cursor?.close()
+        db.close()
+
+        return isFollowed
+    }
+
+    fun followArtist(userId: String, artistId: String): Boolean {
+        val db = this.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(FOLLOWER_USER_ID, userId)
+            put(FOLLOWER_ARTIST_ID, artistId)
+        }
+
+        val result = db.insert(TABLE_FOLLOWER, null, contentValues)
+        db.close()
+
+        return result != -1L  // Return true if insert was successful
+    }
+
+    fun unfollowArtist(userId: String, artistId: String): Boolean {
+        val db = this.writableDatabase
+
+        val result = db.delete(
+            TABLE_FOLLOWER,
+            "$FOLLOWER_USER_ID = ? AND $FOLLOWER_ARTIST_ID = ?",
+            arrayOf(userId, artistId)
+        )
+        db.close()
+
+        return result > 0  // Return true if delete was successful
+    }
+
     fun deleteFollower(userId: Int, artistId: Int) {
         val db = this.writableDatabase
         db.delete(
