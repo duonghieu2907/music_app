@@ -1,10 +1,13 @@
 package com.example.mymusicapp.bottomnavigation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -50,7 +53,6 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
         app(view)
 
         return view
-
     }
 
     private fun app(view: View) {
@@ -95,6 +97,9 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
         //Default layout, calling once
         onSelectionListener(LibraryFilterItem(filterName))
         itemFilterAdapter.addColor(filterName)
+
+        // Handle click for drawer items
+        handleDrawerNavigation(drawerLayout)
     }
 
     //Create the item list
@@ -123,5 +128,61 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_library_container_list, fragment)
             .commit()
+    }
+
+
+
+    private fun handleDrawerNavigation(view: View) {
+        val settingsButton: TextView = view.findViewById(R.id.settings_button)
+        val historyButton: TextView = view.findViewById(R.id.history_button)
+        val queueButton: TextView = view.findViewById(R.id.queue_button)
+
+        settingsButton.setOnClickListener {
+            // Navigate to Settings Fragment
+            navigateToSettings()
+        }
+
+        historyButton.setOnClickListener {
+            // Navigate to History Fragment
+            navigateToHistory()
+        }
+
+        queueButton.setOnClickListener {
+            // Navigate to Queue Fragment
+            navigateToQueue()
+        }
+    }
+
+    private fun navigateToSettings() {
+        Log.d("ExploreFragment", "Navigating to SettingsFragment.")
+        // Replace with your SettingsFragment or Activity
+//        val settingsFragment = SettingsFragment()
+//        parentFragmentManager.beginTransaction()
+//            .replace(R.id.fragment_container, settingsFragment)  // Replace with your fragment container ID
+//            .addToBackStack(null)  // Optional: Add this transaction to the back stack
+//            .commit()
+//        drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
+    private fun navigateToHistory() {
+        Log.d("ExploreFragment", "Navigating to HistoryFragment.")
+        // Replace with your HistoryFragment or Activity
+//        val historyFragment = HistoryFragment()
+//        parentFragmentManager.beginTransaction()
+//            .replace(R.id.fragment_container, historyFragment)  // Replace with your fragment container ID
+//            .addToBackStack(null)  // Optional: Add this transaction to the back stack
+//            .commit()
+//        drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
+    private fun navigateToQueue() {
+        Log.d("ExploreFragment", "Navigating to QueueFragment.")
+        // Navigate to QueueFragment
+//        val queueFragment = QueueFragment()
+//        parentFragmentManager.beginTransaction()
+//            .replace(R.id.fragment_container, queueFragment)  // Replace with your fragment container ID
+//            .addToBackStack(null)  // Optional: Add this transaction to the back stack
+//            .commit()
+//        drawerLayout.closeDrawer(GravityCompat.START)
     }
 }

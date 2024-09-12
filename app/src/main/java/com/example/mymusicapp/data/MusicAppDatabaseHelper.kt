@@ -389,7 +389,13 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     fun getAllGenres(): List<String> {
         val genres = mutableListOf<String>()
         val db = this.readableDatabase
-        val query = "SELECT DISTINCT $ARTIST_GENRE FROM $TABLE_ARTIST"  // Use DISTINCT to avoid duplicate genres
+        // SQL query to get genres ordered by the number of songs in descending order
+        val query = """
+        SELECT $ARTIST_GENRE, COUNT(*) AS song_count
+        FROM $TABLE_ARTIST
+        GROUP BY $ARTIST_GENRE
+        ORDER BY song_count DESC
+    """
         val cursor = db.rawQuery(query, null)
 
         if (cursor.moveToFirst()) {
@@ -402,6 +408,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         cursor.close()
         return genres
     }
+
 
 
     fun updateArtist(artist: Artist) {

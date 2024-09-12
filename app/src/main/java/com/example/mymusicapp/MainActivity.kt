@@ -69,7 +69,18 @@ class MainActivity : AppCompatActivity() {
                 //real data -> do not delete
                 dbHelper.addUser(User("1", "Official", "", "", "", ""))
                 Log.d("mainActivity", "Official added")
+                // Retrieve and print all genres
+                val allGenres: List<String> = dbHelper.getAllGenres()
 
+                // Log the genres to verify
+                Log.d("ExploreFragment", "All Genres: $allGenres")
+
+                // Automatically add playlists for each genre if they don't already exist
+                allGenres.forEach { genre ->
+                    val playlistName = "$genre playlist"
+                    dbHelper.addGenrePlaylistIfNotExists(playlistName, genre, "1")
+                }
+                //addDummyDataToDatabase(spotifyData)
             }
         } catch (e : Exception) {
             Log.e("mainActivity", "Error during background: $e")

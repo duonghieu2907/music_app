@@ -12,7 +12,7 @@ import com.example.mymusicapp.models.SearchResult
 
 class SearchResultAdapter(
     private val searchResults: List<SearchResult>,
-    private val onItemClickListener: SearchActivity
+    private val onItemClickListener: SearchFragment
 ) : RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
