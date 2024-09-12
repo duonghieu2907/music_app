@@ -21,6 +21,7 @@ import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
 import com.example.mymusicapp.playlist.PlaylistSongAdapter
+import com.example.mymusicapp.playlist.SingleTrackFragment
 
 class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, PlaylistSongAdapter.OnItemClickListener {
 
@@ -35,8 +36,10 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
     private lateinit var track: Track
     private lateinit var footer: View // Corrected ConstraintLayout to View type
     private var playlist: Playlist? = null
+    private var album: Album? = null
 
     private lateinit var removeButton: TextView  // Add this if needed
+    private lateinit var add2QButton: TextView  // Add this if needed
     private lateinit var selectedTrack: Track  // Variable to store selected track
 
     override fun onCreateView(
@@ -45,7 +48,10 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         val view = inflater.inflate(R.layout.activity_queue, container, false)
 
         // Hide the navigation bar when this fragment is created
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
 
         // Initialize the database helper
         dbHelper = MusicAppDatabaseHelper(requireContext())
@@ -59,8 +65,22 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         // Initialize removeButton
         removeButton = view.findViewById(R.id.removeButton)
         removeButton.setOnClickListener {
-            removeSelectedTrack() // Call the method to remove the selected track
+            val selectedTrack = queueSongAdapter.getSelectedTrack() // Get the selected track
+            if (selectedTrack != null) {
+                removeSelectedTrack(selectedTrack) // Remove the selected track
+            } else {
+                Log.d("QueueFragment", "No track selected to remove.")
+            }
         }
+
+
+        // Initialize removeButton
+        add2QButton = view.findViewById(R.id.add2QueueButton)
+        add2QButton.setOnClickListener {
+            addSelectedTrack() // Call the method to add the selected track
+        }
+
+
 
         // Set up UI elements and receive arguments...
         clearQueueButton = view.findViewById(R.id.clearQueueButton)
@@ -71,7 +91,7 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentManager.beginTransaction().apply {
                 // Replace the current fragment with a new instance of QueueFragment
-                replace(R.id.fragment_container, QueueFragment.newInstance(track, playlist))
+                replace(R.id.fragment_container, QueueFragment.newInstance(track, playlist, album))
                 // Optional: Add this to the back stack if you want users to go back
                 // addToBackStack(null)
                 commit()
@@ -92,10 +112,14 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         val songName = view.findViewById<TextView>(R.id.songPlaying)
         val songArtist = view.findViewById<TextView>(R.id.artistSongPlaying)
         val playlistName = view.findViewById<TextView>(R.id.playlistName)
+        val playingFrom = view.findViewById<TextView>(R.id.playingFrom)
 
         // Fetch the Track and Playlist passed from arguments
         track = arguments?.getParcelable("TRACK") ?: return view
         playlist = arguments?.getParcelable("PLAYLIST")
+        album = arguments?.getParcelable("ALBUM")
+
+
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
@@ -110,45 +134,68 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
             .into(songCover)
 
         songName.text = track.name
+
+
         songArtist.text = artist?.name ?: "Unknown Artist"
-        playlistName.text = playlist?.name ?: ""
+
+
+
+        if(playlist != null)
+        {
+            playlistName.text = playlist?.name
+            playingFrom.text = "PLAYING FROM PLAYLIST"
+        }
+        else if (album != null)
+        {
+            playlistName.text = album?.name
+            playingFrom.text = "PLAYING FROM ALBUM"
+        }
+        else {
+            playlistName.text = ""
+            playingFrom.text = ""
+        }
 
         // Set up RecyclerViews for queue and playlist
         recyclerViewQueue = view.findViewById(R.id.recyclerViewSongsQueue)
         recyclerViewQueue.layoutManager = LinearLayoutManager(requireContext())
         queueSongAdapter = QueueSongAdapter(dbHelper) { track ->
-            handleTrackSelection(track) // Set selected track when clicked
+            if (track != null) {
+                handleTrackSelection(track)
+            } // Set selected track when clicked
         }
         recyclerViewQueue.adapter = queueSongAdapter
 
         // Set click listeners for the adapter
         queueSongAdapter.setOnItemClickListener(this)
 
-        recyclerViewPlaylist = view.findViewById(R.id.recyclerViewSongsPlaylist)
-        recyclerViewPlaylist.layoutManager = LinearLayoutManager(requireContext())
+        //recyclerViewPlaylist = view.findViewById(R.id.recyclerViewSongsPlaylist)
+        //recyclerViewPlaylist.layoutManager = LinearLayoutManager(requireContext())
 
-        val playlistTracks = playlist?.let { dbHelper.getTracksByPlaylistId(it.playlistId) }
-        val currentTrackIndex = playlistTracks?.indexOfFirst { it.trackId == track.trackId } ?: 0
-        playlistSongAdapter = PlaylistSongAdapter(dbHelper, playlist, currentTrackIndex)
+//        val playlistTracks = playlist?.let { dbHelper.getTracksByPlaylistId(it.playlistId) }
+//        val currentTrackIndex = playlistTracks?.indexOfFirst { it.trackId == track.trackId } ?: 0
+//        playlistSongAdapter = PlaylistSongAdapter(dbHelper, playlist, currentTrackIndex)
 //        { track ->
-//            handleTrackRemoval(track)
+//            handleTrackSelection(track) // Set selected track when clicked
 //        }
-        recyclerViewPlaylist.adapter = playlistSongAdapter
+//        recyclerViewPlaylist.adapter = playlistSongAdapter
 
         // Set click listeners for both adapters
         queueSongAdapter.setOnItemClickListener(this)
-        playlistSongAdapter.setOnItemClickListener(this)
+ //       playlistSongAdapter.setOnItemClickListener(this)
 
         return view
     }
 
     companion object {
-        fun newInstance(track: Track, playlist: Playlist?): QueueFragment {
+        fun newInstance(track: Track, playlist: Playlist?, album: Album?): QueueFragment {
             val fragment = QueueFragment()
             val args = Bundle().apply {
                 putParcelable("TRACK", track)
                 if (playlist != null) {
                     putParcelable("PLAYLIST", playlist)
+                }
+                if (album != null) {
+                    putParcelable("ALBUM", album)
                 }
             }
             fragment.arguments = args
@@ -175,14 +222,21 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         super.onDestroyView()
 
         // Show the navigation bar when this fragment is destroyed
-        (requireActivity() as MainActivity).showBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
     }
 
 
     override fun onResume() {
         super.onResume()
-        // Show the bottom navigation bar when this fragment is resumed
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        // Hide the bottom navigation bar when this fragment is resumed
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 
 
@@ -192,14 +246,22 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun removeSelectedTrack() {
+    private fun removeSelectedTrack(track: Track) {
+        TrackQueue.removeTrack(track) // Remove from TrackQueue
+        queueSongAdapter.resetSelection()  // Reset selection after removal
+        queueSongAdapter.notifyDataSetChanged() // Notify adapter of data change
+        Log.d("QueueFragment", "Track removed: ${track.name}")
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun addSelectedTrack() {
         if (::selectedTrack.isInitialized) { // Check if selectedTrack is initialized
-            TrackQueue.removeTrack(selectedTrack) // Remove from TrackQueue
+            TrackQueue.addTrack(selectedTrack) // Add from TrackQueue
             queueSongAdapter.notifyDataSetChanged() // Notify adapter of data change
 
-            Log.d("QueueFragment", "Track removed: ${selectedTrack.name}")
+            Log.d("QueueFragment", "Track added: ${selectedTrack.name}")
         } else {
-            Log.d("QueueFragment", "No track selected to remove.")
+            Log.d("QueueFragment", "No track selected to add.")
         }
     }
 

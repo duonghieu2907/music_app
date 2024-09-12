@@ -88,7 +88,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     }
 
     private fun openTrack(track: Track) {
-        val fragment = SingleTrackFragment.newInstance(track, null)
+        val fragment = SingleTrackFragment.newInstance(track, null, null)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)

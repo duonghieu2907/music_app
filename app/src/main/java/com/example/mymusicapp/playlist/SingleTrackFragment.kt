@@ -14,6 +14,7 @@ import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.TrackQueue
@@ -28,11 +29,13 @@ class SingleTrackFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var track: Track
     private var playlist: Playlist? = null
+    private var album: Album? = null
     private lateinit var backButton: ImageView
 
     private lateinit var songTitle: TextView
     private lateinit var artistName: TextView
     private lateinit var songCover: ImageView
+    private lateinit var playingFrom: TextView
     private lateinit var playerControlView: PlayerControlView
     private lateinit var exoPlayer: ExoPlayer
 
@@ -89,6 +92,7 @@ class SingleTrackFragment : Fragment() {
         queueButton = view.findViewById(R.id.queue)
         songTitle = view.findViewById(R.id.song_title)
         artistName = view.findViewById(R.id.artist_name)
+        playingFrom = view.findViewById(R.id.playing_from_playlist)
         songCover = view.findViewById(R.id.song_cover)
         likeButton = view.findViewById(R.id.like)
         playlistName = view.findViewById(R.id.playlist_name)
@@ -103,6 +107,7 @@ class SingleTrackFragment : Fragment() {
 
         track = arguments?.getParcelable("TRACK") ?: return view
         playlist = arguments?.getParcelable("PLAYLIST")
+        album = arguments?.getParcelable("ALBUM")
 
         track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
 
@@ -139,15 +144,29 @@ class SingleTrackFragment : Fragment() {
         exoPlayer.playWhenReady = true
 
         songTitle.text = track.name
-        val album = dbHelper.getAlbum(track.albumId)
-        val artist = dbHelper.getArtist(album?.artistId ?: "")
+        val album1 = dbHelper.getAlbum(track.albumId)
+        val artist = dbHelper.getArtist(album1?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
 
-        playlistName.text = playlist?.name ?: ""
+
+        if(playlist != null)
+        {
+            playlistName.text = playlist?.name
+            playingFrom.text = "PLAYING FROM PLAYLIST"
+        }
+        else if (album != null)
+        {
+            playlistName.text = album?.name
+            playingFrom.text = "PLAYING FROM ALBUM"
+        }
+        else {
+            playlistName.text = ""
+            playingFrom.text = ""
+        }
 
 
         Glide.with(this)
-            .load(album?.image)
+            .load(album1?.image)
             .placeholder(R.drawable.blacker_gradient)
             .into(songCover)
     }
@@ -176,14 +195,30 @@ class SingleTrackFragment : Fragment() {
         exoPlayer.playWhenReady = true
 
         songTitle.text = currentTrack.name
-        val album = dbHelper.getAlbum(currentTrack.albumId)
-        val artist = dbHelper.getArtist(album?.artistId ?: "")
+        val album1 = dbHelper.getAlbum(currentTrack.albumId)
+        val artist = dbHelper.getArtist(album1?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
 
-        playlistName.text = playlist?.name ?: ""
+
+
+
+        if(playlist != null)
+        {
+            playlistName.text = playlist?.name
+            playingFrom.text = "PLAYING FROM PLAYLIST"
+        }
+        else if (album != null)
+        {
+            playlistName.text = album?.name
+            playingFrom.text = "PLAYING FROM ALBUM"
+        }
+        else {
+            playlistName.text = ""
+            playingFrom.text = ""
+        }
 
         Glide.with(this)
-            .load(album?.image)
+            .load(album1?.image)
             .placeholder(R.drawable.blacker_gradient)
             .into(songCover)
     }
@@ -230,12 +265,15 @@ class SingleTrackFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track, playlist: Playlist?): SingleTrackFragment {
+        fun newInstance(track: Track, playlist: Playlist?, album: Album?): SingleTrackFragment {
             val fragment = SingleTrackFragment()
             val args = Bundle().apply {
                 putParcelable("TRACK", track)
                 if (playlist != null) {
                     putParcelable("PLAYLIST", playlist)
+                }
+                if (album != null) {
+                    putParcelable("ALBUM", album)
                 }
             }
             fragment.arguments = args
@@ -252,7 +290,7 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun openQueueFragment() {
-        val queueFragment = QueueFragment.newInstance(track, playlist)
+        val queueFragment = QueueFragment.newInstance(track, playlist, album)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, queueFragment)
             .addToBackStack(null)

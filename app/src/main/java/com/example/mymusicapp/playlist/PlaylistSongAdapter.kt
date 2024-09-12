@@ -1,5 +1,6 @@
 package com.example.mymusicapp.playlist
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,8 @@ class PlaylistSongAdapter(
     private val dbHelper: MusicAppDatabaseHelper,
     private val playlist: Playlist?,
     private val currentTrackIndex: Int, // To filter the remaining songs in the playlist
-//    private val onRemoveClickListener: (Track) -> Unit // Add a listener for remove button clicks
+
+    private val onTrackSelected: (Track) -> Unit // Updated lambda parameter
 ) : RecyclerView.Adapter<PlaylistSongAdapter.SongViewHolder>() {
 
     private var songs: List<Track> = emptyList()
@@ -67,6 +69,10 @@ class PlaylistSongAdapter(
 
             holder.itemView.setOnClickListener {
                 onItemClickListener?.onItemClick(position)
+
+
+                onTrackSelected(currentSong) // Trigger lambda to select the track
+                Log.d("QueueSongAdapter", "Track selected: ${currentSong.name}")
             }
         }
     }

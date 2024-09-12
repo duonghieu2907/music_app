@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
@@ -31,6 +33,12 @@ class MenuFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.activity_menu, container, false)
+
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
 
         backButton = view.findViewById(R.id.back)
 
@@ -93,22 +101,41 @@ class MenuFragment : Fragment() {
         add2QText.setOnClickListener(clickListenerQ)
 
 
-        if (playlist != null)
-        {
-        // Find views by ID for the menu items
-        val removeFromPlaylistIcon = view.findViewById<ImageView>(R.id.removePlaylist)
-        val removeFromPlaylist = view.findViewById<TextView>(R.id.removeFromPlaylist)
+        val app = requireActivity().application as Global
 
+        // Fetch the current user's ID (assuming you have an app-level reference to the current user)
+        val curUserId = app.curUserId
 
+        // Check if the playlist is null or if the user doesn't own the playlist
+        if (playlist == null || playlist!!.userId != curUserId) {
+            // Find the views for the "remove from playlist" option
+            val removeFromPlaylistIcon = view.findViewById<ImageView>(R.id.removePlaylist)
+            val removeFromPlaylistText = view.findViewById<TextView>(R.id.removeFromPlaylist)
 
-        val clickListenerRemoveFromPlaylist = View.OnClickListener {
-            dbHelper.deletePlaylistTrack(playlist!!.playlistId, track.trackId)
+            // Tint the icon and text to gray
+            removeFromPlaylistIcon.setColorFilter(
+                resources.getColor(R.color.DavysGrey, requireContext().theme),
+                android.graphics.PorterDuff.Mode.SRC_IN
+            )
+            removeFromPlaylistText.setTextColor(resources.getColor(R.color.DavysGrey, requireContext().theme))
+
+            // Disable click actions
+            removeFromPlaylistIcon.isClickable = false
+            removeFromPlaylistText.isClickable = false
+        } else {
+            // If the playlist is not null and the user owns it, set up click listeners as usual
+            val removeFromPlaylistIcon = view.findViewById<ImageView>(R.id.removePlaylist)
+            val removeFromPlaylistText = view.findViewById<TextView>(R.id.removeFromPlaylist)
+
+            val clickListenerRemoveFromPlaylist = View.OnClickListener {
+                dbHelper.deletePlaylistTrack(playlist!!.playlistId, track.trackId)
+                Toast.makeText(requireContext(), "Track removed from ${playlist!!.name}", Toast.LENGTH_SHORT).show()
+            }
+
+            removeFromPlaylistIcon.setOnClickListener(clickListenerRemoveFromPlaylist)
+            removeFromPlaylistText.setOnClickListener(clickListenerRemoveFromPlaylist)
         }
 
-
-        removeFromPlaylistIcon.setOnClickListener(clickListenerRemoveFromPlaylist)
-        removeFromPlaylist.setOnClickListener(clickListenerRemoveFromPlaylist)
-        }
 
         return view
     }
@@ -141,12 +168,20 @@ class MenuFragment : Fragment() {
         super.onDestroyView()
 
         // Show the navigation bar when this fragment is destroyed
-        (requireActivity() as MainActivity).showBottomNavigation()
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
     }
+
 
     override fun onResume() {
         super.onResume()
-        // Show the bottom navigation bar when this fragment is resumed
-        (requireActivity() as MainActivity).hideBottomNavigation()
+        // Hide the bottom navigation bar when this fragment is resumed
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 }

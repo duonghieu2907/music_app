@@ -5,17 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/sleep_timer_background">
 
-    <ImageView
-        android:id="@+id/favourite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:src="@drawable/love"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="28dp"
-        />
+
 
     <ImageView
         android:id="@+id/back"
@@ -28,16 +18,7 @@
         android:layout_marginTop="28dp"
         android:layout_marginStart="28dp" />
 
-    <ImageView
-        android:id="@+id/add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:src="@drawable/add"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="28dp" />
+
 
     <ImageView
         android:id="@+id/songCover"
@@ -46,7 +27,7 @@
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:src="@drawable/grainy_days"
-        app:layout_constraintTop_toBottomOf="@id/favourite"
+        app:layout_constraintTop_toBottomOf="@id/back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="28dp" />
