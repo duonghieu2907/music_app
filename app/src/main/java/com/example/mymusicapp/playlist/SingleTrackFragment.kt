@@ -153,6 +153,10 @@ class SingleTrackFragment : Fragment() {
         exoPlayer.prepare()
         exoPlayer.playWhenReady = true
 
+        //Add history
+
+        dbHelper.HISTORY_TRACK_ID 
+
         songTitle.text = track.name
         val album1 = dbHelper.getAlbum(track.albumId)
         val artist = dbHelper.getArtist(album1?.artistId ?: "")
@@ -203,6 +207,9 @@ class SingleTrackFragment : Fragment() {
 
         exoPlayer.prepare()
         exoPlayer.playWhenReady = true
+
+
+        // Add history
 
         songTitle.text = currentTrack.name
         val album1 = dbHelper.getAlbum(currentTrack.albumId)
