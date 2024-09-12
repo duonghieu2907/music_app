@@ -119,7 +119,7 @@ class SingleTrackFragment : Fragment() {
         playlist = playlistId?.let { dbHelper.getPlaylist(it) }
         album = albumId?.let { dbHelper.getAlbum(it) }
 
-        track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
+
 
         if (TrackQueue.queue.isEmpty()) {
             // Queue is empty, play this track but don't add to the queue
@@ -147,6 +147,14 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun playSingleTrackWithoutQueue() {
+
+
+        if (track.path.startsWith("SpotifyUri")) {
+            track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
+        }
+
+
+
         val mediaItem = MediaItem.fromUri(Uri.parse(track.path))
         exoPlayer.setMediaItem(mediaItem)
 
@@ -155,7 +163,7 @@ class SingleTrackFragment : Fragment() {
 
         //Add history
 
-        dbHelper.HISTORY_TRACK_ID 
+
 
         songTitle.text = track.name
         val album1 = dbHelper.getAlbum(track.albumId)
@@ -202,6 +210,17 @@ class SingleTrackFragment : Fragment() {
         if (index >= TrackQueue.queue.size) return
 
         val currentTrack = TrackQueue.queue[index]
+
+
+
+        if (currentTrack.path.startsWith("SpotifyUri")) {
+            currentTrack.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
+        }
+
+
+
+
+
         val mediaItem = MediaItem.fromUri(Uri.parse(currentTrack.path))
         exoPlayer.setMediaItem(mediaItem)
 
