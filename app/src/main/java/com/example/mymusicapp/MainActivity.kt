@@ -3,11 +3,9 @@ package com.example.mymusicapp
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -59,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 //Add dummy data
                 //dbHelper.exportDatabaseToFile()
                 addDummyDataToDatabase(spotifyData)
-                insertDummyData()
+                //insertDummyData()
                 dbHelper.addUser(User("1", "Official", "", "", "", ""))
                 Log.d("mainActivity", "Official added")
 
