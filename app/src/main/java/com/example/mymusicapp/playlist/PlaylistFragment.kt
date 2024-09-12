@@ -122,13 +122,14 @@ class PlaylistFragment : Fragment() {
             image = ""
         )
 
-        tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper, playlistId) { track -> openTrack(track, likedSongsPlaylist) }
+        tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper) { track -> openTrack(track, likedSongsPlaylist) }
 
         recyclerViewTracks.adapter = tracksAdapter
     }
 
     private fun loadPlaylistData() {
-
+        // Fetch playlist details
+        playlist = dbHelper.getPlaylist(playlistId)
 
         if (playlist != null) {
             playlistTitle.text = playlist!!.name
@@ -142,7 +143,7 @@ class PlaylistFragment : Fragment() {
             // Fetch tracks
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
 
-            tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper, playlistId) { track -> openTrack(track, playlist!!) }
+            tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper, playlist) { track -> openTrack(track, playlist!!) }
 
             recyclerViewTracks.adapter = tracksAdapter
         } else {

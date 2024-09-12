@@ -287,7 +287,7 @@ class SingleTrackFragment : Fragment() {
     }
 
     private fun openMenuFragment() {
-        val menuFragment = MenuFragment.newInstance(track.trackId, playlist?.playlistId)
+        val menuFragment = MenuFragment.newInstance(track, playlist)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, menuFragment)
             .addToBackStack(null)
