@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 
 import com.example.mymusicapp.data.Global
@@ -182,7 +183,8 @@ class PlaylistFragment : Fragment() {
                     println("Edit")
                 }
                 R.id.action_delete_playlist -> {
-                    // Implement delete playlist logic
+                    // Show pop-up
+                    showDeleteConfirmationDialog()
                     println("Delete")
                 }
                 R.id.action_add_to_queue -> {
@@ -217,6 +219,41 @@ class PlaylistFragment : Fragment() {
         }
         popup.show()
     }
+
+    private fun showDeleteConfirmationDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Delete Playlist")
+        builder.setMessage("Are you sure you want to delete this playlist? This action cannot be undone.")
+
+        // delete
+        builder.setPositiveButton("Yes") { dialog, _ ->
+            deletePlaylist()
+            dialog.dismiss()
+        }
+
+        // cancel
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun deletePlaylist() {
+        val dbHelper = MusicAppDatabaseHelper(requireContext())
+        val success = dbHelper.deletePlaylist(playlistId)
+
+        if (success) {
+            Toast.makeText(requireContext(), "Playlist deleted successfully.", Toast.LENGTH_SHORT).show()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        } else {
+            Toast.makeText(requireContext(), "Failed to delete the playlist.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 
     private fun openTrack(track: Track, playlist: Playlist) {
         val fragment = SingleTrackFragment.newInstance(track, playlist)

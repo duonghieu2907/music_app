@@ -864,10 +864,16 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.close()
     }
 
-    fun deletePlaylist(playlistId: Int) {
+    fun deletePlaylist(playlistId: String) : Boolean {
         val db = this.writableDatabase
-        db.delete(TABLE_PLAYLIST, "$PLAYLIST_ID=?", arrayOf(playlistId.toString()))
-        db.close()
+        return try {
+            val result = db.delete(TABLE_PLAYLIST, "$PLAYLIST_ID=?", arrayOf(playlistId.toString()))
+            db.close()
+            result > 0  // deletion was successful
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            false
+        }
     }
 
     //LikedSong -> outdated, to be removed
@@ -1652,5 +1658,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
             return false
         }
     }
+
+
 }
 
