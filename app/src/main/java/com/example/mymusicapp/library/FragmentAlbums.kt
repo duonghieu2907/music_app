@@ -52,7 +52,7 @@ class FragmentAlbums : Fragment(),
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.addAll(arrayOf("Recently added", "Newest", "A-Z", "Z-A"))
+        allSort.addAll(arrayOf("Recently added", "Recently played", "A-Z", "Z-A"))
 
         //Init setOnClickListener
         val sortBut = view.findViewById<TextView>(R.id.sortButtonAlbum)
@@ -120,6 +120,13 @@ class FragmentAlbums : Fragment(),
     private fun sort(order : String): ArrayList<Album> {
         val db = MusicAppDatabaseHelper(requireContext())
         val sample: ArrayList<Album> = db.sort("album", order, curUser) as? ArrayList<Album>?: ArrayList()
+        db.close()
+        return sample
+    }
+
+    private fun getNewest() : ArrayList<Album> {
+        val db = MusicAppDatabaseHelper(requireContext())
+        val sample: ArrayList<Album> = db.getNewest("album", curUser) as? ArrayList<Album>?: ArrayList()
         db.close()
         return sample
     }

@@ -149,14 +149,14 @@
 
             <ImageView
                 android:id="@+id/viewArtist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/artist"
                 app:layout_constraintTop_toBottomOf="@id/removePlaylist"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
+                android:layout_marginStart="35dp" />
 
             <TextView
                 android:id="@+id/viewAnArtist"
@@ -180,7 +180,7 @@
                 app:layout_constraintTop_toBottomOf="@id/viewArtist"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
+                android:layout_marginStart="36dp" />
 
             <TextView
                 android:id="@+id/viewAnAlbum"
@@ -192,7 +192,7 @@
                 app:layout_constraintTop_toBottomOf="@id/viewArtist"
                 app:layout_constraintStart_toEndOf="@id/viewArtist"
                 android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp"
+                android:layout_marginStart="36dp"
                 android:fontFamily="@font/gothicbold"/>
 
             <ImageView
@@ -204,7 +204,7 @@
                 app:layout_constraintTop_toBottomOf="@id/viewAlbum"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp" />
+                android:layout_marginStart="36dp" />
 
             <TextView
                 android:id="@+id/showCredits"
@@ -216,7 +216,7 @@
                 app:layout_constraintTop_toBottomOf="@id/viewAlbum"
                 app:layout_constraintStart_toEndOf="@id/viewAlbum"
                 android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp"
+                android:layout_marginStart="36dp"
                 android:fontFamily="@font/gothicbold"/>
 
             <ImageView
@@ -240,7 +240,7 @@
                 app:layout_constraintTop_toBottomOf="@id/showCreditsIcon"
                 app:layout_constraintStart_toEndOf="@id/showCreditsIcon"
                 android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp"
+                android:layout_marginStart="31dp"
                 android:fontFamily="@font/gothicbold"/>
 
             <ImageView
@@ -264,7 +264,7 @@
                 app:layout_constraintTop_toBottomOf="@id/shareIcon"
                 app:layout_constraintStart_toEndOf="@id/shareIcon"
                 android:layout_marginTop="28dp"
-                android:layout_marginStart="38dp"
+                android:layout_marginStart="35dp"
                 android:fontFamily="@font/gothicbold"/>
 
 

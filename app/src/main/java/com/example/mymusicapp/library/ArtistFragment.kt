@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
@@ -44,6 +45,10 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         val app = requireActivity().application as Global
         curUserId = app.curUserId
 
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
         // Initialize DBHelper
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
@@ -92,7 +97,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         }
 
         return view
-        }
+    }
     private fun setupRecyclerView(view: View, artistId: String) {
         // Top 5 tracks RecyclerView setup
         val top5Tracks = dbHelper.getTop5TracksByArtist(artistId) // Assume you have this method
