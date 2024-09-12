@@ -61,6 +61,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
             when (sortBut.text.toString()) {
                 allSort[0] -> {
                     sortBut.text = allSort[1]
+                    updateAdapter(getNewest())
                 }
                 allSort[1] -> {
                     //set effect for the button
@@ -119,6 +120,13 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     private fun sort(order : String): ArrayList<Playlist> {
         val db = MusicAppDatabaseHelper(requireContext())
         val sample: ArrayList<Playlist> = db.sort("playlist", order, curUser) as? ArrayList<Playlist>?: ArrayList()
+        db.close()
+        return sample
+    }
+
+    private fun getNewest(): ArrayList<Playlist> {
+        val db = MusicAppDatabaseHelper(requireContext())
+        val sample: ArrayList<Playlist> = db.getNewest("playlist", curUser) as? ArrayList<Playlist>?: ArrayList()
         db.close()
         return sample
     }

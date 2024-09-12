@@ -26,7 +26,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
     companion object {
         private const val DATABASE_NAME = "music_app1.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
 
         // User Table
         private const val TABLE_USER = "User"
@@ -185,7 +185,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val createHistoryTable = ("CREATE TABLE $TABLE_HISTORY ("
                 + "$HISTORY_USER_ID TEXT,"
                 + "$HISTORY_TRACK_ID TEXT,"
-                + "$HISTORY_TIMESTAMP DATETIME DEFAULT CURRENT TIMESTAMP,"
+                + "$HISTORY_TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP,"
                 + "PRIMARY KEY($HISTORY_USER_ID, $HISTORY_TRACK_ID, $HISTORY_TIMESTAMP),"
                 + "FOREIGN KEY($HISTORY_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($HISTORY_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
@@ -1526,6 +1526,17 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     }
 
     //Sort from A-Z
+    /**
+     * Sort
+     *
+     * Function takes three parameters type, order and curUserId
+     *
+     * @param type playlist, album, and artist
+     * @param order ASC, DESC, ADDED. Don't need to be uppercase
+     * @param curUserId the current user using the app
+     *
+     * @return an ArrayList of playlist/album/artist
+     */
     fun sort(type: String, order: String, curUserId: String) : ArrayList<Any> {
         val rawQuery: String
         val list = ArrayList<Any>()
@@ -1566,7 +1577,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = PLAYLIST_TIMESTAMP
                 } else tableName = PLAYLIST_NAME
-                rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
+                rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_USER_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
                             "FROM $TABLE_PLAYLIST AS P " +
                             "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON FP.$FOLLOWED_PLAYLIST_ID = P.$PLAYLIST_ID " +
                             "WHERE P.$PLAYLIST_USER_ID = '$curUserId' OR FP.$FOLLOWED_PLAYLIST_USER_ID = '$curUserId' " +
@@ -1605,8 +1616,97 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
             "playlist" -> {
                 do {
-                    list.add(Playlist(cursor.getString(0), curUserId, cursor.getString(1),
-                        cursor.getString(2)))
+                    list.add(Playlist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3)))
+                } while (cursor.moveToNext())
+            }
+        }
+
+        cursor.close()
+        db.close()
+        return list
+    }
+
+    /**
+     * Getting recently played
+     *
+     * Function takes two parameters type and curUserId
+     *
+     * @param type playlist, album, and artist
+     * @param curUserId the current user using the app
+     *
+     * @return an ArrayList of playlist/album/artist
+     */
+    fun getNewest(type: String, curUserId: String) : ArrayList<Any> {
+        val rawQuery: String
+        val list = ArrayList<Any>()
+        val db = this.readableDatabase
+
+        //Make query
+
+        when (type.lowercase()) {
+            "album" -> {
+                rawQuery =  "SELECT A.$ALBUM_ID, A.$ALBUM_ARTIST_ID, A.$ALBUM_NAME, A.$ALBUM_RELEASE_DATE, A.$ALBUM_IMAGE " +
+                        "FROM $TABLE_HISTORY AS H " +
+                        "JOIN $TABLE_TRACK AS T ON H.$HISTORY_TRACK_ID = T.$TRACK_ID " +
+                        "JOIN $TABLE_ALBUM AS A ON T.$TRACK_ALBUM_ID = A.$ALBUM_ID " +
+                        "WHERE H.$HISTORY_USER_ID = '$curUserId' " +
+                        "ORDER BY $HISTORY_TIMESTAMP DESC"
+            }
+
+            "artist" -> {
+                rawQuery =  "SELECT ART.$ARTIST_ID, ART.$ARTIST_NAME, ART.$ARTIST_GENRE, ART.$ARTIST_IMAGE " +
+                        "FROM $TABLE_HISTORY AS H " +
+                        "JOIN $TABLE_TRACK AS T ON H.$HISTORY_TRACK_ID = T.$TRACK_ID " +
+                        "JOIN $TABLE_ALBUM AS A ON T.$TRACK_ALBUM_ID = A.$ALBUM_ID " +
+                        "JOIN $TABLE_ARTIST AS ART ON A.$ALBUM_ARTIST_ID = ART.$ARTIST_ID"
+                        "WHERE H.$HISTORY_USER_ID = '$curUserId' " +
+                        "ORDER BY $HISTORY_TIMESTAMP DESC"
+            }
+
+            "playlist" -> {
+                rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_USER_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
+                        "FROM $TABLE_HISTORY AS H " +
+                        "JOIN $TABLE_PLAYLIST_TRACK AS PT ON H.$HISTORY_TRACK_ID = PT.$PLAYLIST_TRACK_TRACK_ID " +
+                        "JOIN $TABLE_PLAYLIST AS P ON PT.$PLAYLIST_TRACK_PLAYLIST_ID = P.$PLAYLIST_ID " +
+                        "WHERE H.$HISTORY_USER_ID = '$curUserId' " +
+                        "ORDER BY $HISTORY_TIMESTAMP DESC"
+            }
+            else -> {
+                Log.e("MusicAppDatabaseHelper", "Wrong type")
+                db.close()
+                return list
+            }
+        }
+
+        val cursor = db.rawQuery(rawQuery, arrayOf())
+        if(!cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            Log.e("MusicAppDatabaseHelper", "No element to sort")
+            return list
+        }
+
+        //Add to a list and return
+        when(type.lowercase()) {
+            "album" -> {
+                do {
+                    list.add(Album(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3), cursor.getString(4)))
+                } while (cursor.moveToNext())
+            }
+
+            "artist" -> {
+                do {
+                    list.add(Artist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3)))
+                } while (cursor.moveToNext())
+            }
+
+            "playlist" -> {
+                do {
+                    list.add(Playlist(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3)))
                 } while (cursor.moveToNext())
             }
         }
