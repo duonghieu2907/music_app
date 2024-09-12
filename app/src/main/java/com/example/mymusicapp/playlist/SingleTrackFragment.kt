@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
@@ -19,10 +20,13 @@ import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.TrackQueue
 import com.example.mymusicapp.queue.QueueFragment
+import com.example.mymusicapp.data.PlayerViewModel
+import com.example.mymusicapp.data.PlayerViewModelFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerControlView
+import com.google.android.exoplayer2.SimpleExoPlayer
 
 class SingleTrackFragment : Fragment() {
 
@@ -38,6 +42,7 @@ class SingleTrackFragment : Fragment() {
     private lateinit var songCover: ImageView
     private lateinit var playingFrom: TextView
     private lateinit var playerControlView: PlayerControlView
+    private lateinit var playerViewModel: PlayerViewModel
     private lateinit var exoPlayer: ExoPlayer
 
     private lateinit var moreOptionsButton: ImageView
@@ -45,7 +50,6 @@ class SingleTrackFragment : Fragment() {
     private lateinit var queueButton: ImageView
 
     private lateinit var playlistName: TextView
-    var currentTrackIndex: Int = 0
     private lateinit var curUserId: String
 
     override fun onCreateView(
@@ -54,56 +58,40 @@ class SingleTrackFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.activity_single_song, container, false)
 
+        // Initialize ExoPlayer
+        exoPlayer = ExoPlayer.Builder(requireContext()).build()
+
         // Hide the navigation bar when this fragment is created
         val activity = requireActivity()
         if (activity is MainActivity) {
             activity.hideBottomNavigation()
         }
 
+        // Initialize ViewModel using the factory, passing ExoPlayer to it
+        playerViewModel = ViewModelProvider(
+            requireActivity(), PlayerViewModelFactory(exoPlayer)
+        ).get(PlayerViewModel::class.java)
 
         backButton = view.findViewById(R.id.back)
+        previousButton = view.findViewById(R.id.previous_button)
+        dbHelper = MusicAppDatabaseHelper(requireContext())
 
-        // Set button click handlers
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        previousButton = view.findViewById(R.id.previous_button)
-
         previousButton.setOnClickListener {
-            playPreviousTrackInQueue()
+            playerViewModel.playPreviousTrackInQueue()
         }
-
-
-        dbHelper = MusicAppDatabaseHelper(requireContext())
-
-
-
-
 
         // Get global user ID
         val app = requireActivity().application as Global
         curUserId = app.curUserId
 
-        // Initialize ExoPlayer
-        exoPlayer = ExoPlayer.Builder(requireContext()).build()
+        // Set the ExoPlayer in the PlayerControlView from ViewModel
         playerControlView = view.findViewById(R.id.playerControlView)
-        playerControlView.player = exoPlayer
+        playerControlView.player = playerViewModel.exoPlayer
         playerControlView.setShowTimeoutMs(0)
-
-        // Listen for playback state changes to handle track completion
-        exoPlayer.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) {
-                    handleQueueCompletion()
-                }
-            }
-
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                // Enable/disable "Previous" button based on current track index
-                previousButton.isEnabled = currentTrackIndex > 0
-            }
-        })
 
         moreOptionsButton = view.findViewById(R.id.more_options)
         queueButton = view.findViewById(R.id.queue)
@@ -127,27 +115,19 @@ class SingleTrackFragment : Fragment() {
         val playlistId = arguments?.getString("PLAYLIST_ID")
         val albumId = arguments?.getString("ALBUM_ID")
 
-        // Fetch objects from the database using their IDs
         track = dbHelper.getTrack(trackId) ?: return view
         playlist = playlistId?.let { dbHelper.getPlaylist(it) }
         album = albumId?.let { dbHelper.getAlbum(it) }
 
-
-
         if (TrackQueue.queue.isEmpty()) {
-            // Queue is empty, play this track but don't add to the queue
-            playSingleTrackWithoutQueue()
+            playerViewModel.playTrack(track) // Play track without adding to queue
         } else {
-            // Check if track exists in the queue
             val trackIndex = TrackQueue.queue.indexOfFirst { it.trackId == track.trackId }
             if (trackIndex != -1) {
-                // Start playing from the first occurrence of the track
-                playTrackAtIndex(trackIndex)
+                playerViewModel.playTrack(TrackQueue.queue[trackIndex]) // Play existing track
             } else {
-                // Add track to the queue and play it
                 TrackQueue.queue.add(track)
-                currentTrackIndex = TrackQueue.queue.size - 1
-                playTrackAtIndex(currentTrackIndex)
+                playerViewModel.playTrack(track) // Add track to queue and play it
             }
         }
 
@@ -159,154 +139,27 @@ class SingleTrackFragment : Fragment() {
         return view
     }
 
-    private fun playSingleTrackWithoutQueue() {
+    private fun updateLikeButton() {
+        val isLiked = dbHelper.isTrackLiked(track.trackId, curUserId)
 
-
-        if (track.path.startsWith("SpotifyUri")) {
-            track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
-        }
-
-
-
-        val mediaItem = MediaItem.fromUri(Uri.parse(track.path))
-        exoPlayer.setMediaItem(mediaItem)
-
-        exoPlayer.prepare()
-        exoPlayer.playWhenReady = true
-
-        //Add history
-
-
-
-        songTitle.text = track.name
-        val album1 = dbHelper.getAlbum(track.albumId)
-        val artist = dbHelper.getArtist(album1?.artistId ?: "")
-        artistName.text = artist?.name ?: "Unknown Artist"
-
-
-        if(playlist != null)
-        {
-            playlistName.text = playlist?.name
-            playingFrom.text = "PLAYING FROM PLAYLIST"
-        }
-        else if (album != null)
-        {
-            playlistName.text = album?.name
-            playingFrom.text = "PLAYING FROM ALBUM"
-        }
-        else {
-            playlistName.text = ""
-            playingFrom.text = ""
-        }
-
-
-        Glide.with(this)
-            .load(album1?.image)
-            .placeholder(R.drawable.blacker_gradient)
-            .into(songCover)
-    }
-
-    private fun handleQueueCompletion() {
-        if (TrackQueue.queue.isNotEmpty()) {
-            // Continue to next track in the queue if there is any
-            playNextTrackInQueue()
+        if (isLiked) {
+            likeButton.setImageResource(R.drawable.filledlove)
         } else {
-            // Queue is empty, stop playback and wait for new songs to be added
-            exoPlayer.stop()
-            Toast.makeText(requireContext(), "Playback completed. Waiting for new tracks.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun playTrackAtIndex(index: Int) {
-        currentTrackIndex = index
-
-        if (index >= TrackQueue.queue.size) return
-
-        val currentTrack = TrackQueue.queue[index]
-
-
-
-        if (currentTrack.path.startsWith("SpotifyUri")) {
-            currentTrack.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
-        }
-
-
-
-
-
-        val mediaItem = MediaItem.fromUri(Uri.parse(currentTrack.path))
-        exoPlayer.setMediaItem(mediaItem)
-
-        exoPlayer.prepare()
-        exoPlayer.playWhenReady = true
-
-
-        // Add history
-
-        songTitle.text = currentTrack.name
-        val album1 = dbHelper.getAlbum(currentTrack.albumId)
-        val artist = dbHelper.getArtist(album1?.artistId ?: "")
-        artistName.text = artist?.name ?: "Unknown Artist"
-
-
-
-
-        if(playlist != null)
-        {
-            playlistName.text = playlist?.name
-            playingFrom.text = "PLAYING FROM PLAYLIST"
-        }
-        else if (album != null)
-        {
-            playlistName.text = album?.name
-            playingFrom.text = "PLAYING FROM ALBUM"
-        }
-        else {
-            playlistName.text = ""
-            playingFrom.text = ""
-        }
-
-        Glide.with(this)
-            .load(album1?.image)
-            .placeholder(R.drawable.blacker_gradient)
-            .into(songCover)
-    }
-
-    private fun playNextTrackInQueue() {
-        currentTrackIndex++
-        if (currentTrackIndex < TrackQueue.queue.size) {
-            playTrackAtIndex(currentTrackIndex)
-        } else {
-            exoPlayer.stop()
-            Toast.makeText(requireContext(), "End of the queue", Toast.LENGTH_SHORT).show()
+            likeButton.setImageResource(R.drawable.love)
         }
     }
 
     private fun toggleLikeStatus() {
         if (dbHelper.isTrackLiked(track.trackId, curUserId)) {
-            dbHelper.deleteLike(curUserId, track.trackId) // Use global curUserId
+            dbHelper.deleteLike(curUserId, track.trackId)
         } else {
-            dbHelper.addLike(curUserId, track.trackId) // Use global curUserId
+            dbHelper.addLike(curUserId, track.trackId)
         }
         updateLikeButton()
     }
 
-    private fun updateLikeButton() {
-        // is liked by the user
-        val isLiked = dbHelper.isTrackLiked(track.trackId, curUserId)  // Use global curUserId
-
-        if (isLiked) {
-            likeButton.setImageResource(R.drawable.filledlove)  // Filled heart for liked
-        } else {
-            likeButton.setImageResource(R.drawable.love)  // Empty heart for not liked
-        }
-    }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
-        exoPlayer.release()
-        // Show the navigation bar when this fragment is destroyed
         val activity = requireActivity()
         if (activity is MainActivity) {
             activity.showBottomNavigation()
@@ -341,28 +194,11 @@ class SingleTrackFragment : Fragment() {
             .commit()
     }
 
-
-
     override fun onResume() {
         super.onResume()
-        // Hide the bottom navigation bar when this fragment is resumed
-        // Hide the navigation bar when this fragment is created
         val activity = requireActivity()
         if (activity is MainActivity) {
             activity.hideBottomNavigation()
         }
     }
-
-
-    private fun playPreviousTrackInQueue() {
-        // Check if we are not at the first track in the queue
-        if (currentTrackIndex > 0) {
-            currentTrackIndex-- // Decrement the index to point to the previous track
-            playTrackAtIndex(currentTrackIndex) // Play the track at the new index
-        } else {
-            Toast.makeText(requireContext(), "Already at the first track in the queue", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
 }
