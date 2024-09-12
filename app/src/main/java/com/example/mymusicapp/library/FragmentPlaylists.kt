@@ -93,6 +93,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     private fun createPlaylistItem(){
         val db = MusicAppDatabaseHelper(requireContext())
         updateAdapter(db.getUserLibraryPlaylists(curUser))
+        db.close()
     }
 
     override fun itemSelectionClickListener(item: Playlist?) {
@@ -118,6 +119,7 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
     private fun sort(order : String): ArrayList<Playlist> {
         val db = MusicAppDatabaseHelper(requireContext())
         val sample: ArrayList<Playlist> = db.sort("playlist", order, curUser) as? ArrayList<Playlist>?: ArrayList()
+        db.close()
         return sample
     }
 }

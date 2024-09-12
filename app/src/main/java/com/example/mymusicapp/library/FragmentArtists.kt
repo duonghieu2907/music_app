@@ -91,6 +91,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     private fun createArtistItem() {
         val db = MusicAppDatabaseHelper(requireContext()) //Get database
         updateAdapter(db.getUserLibraryArtists(curUser))
+        db.close()
     }
 
     override fun setOnItemClickListener(item: Artist?) {
@@ -101,6 +102,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     private fun sort(order : String): ArrayList<Artist> {
         val db = MusicAppDatabaseHelper(requireContext())
         val sample: ArrayList<Artist> = db.sort("artist", order, curUser) as? ArrayList<Artist>?: ArrayList()
+        db.close()
         return sample
     }
 }
