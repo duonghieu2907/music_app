@@ -121,7 +121,7 @@ class MenuFragment : Fragment() {
             val removeFromPlaylistIcon = view.findViewById<ImageView>(R.id.removePlaylist)
             val removeFromPlaylistText = view.findViewById<TextView>(R.id.removeFromPlaylist)
 
-            if (playlistId == "userLikedSongs") {
+            if (playlistId == "willneverused") {
                 // Set click listener for unliking the song
                 val clickListenerUnlike = View.OnClickListener {
 
