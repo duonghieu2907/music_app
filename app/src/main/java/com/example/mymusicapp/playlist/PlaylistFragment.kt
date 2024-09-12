@@ -124,7 +124,7 @@ class PlaylistFragment : Fragment() {
             name = "Liked Songs",
             image = ""
         )
-        tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, likedSongsPlaylist) }
+        tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper, null) { track -> openTrack(track, likedSongsPlaylist) }
         recyclerViewTracks.adapter = tracksAdapter
     }
 
@@ -143,7 +143,7 @@ class PlaylistFragment : Fragment() {
 
             // Fetch tracks
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
-            tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, playlist!!) }
+            tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper, playlist!!) { track -> openTrack(track, playlist!!) }
             recyclerViewTracks.adapter = tracksAdapter
         } else {
             Toast.makeText(requireContext(), "Playlist not found", Toast.LENGTH_SHORT).show()
