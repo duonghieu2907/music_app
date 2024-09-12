@@ -35,12 +35,6 @@ class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_search, container, false)
 
-        // Hide the navigation bar when this fragment is created
-        val activity = requireActivity()
-        if (activity is MainActivity) {
-            activity.hideBottomNavigation()
-        }
-
         // Set up the back button
         val backButton: ImageButton = view.findViewById(R.id.back_button)
         backButton.setOnClickListener {
@@ -117,6 +111,15 @@ class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
                 }
                 Toast.makeText(requireContext(), "Clicked on Track: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
         }
     }
 }
