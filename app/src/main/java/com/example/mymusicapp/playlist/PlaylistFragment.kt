@@ -9,19 +9,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mymusicapp.R
-import android.widget.Toast
 import com.bumptech.glide.Glide
-
+import com.example.mymusicapp.R
+import com.example.mymusicapp.bottomnavigation.LibraryFragment
 import com.example.mymusicapp.data.Global
-
-import com.example.mymusicapp.MainActivity
-
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import com.example.mymusicapp.models.*
+import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.models.TrackQueue
 
 class PlaylistFragment : Fragment() {
 
@@ -87,7 +86,11 @@ class PlaylistFragment : Fragment() {
 
         //button
         backButton.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            val fragment = LibraryFragment.newInstance("Playlists")
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         optionsButton.setOnClickListener {

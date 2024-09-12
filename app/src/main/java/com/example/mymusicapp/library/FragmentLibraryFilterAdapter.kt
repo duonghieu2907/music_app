@@ -1,8 +1,5 @@
 package com.example.mymusicapp.library
 
-import android.graphics.Color
-import android.graphics.LinearGradient
-import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,6 +65,19 @@ class FragmentLibraryFilterAdapter(
 
             //Changed the one that has blue
             notifyItemChanged(prevSelectedPosition)
+        }
+    }
+
+    fun addColor(filterName: String) {
+        for(i in 0..<itemCount) {
+            if(filterItem[i].name == filterName) {
+                //Update the selected position
+                selectedPosition = i
+
+                //Notify adapter to update the color
+                notifyItemChanged(selectedPosition)
+                return
+            }
         }
     }
 }

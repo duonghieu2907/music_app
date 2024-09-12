@@ -1,20 +1,16 @@
 package com.example.mymusicapp.bottomnavigation
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
-import com.example.mymusicapp.library.BrowseLibrary
 import com.example.mymusicapp.library.FragmentAlbums
 import com.example.mymusicapp.library.FragmentArtists
 import com.example.mymusicapp.library.FragmentLibraryFilterAdapter
@@ -25,7 +21,18 @@ import com.example.mymusicapp.library.LibraryFilterItem
 
 class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibraryFilterSelectionListener {
     private lateinit var drawerLayout: DrawerLayout
- 
+    private var filterName: String = ""
+
+    companion object{
+        private const val ARG_FILTER_NAME = "filter_name"
+        fun newInstance(filterName: String): LibraryFragment {
+            val fragment = LibraryFragment()
+            val args = Bundle()
+            args.putString(LibraryFragment.ARG_FILTER_NAME, filterName)
+            fragment.arguments = args
+            return fragment
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,6 +40,13 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
     ): View {
         // Inflate the layout for this fragment
         val view: View = inflater.inflate(R.layout.fragment_library, container, false)
+
+        //Get argument
+        arguments?.let {
+            filterName = it.getString(ARG_FILTER_NAME)?: ""
+        }
+
+
         app(view)
 
         return view
@@ -71,21 +85,16 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
 
 
         //Your library Fragment
-        val yourLibraryText : TextView = view.findViewById(R.id.YourLibraryText)
-        yourLibraryText.setOnClickListener {
+        val yourLibrarySection : View = view.findViewById(R.id.YourLibrarySection)
+        yourLibrarySection.setOnClickListener {
             onSelectionListener(null)
             itemFilterAdapter.resetColors()
         }
 
-        val yourLibraryIcon : ImageView = view.findViewById(R.id.YourLibraryIcon)
-        yourLibraryIcon.setOnClickListener {
-            onSelectionListener(null)
-            itemFilterAdapter.resetColors()
-        }
         //Set up list
         //Default layout, calling once
-        onSelectionListener(null)
-
+        onSelectionListener(LibraryFilterItem(filterName))
+        itemFilterAdapter.addColor(filterName)
     }
 
     //Create the item list

@@ -15,6 +15,16 @@
         android:contentDescription="avatar"
         android:src="@drawable/ic_avatar"/>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/YourLibrarySection"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.28"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.04">
     <TextView
         android:id="@+id/YourLibraryText"
         android:layout_width="wrap_content"
@@ -23,25 +33,28 @@
         android:text="Your Library"
         android:textColor="@color/lightBlue"
         android:textSize="27sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="@id/YourLibrarySection"
+        app:layout_constraintEnd_toEndOf="@id/YourLibrarySection"
         app:layout_constraintHorizontal_bias="0.28"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.04" />
+        app:layout_constraintStart_toStartOf="@id/YourLibrarySection"
+        app:layout_constraintTop_toTopOf="@id/YourLibrarySection"/>
 
     <ImageView
         android:id="@+id/YourLibraryIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/music_logo"
+        android:clickable="false"
+        android:focusable="false"
         app:layout_constraintBottom_toBottomOf="@+id/YourLibraryText"
         app:layout_constraintEnd_toStartOf="@id/YourLibraryText"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/YourLibraryText"
         app:layout_constraintVertical_bias="0.5" />
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
@@ -55,7 +68,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/YourLibraryText"
+        app:layout_constraintTop_toBottomOf="@+id/YourLibrarySection"
         app:layout_constraintVertical_bias="0.05" />
 
     <FrameLayout

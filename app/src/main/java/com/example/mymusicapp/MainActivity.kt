@@ -56,8 +56,10 @@ class MainActivity : AppCompatActivity() {
                 //To change database, wipe all data in emulator
 
                 //Add dummy data
-                dbHelper.importDatabaseFromFile()
-                addDummyDataToDatabase(spotifyData)
+                dbHelper.addUser(User("1", "Official", "", "", "", ""))
+                Log.d("mainActivity", "Official added")
+
+                //addDummyDataToDatabase(spotifyData)
             }
         } catch (e : Exception) {
             Log.e("mainActivity", "Error during background: $e")
