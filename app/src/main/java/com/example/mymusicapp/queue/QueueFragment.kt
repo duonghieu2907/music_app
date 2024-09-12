@@ -20,16 +20,14 @@ import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
-import com.example.mymusicapp.playlist.PlaylistSongAdapter
-import com.example.mymusicapp.playlist.SingleTrackFragment
 
-class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, PlaylistSongAdapter.OnItemClickListener {
+class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener {
 
     // Declaration of variables...
     private lateinit var recyclerViewQueue: RecyclerView
     private lateinit var recyclerViewPlaylist: RecyclerView
     private lateinit var queueSongAdapter: QueueSongAdapter
-    private lateinit var playlistSongAdapter: PlaylistSongAdapter
+
     private lateinit var backButton: ImageView
     private lateinit var clearQueueButton: TextView
     private lateinit var dbHelper: MusicAppDatabaseHelper
@@ -124,12 +122,12 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener, Playlist
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
         // Fetch Album and Artist information
-        val album: Album? = dbHelper.getAlbum(track.albumId)
-        val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
+        val album1: Album? = dbHelper.getAlbum(track.albumId)
+        val artist: Artist? = dbHelper.getArtist(album1?.artistId ?: "")
 
         // Load the album cover image
         Glide.with(this)
-            .load(album?.image)
+            .load(album1?.image)
             .placeholder(R.drawable.blacker_gradient)
             .into(songCover)
 

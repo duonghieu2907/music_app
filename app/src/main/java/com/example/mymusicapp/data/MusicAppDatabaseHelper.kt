@@ -849,6 +849,23 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         }
     }
 
+    // New method to get the count of playlists by a specific user
+    fun getPlaylistCountByUser(userId: String): Int {
+        val db = this.readableDatabase
+        val query = "SELECT COUNT(*) FROM $TABLE_PLAYLIST WHERE $PLAYLIST_USER_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId))
+
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        db.close()
+
+        return count
+    }
+
+
     fun getPlaylistIdByName(playlistName: String, userId: String): String? {
         val db = this.readableDatabase
         var playlistId: String? = null
