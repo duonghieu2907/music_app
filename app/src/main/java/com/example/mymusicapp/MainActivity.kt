@@ -281,13 +281,13 @@ class MainActivity : AppCompatActivity() {
     val dummyPlaylists = listOf(
         Playlist(
             playlistId = "playlist1",
-            userId = "3", // Assuming user "3" is the current user
+            userId = "3",
             name = "My Favorite Songs",
             image = "https://example.com/playlist1.jpg"
         ),
         Playlist(
             playlistId = "playlist2",
-            userId = "2", // Assuming user "2" is another user
+            userId = "3",
             name = "Chill Vibes",
             image = "https://example.com/playlist2.jpg"
         )
