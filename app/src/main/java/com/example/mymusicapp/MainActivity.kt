@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -38,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         try {
             dbHelper = MusicAppDatabaseHelper(this)
             //dbHelper.deleteAll() //Run this line to delete everything
+            //Run this line of code to export database
+            dbHelper.exportDatabaseToFile()
 
             //Run this to update or insert data to database
             lifecycleScope.launch(Dispatchers.IO) {
@@ -51,13 +52,21 @@ class MainActivity : AppCompatActivity() {
                 //authCode received, built clientApi and AppApi
                 //spotifyData.buildClientApi(authCode!!)
                 //spotifyData.buildAppApi()
+                
                 //dbHelper.deleteAll() //Run this line to delete all data
                 //To change database, wipe all data in emulator
 
-                //Add dummy data
+                //use for back up
                 //dbHelper.exportDatabaseToFile()
-                //addDummyDataToDatabase(spotifyData)
+
+
+                //dummy to work with playlist
+                dbHelper.addUser(User("3", "Test", "", "", "", ""))
                 //insertDummyData()
+                //addDummyDataToDatabase(spotifyData)
+                
+                
+                //real data -> do not delete
                 dbHelper.addUser(User("1", "Official", "", "", "", ""))
                 Log.d("mainActivity", "Official added")
                 // Retrieve and print all genres
@@ -285,13 +294,13 @@ class MainActivity : AppCompatActivity() {
     val dummyPlaylists = listOf(
         Playlist(
             playlistId = "playlist1",
-            userId = "1", // Assuming user "1" is the current user
+            userId = "3",
             name = "My Favorite Songs",
             image = "https://example.com/playlist1.jpg"
         ),
         Playlist(
             playlistId = "playlist2",
-            userId = "2", // Assuming user "2" is another user
+            userId = "3",
             name = "Chill Vibes",
             image = "https://example.com/playlist2.jpg"
         )
@@ -312,7 +321,7 @@ class MainActivity : AppCompatActivity() {
         dbHelper.addPlaylistTrack("playlist1","track2")
         dbHelper.addPlaylistTrack("playlist2","track3")
 
-        Toast.makeText(this,  "Dummy data inserted for testing", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this,  "Dummy data inserted for testing", Toast.LENGTH_SHORT).show()
     }
 
 

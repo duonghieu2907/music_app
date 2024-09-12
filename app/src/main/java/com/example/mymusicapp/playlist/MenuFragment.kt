@@ -79,7 +79,7 @@ class MenuFragment : Fragment() {
 
         // Set click listeners for the menu items to open Add2PlaylistFragment
         val clickListener = View.OnClickListener {
-            openFragment(Add2PlaylistFragment.newInstance(track, ))  // Pass the track data when opening Add2PlaylistFragment
+            openFragment(Add2PlaylistFragment.newInstance(track ))  // Pass the track data when opening Add2PlaylistFragment
         }
 
         addPlaylistIcon.setOnClickListener(clickListener)

@@ -107,7 +107,7 @@ class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
             "Track" -> {
                 val fragment = dbHelper.getTrack(searchResult.id)?.let { track ->
                     SingleTrackFragment.newInstance(
-                        track, null, null)
+                        track.trackId, null, null)
                 }
                 if (fragment != null) {
                     parentFragmentManager.beginTransaction()

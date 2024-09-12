@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import com.example.mymusicapp.models.Album
-import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.playlist.PlaylistTracksAdapter
 import com.example.mymusicapp.playlist.SingleTrackFragment
@@ -73,7 +71,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         // Top 5 tracks RecyclerView setup
         val top5Tracks = dbHelper.getTop5TracksByArtist(artistId) // Assume you have this method
         Log.d("ArtistFragment", "Top 5 Tracks: $top5Tracks")  // Log the result
-        val trackAdapter = PlaylistTracksAdapter(top5Tracks, dbHelper) { track -> openTrack(track) }
+        val trackAdapter = PlaylistTracksAdapter(this, top5Tracks, dbHelper, null) { track -> openTrack(track) }
         val trackRecyclerView = view.findViewById<RecyclerView>(R.id.topSongsRecyclerView)
         trackRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         trackRecyclerView.adapter = trackAdapter
@@ -88,7 +86,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     }
 
     private fun openTrack(track: Track) {
-        val fragment = SingleTrackFragment.newInstance(track, null, null)
+        val fragment = SingleTrackFragment.newInstance(track.trackId, null, null)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)

@@ -10,16 +10,17 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
-import androidx.appcompat.app.AlertDialog
-import com.example.mymusicapp.bottomnavigation.LibraryFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import com.example.mymusicapp.models.*
+import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.models.TrackQueue
 
 class PlaylistFragment : Fragment() {
 
@@ -85,11 +86,12 @@ class PlaylistFragment : Fragment() {
 
         //button
         backButton.setOnClickListener {
-            val fragment = LibraryFragment.newInstance("Playlists")
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+//            val fragment = LibraryFragment.newInstance("Playlists")
+//            parentFragmentManager.beginTransaction()
+//                .replace(R.id.fragment_container, fragment)
+//                .addToBackStack(null)
+//                .commit()
         }
 
         optionsButton.setOnClickListener {
@@ -124,7 +126,9 @@ class PlaylistFragment : Fragment() {
             name = "Liked Songs",
             image = ""
         )
-        tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, likedSongsPlaylist) }
+
+        tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper) { track -> openTrack(track, likedSongsPlaylist) }
+
         recyclerViewTracks.adapter = tracksAdapter
     }
 
@@ -143,7 +147,9 @@ class PlaylistFragment : Fragment() {
 
             // Fetch tracks
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
-            tracksAdapter = PlaylistTracksAdapter(trackList, dbHelper) { track -> openTrack(track, playlist!!) }
+
+            tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper, playlist) { track -> openTrack(track, playlist!!) }
+
             recyclerViewTracks.adapter = tracksAdapter
         } else {
             Toast.makeText(requireContext(), "Playlist not found", Toast.LENGTH_SHORT).show()
@@ -257,7 +263,7 @@ class PlaylistFragment : Fragment() {
 
 
     private fun openTrack(track: Track, playlist: Playlist) {
-        val fragment = SingleTrackFragment.newInstance(track, playlist, null)
+        val fragment = SingleTrackFragment.newInstance(track.trackId, playlist.playlistId, null)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)

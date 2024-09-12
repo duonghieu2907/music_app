@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
-import com.example.mymusicapp.bottomnavigation.LibraryFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
@@ -83,11 +82,12 @@ class AlbumFragment : Fragment() {
 
         // Set button click handlers
         backButton.setOnClickListener {
-            val fragment = LibraryFragment.newInstance("Albums")
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+//            val fragment = LibraryFragment.newInstance("Albums")
+//            parentFragmentManager.beginTransaction()
+//                .replace(R.id.fragment_container, fragment)
+//                .addToBackStack(null)
+//                .commit()
         }
 
         optionsButton.setOnClickListener {
@@ -167,19 +167,19 @@ class AlbumFragment : Fragment() {
 
             // Fetch tracks for this album
             val trackList: List<Track> = dbHelper.getTracksByAlbumId(albumId)  // Ensure this method accepts String
-            tracksAdapter = AlbumTracksAdapter(trackList, dbHelper) { track -> openTrack(track, album) }
+            tracksAdapter = AlbumTracksAdapter(trackList, dbHelper) { track -> openTrack(track.trackId, albumId) }
             recyclerViewTracks.adapter = tracksAdapter
         } else {
             Toast.makeText(requireContext(), "Album not found", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun openTrack(track: Track, album: Album?) {
-        val fragment = SingleTrackFragment.newInstance(track,null, album)
+    private fun openTrack(trackId: String, albumId: String? = null) {
+        val fragment = SingleTrackFragment.newInstance(trackId,null, albumId)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-        Toast.makeText(requireContext(), track.name, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), trackId, Toast.LENGTH_SHORT).show()
     }
 }
