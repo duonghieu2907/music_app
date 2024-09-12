@@ -73,7 +73,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
         // Top 5 tracks RecyclerView setup
         val top5Tracks = dbHelper.getTop5TracksByArtist(artistId) // Assume you have this method
         Log.d("ArtistFragment", "Top 5 Tracks: $top5Tracks")  // Log the result
-        val trackAdapter = PlaylistTracksAdapter(top5Tracks, dbHelper) { track -> openTrack(track) }
+        val trackAdapter = PlaylistTracksAdapter(this, top5Tracks, dbHelper, null) { track -> openTrack(track) }
         val trackRecyclerView = view.findViewById<RecyclerView>(R.id.topSongsRecyclerView)
         trackRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         trackRecyclerView.adapter = trackAdapter
