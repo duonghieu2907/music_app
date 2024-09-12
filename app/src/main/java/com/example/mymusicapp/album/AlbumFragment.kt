@@ -1,7 +1,6 @@
 package com.example.mymusicapp.album
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -9,15 +8,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mymusicapp.R
-import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.R
+import com.example.mymusicapp.bottomnavigation.LibraryFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import com.example.mymusicapp.models.*
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.models.TrackQueue
 import com.example.mymusicapp.playlist.SingleTrackFragment
 
 class AlbumFragment : Fragment() {
@@ -81,7 +83,11 @@ class AlbumFragment : Fragment() {
 
         // Set button click handlers
         backButton.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            val fragment = LibraryFragment.newInstance("Albums")
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         optionsButton.setOnClickListener {

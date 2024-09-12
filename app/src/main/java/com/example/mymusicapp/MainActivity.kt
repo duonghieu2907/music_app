@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -38,8 +39,6 @@ class MainActivity : AppCompatActivity() {
             dbHelper = MusicAppDatabaseHelper(this)
             //dbHelper.deleteAll() //Run this line to delete everything
 
-            //cur user liked songs? not sure if we should pass the user id in
-            //dbHelper.addUserLikedSongsPlaylist("1")
             //Run this to update or insert data to database
             lifecycleScope.launch(Dispatchers.IO) {
                 val spotifyData = SpotifyData()
@@ -51,13 +50,25 @@ class MainActivity : AppCompatActivity() {
 
                 //authCode received, built clientApi and AppApi
                 //spotifyData.buildClientApi(authCode!!)
-                spotifyData.buildAppApi()
+                //spotifyData.buildAppApi()
+                
                 //dbHelper.deleteAll() //Run this line to delete all data
                 //To change database, wipe all data in emulator
 
-                //Add dummy data
-                dbHelper.importDatabaseFromFile()
-                addDummyDataToDatabase(spotifyData)
+                //use for back up
+                //dbHelper.exportDatabaseToFile()
+
+
+                //dummy to work with playlist
+                dbHelper.addUser(User("3", "Test", "", "", "", ""))
+                insertDummyData()
+                 //addDummyDataToDatabase(spotifyData)
+                
+                
+                //real data -> do not delete
+                dbHelper.addUser(User("1", "Official", "", "", "", ""))
+                Log.d("mainActivity", "Official added")
+
             }
         } catch (e : Exception) {
             Log.e("mainActivity", "Error during background: $e")
@@ -241,4 +252,67 @@ class MainActivity : AppCompatActivity() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.visibility = View.VISIBLE
     }
+
+    // Sample Tracks
+    val dummyTracks = listOf(
+        Track(
+            trackId = "track1",
+            albumId = "album1",
+            name = "Song One",
+            duration = "03:45",
+            path = "https://example.com/track1.mp3"
+        ),
+        Track(
+            trackId = "track2",
+            albumId = "album1",
+            name = "Song Two",
+            duration = "04:20",
+            path = "https://example.com/track2.mp3"
+        ),
+        Track(
+            trackId = "track3",
+            albumId = "album2",
+            name = "Song Three",
+            duration = "05:10",
+            path = "https://example.com/track3.mp3"
+        )
+    )
+
+    // Sample Playlists
+    val dummyPlaylists = listOf(
+        Playlist(
+            playlistId = "playlist1",
+            userId = "3",
+            name = "My Favorite Songs",
+            image = "https://example.com/playlist1.jpg"
+        ),
+        Playlist(
+            playlistId = "playlist2",
+            userId = "3",
+            name = "Chill Vibes",
+            image = "https://example.com/playlist2.jpg"
+        )
+    )
+    private fun insertDummyData() {
+        // Insert dummy tracks
+        dummyTracks.forEach { track ->
+            dbHelper.addTrack(track)  // Assuming you have a function to add tracks
+        }
+
+        // Insert dummy playlists
+        dummyPlaylists.forEach { playlist ->
+            dbHelper.addPlaylist(playlist)  // Assuming you have a function to add playlists
+        }
+
+        // Optionally, associate tracks with playlists
+        dbHelper.addPlaylistTrack("playlist1","track1")
+        dbHelper.addPlaylistTrack("playlist1","track2")
+        dbHelper.addPlaylistTrack("playlist2","track3")
+
+        Toast.makeText(this,  "Dummy data inserted for testing", Toast.LENGTH_SHORT).show()
+    }
+
+
+
+
 }

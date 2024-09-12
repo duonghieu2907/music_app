@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
@@ -18,11 +19,16 @@ import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.queue.QueueFragment
 import com.example.mymusicapp.playlist.MenuFragment
 
+import com.example.mymusicapp.models.*
+
+
 class PlaylistTracksAdapter(
     private val fragment: Fragment, // Pass the Fragment here
     private val trackList: List<Track>,
     private val dbHelper: MusicAppDatabaseHelper,
+
     private val playlist: Playlist? = null,
+
     private val onItemClick: (Track) -> Unit
 
 ) : RecyclerView.Adapter<PlaylistTracksAdapter.TrackViewHolder>() {
@@ -66,6 +72,7 @@ class PlaylistTracksAdapter(
     }
 
     private fun showMenu(view: View?, track: Track) {
+
         //jump to Menu Fragment
         Log.d("QueueSongAdapter", "Attempting to open Menu Fragment.")
         val menuFragment = MenuFragment.newInstance(track, playlist)
@@ -75,7 +82,9 @@ class PlaylistTracksAdapter(
             .replace(R.id.fragment_container, menuFragment)
             .addToBackStack(null)
             .commit()
+
     }
+
 
     override fun getItemCount(): Int {
         return trackList.size

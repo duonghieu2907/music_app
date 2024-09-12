@@ -92,6 +92,7 @@ class FragmentAlbums : Fragment(),
     private fun createAlbumsItem(){
         val db = MusicAppDatabaseHelper(requireContext())
         updateAdapter(db.getUserFollowedAlbums(curUser))
+        db.close()
     }
 
     override fun setOnItemClickListener(item: Album?) {
@@ -119,6 +120,7 @@ class FragmentAlbums : Fragment(),
     private fun sort(order : String): ArrayList<Album> {
         val db = MusicAppDatabaseHelper(requireContext())
         val sample: ArrayList<Album> = db.sort("album", order, curUser) as? ArrayList<Album>?: ArrayList()
+        db.close()
         return sample
     }
 }

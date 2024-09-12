@@ -9,17 +9,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mymusicapp.R
-import android.widget.Toast
 import com.bumptech.glide.Glide
-
+import com.example.mymusicapp.R
+import androidx.appcompat.app.AlertDialog
+import com.example.mymusicapp.bottomnavigation.LibraryFragment
 import com.example.mymusicapp.data.Global
-
-import com.example.mymusicapp.MainActivity
-
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.*
 
@@ -87,7 +85,11 @@ class PlaylistFragment : Fragment() {
 
         //button
         backButton.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            val fragment = LibraryFragment.newInstance("Playlists")
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         optionsButton.setOnClickListener {
@@ -122,7 +124,9 @@ class PlaylistFragment : Fragment() {
             name = "Liked Songs",
             image = ""
         )
+
         tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper) { track -> openTrack(track, likedSongsPlaylist) }
+
         recyclerViewTracks.adapter = tracksAdapter
     }
 
@@ -141,7 +145,9 @@ class PlaylistFragment : Fragment() {
 
             // Fetch tracks
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
+
             tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper, playlist) { track -> openTrack(track, playlist!!) }
+
             recyclerViewTracks.adapter = tracksAdapter
         } else {
             Toast.makeText(requireContext(), "Playlist not found", Toast.LENGTH_SHORT).show()
@@ -182,7 +188,8 @@ class PlaylistFragment : Fragment() {
                     println("Edit")
                 }
                 R.id.action_delete_playlist -> {
-                    // Implement delete playlist logic
+                    // Show pop-up
+                    showDeleteConfirmationDialog()
                     println("Delete")
                 }
                 R.id.action_add_to_queue -> {
@@ -217,6 +224,41 @@ class PlaylistFragment : Fragment() {
         }
         popup.show()
     }
+
+    private fun showDeleteConfirmationDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Delete Playlist")
+        builder.setMessage("Are you sure you want to delete this playlist? This action cannot be undone.")
+
+        // delete
+        builder.setPositiveButton("Yes") { dialog, _ ->
+            deletePlaylist()
+            dialog.dismiss()
+        }
+
+        // cancel
+        builder.setNegativeButton("No") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun deletePlaylist() {
+        val dbHelper = MusicAppDatabaseHelper(requireContext())
+        val success = dbHelper.deletePlaylist(playlistId)
+
+        if (success) {
+            Toast.makeText(requireContext(), "Playlist deleted successfully.", Toast.LENGTH_SHORT).show()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        } else {
+            Toast.makeText(requireContext(), "Failed to delete the playlist.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 
     private fun openTrack(track: Track, playlist: Playlist) {
         val fragment = SingleTrackFragment.newInstance(track.trackId, playlist.playlistId, null)

@@ -97,6 +97,11 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         const val FOLLOWED_ALBUM_USER_ID = "FollowedAlbumUserId"
         const val FOLLOWED_ALBUM_ID = "FollowedAlbumId"
 
+        //History
+        const val TABLE_HISTORY = "History"
+        const val HISTORY_USER_ID = "user_id"
+        const val HISTORY_TRACK_ID = "track_id"
+        const val HISTORY_TIMESTAMP = "listen_at"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -177,6 +182,14 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                 + "FOREIGN KEY($FOLLOWED_ALBUM_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($FOLLOWED_ALBUM_ID) REFERENCES $TABLE_ALBUM($ALBUM_ID))")
 
+        val createHistoryTable = ("CREATE TABLE $TABLE_HISTORY ("
+                + "$HISTORY_USER_ID TEXT,"
+                + "$HISTORY_TRACK_ID TEXT,"
+                + "$HISTORY_TIMESTAMP DATETIME DEFAULT CURRENT TIMESTAMP,"
+                + "PRIMARY KEY($HISTORY_USER_ID, $HISTORY_TRACK_ID, $HISTORY_TIMESTAMP),"
+                + "FOREIGN KEY($HISTORY_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
+                + "FOREIGN KEY($HISTORY_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
+
 
         // Execute the SQL statements
         db.execSQL(createUserTable)
@@ -189,6 +202,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.execSQL(createLikeTable) //like track
         db.execSQL(createFollowedPlaylistsTable)
         db.execSQL(createFollowedAlbumsTable)
+        db.execSQL(createHistoryTable) //History
     }
 
 
@@ -204,6 +218,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_PLAYLISTS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_ALBUMS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_HISTORY")
         onCreate(db)
     }
 
@@ -881,10 +896,16 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.close()
     }
 
-    fun deletePlaylist(playlistId: Int) {
+    fun deletePlaylist(playlistId: String) : Boolean {
         val db = this.writableDatabase
-        db.delete(TABLE_PLAYLIST, "$PLAYLIST_ID=?", arrayOf(playlistId.toString()))
-        db.close()
+        return try {
+            val result = db.delete(TABLE_PLAYLIST, "$PLAYLIST_ID=?", arrayOf(playlistId.toString()))
+            db.close()
+            result > 0  // deletion was successful
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            false
+        }
     }
 
     //LikedSong -> outdated, to be removed
@@ -1246,7 +1267,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
         // Query for playlists created by the user
         // Join both table and compare with userId, if one of PlaylistUserId or Followed_userId is UserId, then we insert
-        val query = "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
+        val query = "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_USER_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
                     "FROM $TABLE_PLAYLIST AS P " +
                     "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON P.$PLAYLIST_ID = FP.$FOLLOWED_PLAYLIST_ID " +
                     "WHERE $FOLLOWED_PLAYLIST_USER_ID = ? OR $PLAYLIST_USER_ID = ?"
@@ -1263,9 +1284,9 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         do {
             playlists.add(Playlist(
                 cursor.getString(0),
-                userId,
                 cursor.getString(1),
-                cursor.getString(2)
+                cursor.getString(2),
+                cursor.getString(3)
             ))
         } while (cursor.moveToNext())
 
@@ -1669,5 +1690,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
             return false
         }
     }
+
+
 }
 
