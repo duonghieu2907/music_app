@@ -52,18 +52,22 @@ class MainActivity : AppCompatActivity() {
 
                 //authCode received, built clientApi and AppApi
                 //spotifyData.buildClientApi(authCode!!)
-                spotifyData.buildAppApi()
+                //spotifyData.buildAppApi()
                 //dbHelper.deleteAll() //Run this line to delete all data
                 //To change database, wipe all data in emulator
 
                 //Add dummy data
                 //dbHelper.exportDatabaseToFile()
-                addDummyDataToDatabase(spotifyData)
-                insertDummyData()
-                dbHelper.addUser(User("1", "Official", "", "", "", ""))
-                Log.d("mainActivity", "Official added")
-
                 //addDummyDataToDatabase(spotifyData)
+
+
+                //dbHelper.addUser(User("1", "Official", "", "", "", ""))
+                //Log.d("mainActivity", "Official added")
+
+                //dummy to work with playlist
+                dbHelper.addUser(User("3", "Test", "", "", "", ""))
+                insertDummyData()
+
             }
         } catch (e : Exception) {
             Log.e("mainActivity", "Error during background: $e")
@@ -277,7 +281,7 @@ class MainActivity : AppCompatActivity() {
     val dummyPlaylists = listOf(
         Playlist(
             playlistId = "playlist1",
-            userId = "1", // Assuming user "1" is the current user
+            userId = "3", // Assuming user "3" is the current user
             name = "My Favorite Songs",
             image = "https://example.com/playlist1.jpg"
         ),
