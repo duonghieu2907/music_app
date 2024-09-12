@@ -27,7 +27,7 @@ class PlaylistTracksAdapter(
     private val trackList: List<Track>,
     private val dbHelper: MusicAppDatabaseHelper,
 
-    private val playlist: Playlist? = null,
+    private val playlistId: String,
 
     private val onItemClick: (Track) -> Unit
 
@@ -75,7 +75,7 @@ class PlaylistTracksAdapter(
 
         //jump to Menu Fragment
         Log.d("QueueSongAdapter", "Attempting to open Menu Fragment.")
-        val menuFragment = MenuFragment.newInstance(track, playlist)
+        val menuFragment = MenuFragment.newInstance(track.trackIdg, playlistId)
 
         Log.d("QueueSongAdapter", "Menu Fragment created, proceeding with transaction.")
         fragment.requireActivity().supportFragmentManager.beginTransaction()

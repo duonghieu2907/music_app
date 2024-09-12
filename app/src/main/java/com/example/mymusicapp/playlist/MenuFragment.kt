@@ -47,9 +47,7 @@ class MenuFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        // Fetch the Track and Playlist passed from arguments
-        track = arguments?.getParcelable("TRACK") ?: return view
-        playlist = arguments?.getParcelable("PLAYLIST")
+
 
         // Find views by ID
         val songCover = view.findViewById<ImageView>(R.id.songCover)
@@ -57,6 +55,17 @@ class MenuFragment : Fragment() {
         val songArtist = view.findViewById<TextView>(R.id.songArtist)
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
+
+
+        // Fetch track, playlist, and album using IDs
+        val trackId = arguments?.getString("TRACK_ID") ?: return view
+        val playlistId = arguments?.getString("PLAYLIST_ID")
+        val albumId = arguments?.getString("ALBUM_ID")
+
+        // Fetch objects from the database using their IDs
+        track = dbHelper.getTrack(trackId) ?: return view
+        playlist = playlistId?.let { dbHelper.getPlaylist(it) }
+
 
         // Fetch Album and Artist details
         val album: Album? = dbHelper.getAlbum(track.albumId)
@@ -106,22 +115,42 @@ class MenuFragment : Fragment() {
         // Fetch the current user's ID (assuming you have an app-level reference to the current user)
         val curUserId = app.curUserId
 
-        // Check if the playlist is null or if the user doesn't own the playlist
-        if (playlist == null || playlist!!.userId != curUserId) {
+        // Check if the playlist is null, or the user doesn't own it, or it's the liked songs playlist
+        if (playlist == null || playlist!!.userId != curUserId || playlistId == "userLikedSongs") {
             // Find the views for the "remove from playlist" option
             val removeFromPlaylistIcon = view.findViewById<ImageView>(R.id.removePlaylist)
             val removeFromPlaylistText = view.findViewById<TextView>(R.id.removeFromPlaylist)
 
-            // Tint the icon and text to gray
-            removeFromPlaylistIcon.setColorFilter(
-                resources.getColor(R.color.DavysGrey, requireContext().theme),
-                android.graphics.PorterDuff.Mode.SRC_IN
-            )
-            removeFromPlaylistText.setTextColor(resources.getColor(R.color.DavysGrey, requireContext().theme))
+            if (playlistId == "userLikedSongs") {
+                // Set click listener for unliking the song
+                val clickListenerUnlike = View.OnClickListener {
 
-            // Disable click actions
-            removeFromPlaylistIcon.isClickable = false
-            removeFromPlaylistText.isClickable = false
+
+
+                    if (dbHelper.isTrackLiked(track.trackId, curUserId)) {
+                        dbHelper.deleteLike(curUserId, track.trackId) // Use global curUserId
+                    }
+
+
+
+                    Toast.makeText(requireContext(), "Track unliked", Toast.LENGTH_SHORT).show()
+                }
+                removeFromPlaylistIcon.setOnClickListener(clickListenerUnlike)
+                removeFromPlaylistText.setOnClickListener(clickListenerUnlike)
+
+            } else {
+                // Tint the icon and text to gray for non-removable playlists
+                removeFromPlaylistIcon.setColorFilter(
+                    resources.getColor(R.color.DavysGrey, requireContext().theme),
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+                removeFromPlaylistText.setTextColor(resources.getColor(R.color.DavysGrey, requireContext().theme))
+
+                // Disable click actions
+                removeFromPlaylistIcon.isClickable = false
+                removeFromPlaylistText.isClickable = false
+            }
+
         } else {
             // If the playlist is not null and the user owns it, set up click listeners as usual
             val removeFromPlaylistIcon = view.findViewById<ImageView>(R.id.removePlaylist)
@@ -150,14 +179,12 @@ class MenuFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(track: Track, playlist: Playlist?): MenuFragment {
+        fun newInstance(trackId: String, playlistId: String? = null): MenuFragment {
             val fragment = MenuFragment()
-            val args = Bundle().apply {
-                putParcelable("TRACK", track)
-                if (playlist != null) {
-                    putParcelable("PLAYLIST", playlist)
-                }
-            }
+            val args = Bundle()
+            args.putString("TRACK_ID", trackId)
+            playlistId?.let { args.putString("PLAYLIST_ID", it) }
+
             fragment.arguments = args
             return fragment
         }
