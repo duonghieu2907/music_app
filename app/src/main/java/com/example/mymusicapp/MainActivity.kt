@@ -309,7 +309,7 @@ class MainActivity : AppCompatActivity() {
         dbHelper.addPlaylistTrack("playlist1","track2")
         dbHelper.addPlaylistTrack("playlist2","track3")
 
-        Toast.makeText(this,  "Dummy data inserted for testing", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this,  "Dummy data inserted for testing", Toast.LENGTH_SHORT).show()
     }
 
 

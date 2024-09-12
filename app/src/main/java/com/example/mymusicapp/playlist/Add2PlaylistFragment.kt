@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.MainActivity
@@ -21,6 +23,7 @@ class Add2PlaylistFragment : Fragment() {
     private lateinit var playlistRecyclerView: RecyclerView
     private lateinit var playlistAdapter: PlaylistAdapter
     private lateinit var backButton: ImageView
+    private lateinit var newPlaylistButton: AppCompatButton
     private lateinit var track: Track  // Track data to be passed
     private lateinit var dbHelper: MusicAppDatabaseHelper
 
@@ -44,6 +47,18 @@ class Add2PlaylistFragment : Fragment() {
         // Set button click handlers
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        newPlaylistButton = view.findViewById(R.id.newPlaylistButton)
+
+        // Set button click handlers
+        newPlaylistButton.setOnClickListener {
+
+
+            openFragment(FragmentNewPlaylist.newInstance(track.trackId))  // Pass the track data when opening Add2PlaylistFragment
+
+
+
         }
 
         // Initialize RecyclerView
@@ -141,5 +156,14 @@ class Add2PlaylistFragment : Fragment() {
         if (activity is MainActivity) {
             activity.hideBottomNavigation()
         }
+    }
+
+    // Helper function to open fragments
+    private fun openFragment(fragment: Fragment) {
+        val fragmentManager = parentFragmentManager
+        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragment_container, fragment) // Replace with the ID of your container
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 }
