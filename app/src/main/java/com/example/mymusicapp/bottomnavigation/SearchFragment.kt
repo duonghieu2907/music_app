@@ -3,12 +3,16 @@ package com.example.mymusicapp.bottomnavigation
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
@@ -17,44 +21,55 @@ import com.example.mymusicapp.models.SearchResult
 import com.example.mymusicapp.playlist.PlaylistFragment
 import com.example.mymusicapp.playlist.SingleTrackFragment
 
-class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListener {
+class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
 
     private lateinit var searchInput: EditText
     private lateinit var searchResultsRecyclerView: RecyclerView
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var searchResultAdapter: SearchResultAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_search, container, false)
+
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
 
         // Set up the back button
-        val backButton: ImageButton = findViewById(R.id.back_button)
+        val backButton: ImageButton = view.findViewById(R.id.back_button)
         backButton.setOnClickListener {
-            // Finish activity on back button click
-            finish()
+            // Navigate back by popping the back stack
+            activity?.supportFragmentManager?.popBackStack()
         }
 
         // Implement search functionality
-        searchInput = findViewById(R.id.search_input)
-        searchResultsRecyclerView = findViewById(R.id.search_results_recycler_view)
+        searchInput = view.findViewById(R.id.search_input)
+        searchResultsRecyclerView = view.findViewById(R.id.search_results_recycler_view)
 
         // Initialize Database Helper
-        dbHelper = MusicAppDatabaseHelper(this)
+        dbHelper = MusicAppDatabaseHelper(requireContext())
 
         // Set up the search input and RecyclerView
-        searchResultsRecyclerView.layoutManager = LinearLayoutManager(this)
+        searchResultsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val keyword = s.toString()
                 val results = dbHelper.search(keyword)
-                searchResultAdapter = SearchResultAdapter(results, this@SearchActivity)
+                searchResultAdapter = SearchResultAdapter(results, this@SearchFragment)
                 searchResultsRecyclerView.adapter = searchResultAdapter
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        return view
     }
 
     // Handle item click
@@ -63,31 +78,31 @@ class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListe
         when (searchResult.type) {
             "Artist" -> {
                 val artistFragment = ArtistFragment.newInstance(searchResult.id) // Transfer artist ID
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container_search, artistFragment)  // Replace with your fragment container ID
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, artistFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
 
-                Toast.makeText(this, "Clicked on Artist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Clicked on Artist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
 
             "Album" -> {
                 val albumFragment = AlbumFragment.newInstance(searchResult.id) //Transfer id
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container_search, albumFragment)  // Replace with your fragment container ID
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, albumFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
 
-                Toast.makeText(this, "Clicked on Album: ${searchResult.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Clicked on Album: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
             "Playlist" -> {
                 val playlistFragment = PlaylistFragment.newInstance(searchResult.id) //Transfer id
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container_search, playlistFragment)  // Replace with your fragment container ID
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
 
-                Toast.makeText(this, "Clicked on Playlist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Clicked on Playlist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
             "Track" -> {
                 val fragment = dbHelper.getTrack(searchResult.id)?.let { track ->
@@ -95,12 +110,12 @@ class SearchActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListe
                         track, null, null)
                 }
                 if (fragment != null) {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container_search, fragment)
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
                         .addToBackStack(null)
                         .commit()
                 }
-                Toast.makeText(this, "Clicked on Track: ${searchResult.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Clicked on Track: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
         }
     }

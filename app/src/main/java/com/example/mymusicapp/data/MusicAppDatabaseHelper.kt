@@ -26,7 +26,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
     companion object {
         private const val DATABASE_NAME = "music_app1.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
 
         // User Table
         private const val TABLE_USER = "User"
@@ -185,7 +185,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val createHistoryTable = ("CREATE TABLE $TABLE_HISTORY ("
                 + "$HISTORY_USER_ID TEXT,"
                 + "$HISTORY_TRACK_ID TEXT,"
-                + "$HISTORY_TIMESTAMP DATETIME DEFAULT CURRENT TIMESTAMP,"
+                + "$HISTORY_TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP,"
                 + "PRIMARY KEY($HISTORY_USER_ID, $HISTORY_TRACK_ID, $HISTORY_TIMESTAMP),"
                 + "FOREIGN KEY($HISTORY_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
                 + "FOREIGN KEY($HISTORY_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
@@ -389,7 +389,13 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     fun getAllGenres(): List<String> {
         val genres = mutableListOf<String>()
         val db = this.readableDatabase
-        val query = "SELECT DISTINCT $ARTIST_GENRE FROM $TABLE_ARTIST"  // Use DISTINCT to avoid duplicate genres
+        // SQL query to get genres ordered by the number of songs in descending order
+        val query = """
+        SELECT $ARTIST_GENRE, COUNT(*) AS song_count
+        FROM $TABLE_ARTIST
+        GROUP BY $ARTIST_GENRE
+        ORDER BY song_count DESC
+    """
         val cursor = db.rawQuery(query, null)
 
         if (cursor.moveToFirst()) {
@@ -402,6 +408,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         cursor.close()
         return genres
     }
+
 
 
     fun updateArtist(artist: Artist) {
