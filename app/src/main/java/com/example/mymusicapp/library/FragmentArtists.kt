@@ -2,11 +2,11 @@ package com.example.mymusicapp.library
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -95,8 +95,14 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     }
 
     override fun setOnItemClickListener(item: Artist?) {
-        //Navigate here
-        Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
+        // Ensure that item is not null
+        item?.let {
+            val artistFragment = ArtistFragment.newInstance(item.artistId) //Transfer id
+
+            loadFragment(artistFragment)
+        } ?: run {
+            Log.d("FragmentArtist", "Item is null!")
+        }
     }
 
     private fun sort(order : String): ArrayList<Artist> {
@@ -104,5 +110,12 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         val sample: ArrayList<Artist> = db.sort("artist", order, curUser) as? ArrayList<Artist>?: ArrayList()
         db.close()
         return sample
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

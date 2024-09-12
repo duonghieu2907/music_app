@@ -2,11 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context=".ArtistFragment">
+    android:background="@color/black">
 
     <!-- Artist Image -->
     <ImageView
@@ -20,6 +18,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="artist avatar"
         android:src="@drawable/ic_avatar" />
+
+    <!-- Chevron -->
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="28dp"
+        android:layout_height="32dp"
+        android:layout_alignParentStart="true"
+        android:contentDescription="Back Button"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_leftarrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.022" />
 
     <!-- Artist Name -->
     <TextView
@@ -49,7 +63,26 @@
         app:layout_constraintTop_toTopOf="@id/artistNameTextView"
         app:layout_constraintStart_toEndOf="@id/artistNameTextView"/>
 
+    <!-- Option button -->
+
+
     <!-- Top 5 Songs Section -->
+    <ImageView
+        android:id="@+id/optionsButtonArtist"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="Options Button"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_more_vert"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.958"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.021"
+        app:tint="@color/white" />
+
     <TextView
         android:id="@+id/topSongsLabel"
         android:layout_width="wrap_content"
@@ -62,6 +95,39 @@
         android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/artistImageView"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/follow_background"
+        android:src="@drawable/rectangle_item_filter_nocolor"
+        android:background="@color/black"
+        android:layout_width="80dp"
+        android:layout_height="23dp"
+        android:scaleType="fitXY"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintStart_toEndOf="@id/topSongsLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/topSongsLabel"
+        app:layout_constraintBottom_toBottomOf="@id/topSongsLabel"
+        app:layout_constraintVertical_bias="0.9"
+        app:layout_constraintHorizontal_bias="0.071"/>
+
+    <TextView
+        android:id="@+id/follow_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gothicbold"
+        android:text="Follow"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintStart_toStartOf="@id/follow_background"
+        app:layout_constraintEnd_toEndOf="@id/follow_background"
+        app:layout_constraintTop_toTopOf="@id/follow_background"
+        app:layout_constraintBottom_toBottomOf="@id/follow_background"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.5"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/topSongsRecyclerView"
