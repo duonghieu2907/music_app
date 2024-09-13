@@ -40,6 +40,12 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
 
         _currentTrack.value = track // Notify observers of the track change
 
+
+        if (track.path.startsWith( "SpotifyUri")) {
+            track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
+        }
+
+
         val mediaItem = MediaItem.fromUri(Uri.parse(track.path))
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
@@ -85,6 +91,11 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
             currentTrackIndex = index // Update the current track index
 
             val track = TrackQueue.queue[index] // Get the track at the specified index
+
+
+            if (track.path.startsWith( "SpotifyUri")) {
+                track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
+            }
 
             // Prepare the ExoPlayer to play the track directly
             val mediaItem = MediaItem.fromUri(Uri.parse(track.path))
