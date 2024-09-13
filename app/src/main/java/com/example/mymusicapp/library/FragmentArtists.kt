@@ -6,10 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
@@ -27,13 +29,18 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         val view : View = inflater.inflate(R.layout.fragment_artists, container, false)
         val application = requireActivity().application as Global
         curUser = application.curUserId
+
+        val activity = requireActivity()
+        if(activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
+
         app(view)
 
         return view
     }
 
     private fun app(view: View) {
-
         //Adapter
         adapter = FragmentArtistAdapter(items, this)
         createArtistItem()
@@ -50,7 +57,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.addAll(arrayOf("Recently added", "Newest", "A-Z", "Z-A"))
+        allSort.addAll(arrayOf("Recently added", "Recently played", "A-Z", "Z-A"))
 
         //Init setOnClickListener
         val sortBut = view.findViewById<TextView>(R.id.sortButtonArtist)
@@ -58,6 +65,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
             when (sortBut.text.toString()) {
                 allSort[0] -> {
                     sortBut.text = allSort[1]
+                    updateAdapter(getNewest())
                 }
                 allSort[1] -> {
                     //set effect for the button
@@ -108,6 +116,13 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     private fun sort(order : String): ArrayList<Artist> {
         val db = MusicAppDatabaseHelper(requireContext())
         val sample: ArrayList<Artist> = db.sort("artist", order, curUser) as? ArrayList<Artist>?: ArrayList()
+        db.close()
+        return sample
+    }
+
+    private fun getNewest() : ArrayList<Artist> {
+        val db = MusicAppDatabaseHelper(requireContext())
+        val sample: ArrayList<Artist> = db.getNewest("artist", curUser) as? ArrayList<Artist>?: ArrayList()
         db.close()
         return sample
     }

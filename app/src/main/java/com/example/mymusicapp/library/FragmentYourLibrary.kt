@@ -1,26 +1,38 @@
 package com.example.mymusicapp.library
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
 import com.example.mymusicapp.createnew.CreateNewPlaylist
+import com.example.mymusicapp.data.Global
+import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.playlist.PlaylistFragment
+import com.example.mymusicapp.playlist.SingleTrackFragment
 
 class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickListener {
+    companion object {
+        private var items = ArrayList<Track>()
+        private lateinit var adapter: FragmentYourLibraryAdapter
+        private lateinit var curUserId: String
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_your_library, container, false)
+        val app = requireActivity().application as Global
+        curUserId = app.curUserId
+
+
         app(view)
 
         return view
@@ -46,7 +58,8 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
 
         //Lists
         //Adapter
-        val fragmentYourLibraryAdapter = FragmentYourLibraryAdapter(createPlaylistItem(), this)
+        adapter = FragmentYourLibraryAdapter(items, this)
+        updateAdapter(getNewest())
 
         //LayoutManager
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -54,28 +67,39 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
         //Set recycleView
         val recyclerView : RecyclerView = view.findViewById(R.id.yourLibraryList)
         recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = fragmentYourLibraryAdapter
+        recyclerView.adapter = adapter
     }
 
-    private fun createPlaylistItem(): ArrayList<PlaylistItem> {
-        val sample = ArrayList<PlaylistItem>()
-
-        //Sample
-        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.playlistsample)
-        sample.add(PlaylistItem("Conan Gray", bitmap))
-
-        //return
-        return sample
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateAdapter(list : ArrayList<Track>) {
+        items.clear()
+        items.addAll(list)
+        adapter.notifyDataSetChanged()
     }
 
-    override fun setOnItemClickListener(item: PlaylistItem?) {
-        //Navigate here
-        Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
+    override fun setOnItemClickListener(item: Track?) {
+        val db = MusicAppDatabaseHelper(requireContext())
+        val fragment = db.getTrack(item?.trackId?:"")?.let { track ->
+            SingleTrackFragment.newInstance(
+                track.trackId, null, null)
+        }
+
+        if (fragment != null) {
+            loadFragment(fragment)
+        }
+
     }
     private fun loadFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun getNewest() : ArrayList<Track> {
+        val db = MusicAppDatabaseHelper(requireContext())
+        val sample: ArrayList<Track> = db.getNewest("track", curUserId) as? ArrayList<Track>?: ArrayList()
+        db.close()
+        return sample
     }
 }

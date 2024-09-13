@@ -1,5 +1,6 @@
-package com.example.mymusicapp.playlist
+package com.example.mymusicapp.bottomnavigation
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuInflater
@@ -13,21 +14,24 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Playlist
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
+import com.example.mymusicapp.playlist.PlaylistTracksAdapter
+import com.example.mymusicapp.playlist.SingleTrackFragment
 
-class PlaylistFragment : Fragment() {
+class MixPlaylistFragment : Fragment() {
 
     private lateinit var backButton: ImageView
     private lateinit var optionsButton: ImageView
-    private lateinit var playlistImage: ImageView
+    private lateinit var playlistImage: View
+    private lateinit var playlistImageUnderline: View
     private lateinit var playlistTitle: TextView
-    private lateinit var playlistCreator: TextView
+    private lateinit var playlistDescription: TextView
 
     private lateinit var recyclerViewTracks: RecyclerView
     private lateinit var tracksAdapter: PlaylistTracksAdapter
@@ -35,13 +39,15 @@ class PlaylistFragment : Fragment() {
 
     private var playlist: Playlist? = null
     private var playlistId: String = ""
+    private var boxColor: Int = Color.TRANSPARENT
+    private var underlineColor: Int = Color.TRANSPARENT
     private lateinit var curUserId: String
 
     companion object {
         private const val ARG_PLAYLIST_ID = "playlist_id"
         private const val LIKED_SONGS_ID = "userLikedSongs" // -> compare arg to see if it is liked songs or plain playlist
-        fun newInstance(playlistId: String): PlaylistFragment {
-            val fragment = PlaylistFragment()
+        fun newInstance(playlistId: String): MixPlaylistFragment {
+            val fragment = MixPlaylistFragment()
             val args = Bundle()
             args.putString(ARG_PLAYLIST_ID, playlistId)
             println(playlistId)
@@ -55,6 +61,8 @@ class PlaylistFragment : Fragment() {
 
         arguments?.let {
             playlistId = it.getString(ARG_PLAYLIST_ID) ?: ""
+            boxColor = it.getInt("box_color", Color.TRANSPARENT)
+            underlineColor = it.getInt("underline_color", Color.TRANSPARENT)
         }
         dbHelper = MusicAppDatabaseHelper(requireContext())
         if (isAdded) {
@@ -71,16 +79,21 @@ class PlaylistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_single_playlist, container, false)
+        val view = inflater.inflate(R.layout.fragment_mix_playlist, container, false)
 
-
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
 
         // Initialize UI
         backButton = view.findViewById(R.id.backButton)
         optionsButton = view.findViewById(R.id.optionsButton)
         playlistImage = view.findViewById(R.id.playlistImage)
+        playlistImageUnderline = view.findViewById(R.id.underline)
         playlistTitle = view.findViewById(R.id.playlistTitle)
-        playlistCreator = view.findViewById(R.id.playlistOwner)
+        playlistDescription = view.findViewById(R.id.playlistOwner)
         recyclerViewTracks = view.findViewById(R.id.recyclerViewSongs)
 
         //button
@@ -95,35 +108,10 @@ class PlaylistFragment : Fragment() {
         // RecyclerView
         recyclerViewTracks.layoutManager = LinearLayoutManager(requireContext())
 
-        // Load data based on the playlist type
-        if (playlistId == LIKED_SONGS_ID) {
-            loadLikedSongs()
-        } else {
-            loadPlaylistData()
-        }
+        // Load data
+        loadPlaylistData()
 
         return view
-    }
-
-    private fun loadLikedSongs() {
-        playlistTitle.text = "Liked Songs"
-        playlistCreator.visibility = View.GONE
-
-        Glide.with(this)
-            .load(R.drawable.liked_songs_cover)
-            .into(playlistImage)
-
-        val trackList: List<Track> = dbHelper.getUserLikedTracks(curUserId)
-        val likedSongsPlaylist = Playlist(
-            playlistId = LIKED_SONGS_ID,
-            userId = curUserId,
-            name = "Liked Songs",
-            image = ""
-        )
-
-        tracksAdapter = PlaylistTracksAdapter(this, trackList, dbHelper, playlistId) { track -> openTrack(track, likedSongsPlaylist) }
-
-        recyclerViewTracks.adapter = tracksAdapter
     }
 
     private fun loadPlaylistData() {
@@ -132,12 +120,19 @@ class PlaylistFragment : Fragment() {
 
         if (playlist != null) {
             playlistTitle.text = playlist!!.name
-            playlistCreator.text = dbHelper.getUser(playlist!!.userId)?.name ?: "Unknown"
 
-            Glide.with(this)
-                .load(playlist!!.image)
-                .placeholder(R.drawable.blacker_gradient)
-                .into(playlistImage)
+            // Set playlist description based on the mix playlist
+            playlistDescription.text = when (playlist!!.name) {
+                "Mix 1" -> "A collection of the latest and greatest pop hits."
+                "Mix 2" -> "Discover the newest tracks from the indie scene."
+                "Mix 3" -> "Rock out to the best rock anthems."
+                "Mix 4" -> "Enjoy alternative tracks that push the boundaries."
+                "Mix 5" -> "Listen to the top Viet tracks of the moment."
+                else -> "Playlist description not available."
+            }
+
+            playlistImage.setBackgroundColor(boxColor)
+            playlistImageUnderline.setBackgroundColor(underlineColor)
 
             // Fetch tracks
             val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
@@ -193,9 +188,7 @@ class PlaylistFragment : Fragment() {
 
                     val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
                     val playlistIdList = mutableListOf<String>()
-                    for (i in 0 until trackList.size) {
-                        playlistIdList.add(playlistId)
-                    }
+                    for(i in 0 until trackList.size) playlistIdList.add(playlistId)
 
                     TrackQueue.addTracks(trackList, playlistIdList)
                     println("Queue")

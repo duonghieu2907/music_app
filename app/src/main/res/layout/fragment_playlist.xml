@@ -33,13 +33,14 @@
 
         <TextView
             android:id="@+id/sortButtonPlaylist"
-            android:layout_width="wrap_content"
+            android:layout_width="150sp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableRight="@drawable/sort"
             android:drawablePadding="4dp"
             android:fontFamily="@font/gothicbold"
-            android:text="Newest"
+            android:text="Recently played"
+            android:textAlignment="textEnd"
             android:textColor="@color/lightBlue"
             app:layout_constraintStart_toStartOf="@id/toolSection"
             app:layout_constraintEnd_toEndOf="@id/toolSection"

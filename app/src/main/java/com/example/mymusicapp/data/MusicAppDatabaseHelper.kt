@@ -26,7 +26,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
     companion object {
         private const val DATABASE_NAME = "music_app1.db"
-        private const val DATABASE_VERSION = 4
+        private const val DATABASE_VERSION = 5
 
         // User Table
         private const val TABLE_USER = "User"
@@ -100,6 +100,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         //History
         const val TABLE_HISTORY = "History"
         const val HISTORY_USER_ID = "user_id"
+        const val HISTORY_PLAYLIST_ID = "playlist_id"
         const val HISTORY_TRACK_ID = "track_id"
         const val HISTORY_TIMESTAMP = "listen_at"
     }
@@ -185,10 +186,12 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val createHistoryTable = ("CREATE TABLE $TABLE_HISTORY ("
                 + "$HISTORY_USER_ID TEXT,"
                 + "$HISTORY_TRACK_ID TEXT,"
+                + "$HISTORY_PLAYLIST_ID TEXT,"
                 + "$HISTORY_TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP,"
                 + "PRIMARY KEY($HISTORY_USER_ID, $HISTORY_TRACK_ID, $HISTORY_TIMESTAMP),"
                 + "FOREIGN KEY($HISTORY_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
-                + "FOREIGN KEY($HISTORY_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID))")
+                + "FOREIGN KEY($HISTORY_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID),"
+                + "FOREIGN KEY($HISTORY_PLAYLIST_ID) REFERENCES $TABLE_PLAYLIST($PLAYLIST_ID))")
 
 
         // Execute the SQL statements
@@ -232,6 +235,8 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_HISTORY")
         DatabaseUtils.copyDatabaseIfNeeded(context)
+        Log.d("DATABASE", "Upgrade")
+        
     }
 
     override fun getReadableDatabase(): SQLiteDatabase {
@@ -1070,7 +1075,6 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         }
     }
 
-
     fun getPlaylistTrack(playlistId: Int, trackId: Int): PlaylistTrack? {
         val db = this.readableDatabase
         val cursor = db.query(
@@ -1440,29 +1444,55 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val db = this.writableDatabase
 
         // Check if the playlist already exists
-        val queryCheck = "SELECT 1 FROM $TABLE_PLAYLIST WHERE $PLAYLIST_NAME = ? AND $PLAYLIST_USER_ID = ?"
+        val queryCheck = "SELECT $PLAYLIST_ID FROM $TABLE_PLAYLIST WHERE $PLAYLIST_NAME = ? AND $PLAYLIST_USER_ID = ?"
         val cursorCheck = db.rawQuery(queryCheck, arrayOf(playlistName, userId))
 
+        var playlistId: String? = null
         if (cursorCheck.moveToFirst()) {
-            // Playlist already exists, no need to add it again
-            println("Playlist already exists")
+            // Playlist already exists, get its ID
+            playlistId = cursorCheck.getString(cursorCheck.getColumnIndexOrThrow(PLAYLIST_ID))
             cursorCheck.close()
-            db.close()
-            return
-        }
-        cursorCheck.close()
 
-        // Create a new playlist since it doesn't exist
-        val playlistId = UUID.randomUUID().toString() // Generate a unique ID for the new playlist
-        val playlistValues = ContentValues().apply {
-            put(PLAYLIST_ID, playlistId)
-            put(PLAYLIST_USER_ID, userId)
-            put(PLAYLIST_NAME, playlistName)
-            put(PLAYLIST_IMAGE, "123") // Set playlist image if available
-        }
-        db.insert(TABLE_PLAYLIST, null, playlistValues)
+            // Check if the playlist already has tracks
+            val queryCheckTracks = "SELECT 1 FROM $TABLE_PLAYLIST_TRACK WHERE $PLAYLIST_TRACK_PLAYLIST_ID = ?"
+            val cursorCheckTracks = db.rawQuery(queryCheckTracks, arrayOf(playlistId))
 
-        // Get all tracks for the given genre
+            if (cursorCheckTracks.moveToFirst()) {
+                // Playlist already has tracks, no need to add tracks again
+                println("Playlist already exists and has tracks")
+                cursorCheckTracks.close()
+                db.close()
+                return
+            }
+            cursorCheckTracks.close()
+        } else {
+            // Playlist does not exist, create a new one
+            playlistId = UUID.randomUUID().toString() // Generate a unique ID for the new playlist
+            val playlistValues = ContentValues().apply {
+                put(PLAYLIST_ID, playlistId)
+                put(PLAYLIST_USER_ID, userId)
+                put(PLAYLIST_NAME, playlistName)
+                put(PLAYLIST_IMAGE, "123") // Set playlist image if available
+            }
+            db.insert(TABLE_PLAYLIST, null, playlistValues)
+        }
+
+        // Get all tracks for the given genre using the new function
+        val tracks = getAllTracksByGenre(genre)
+
+        // Add each track to the playlist using addPlaylistTrack function
+        tracks.forEach { trackId ->
+            addPlaylistTrack(playlistId!!, trackId)
+        }
+
+        db.close()
+    }
+
+    fun getAllTracksByGenre(genre: String): List<String> {
+        val db = this.readableDatabase
+        val trackIds = mutableListOf<String>()
+
+        // Query to retrieve all tracks for the given genre
         val query = """
         SELECT t.$TRACK_ID
         FROM $TABLE_TRACK t
@@ -1472,26 +1502,17 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     """
         val cursor = db.rawQuery(query, arrayOf(genre))
 
-        // Add tracks to the new playlist
-        var trackOrder = 1
         if (cursor.moveToFirst()) {
             do {
                 val trackId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
-                val playlistTrackValues = ContentValues().apply {
-                    put(PLAYLIST_TRACK_PLAYLIST_ID, playlistId)
-                    put(PLAYLIST_TRACK_TRACK_ID, trackId)
-                    put(PLAYLIST_TRACK_ORDER, trackOrder)
-                }
-                db.insert(TABLE_PLAYLIST_TRACK, null, playlistTrackValues)
-                trackOrder++
+                trackIds.add(trackId)
             } while (cursor.moveToNext())
         }
 
         cursor.close()
         db.close()
+        return trackIds
     }
-
-
 
     fun search(keyword: String): List<SearchResult> {
         val db = this.readableDatabase
@@ -1624,7 +1645,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = ALBUM_TIMESTAMP
                 } else tableName = ALBUM_NAME
-                rawQuery =  "SELECT A.$ALBUM_ID, A.$ALBUM_ARTIST_ID, A.$ALBUM_NAME, A.$ALBUM_RELEASE_DATE, A.$ALBUM_IMAGE " +
+                rawQuery =  "SELECT DISTINCT A.$ALBUM_ID, A.$ALBUM_ARTIST_ID, A.$ALBUM_NAME, A.$ALBUM_RELEASE_DATE, A.$ALBUM_IMAGE " +
                             "FROM $TABLE_ALBUM AS A " +
                             "LEFT JOIN $TABLE_FOLLOWED_ALBUMS AS FA ON FA.$FOLLOWED_ALBUM_ID = A.$ALBUM_ID " +
                             "WHERE FA.$FOLLOWED_ALBUM_USER_ID = '$curUserId' " +
@@ -1636,7 +1657,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = ARTIST_TIMESTAMP
                 } else tableName = ARTIST_NAME
-                rawQuery =  "SELECT A.$ARTIST_ID, A.$ARTIST_NAME, A.$ARTIST_GENRE, A.$ARTIST_IMAGE " +
+                rawQuery =  "SELECT DISTINCT A.$ARTIST_ID, A.$ARTIST_NAME, A.$ARTIST_GENRE, A.$ARTIST_IMAGE " +
                             "FROM $TABLE_ARTIST AS A " +
                             "JOIN $TABLE_FOLLOWER AS FA ON A.$ARTIST_ID = FA.$FOLLOWER_ARTIST_ID " +
                             "WHERE FA.$FOLLOWER_USER_ID = '$curUserId' " +
@@ -1648,7 +1669,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                     orderTmp = "DESC"
                     tableName = PLAYLIST_TIMESTAMP
                 } else tableName = PLAYLIST_NAME
-                rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_USER_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
+                rawQuery =  "SELECT DISTINCT P.$PLAYLIST_ID, P.$PLAYLIST_USER_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
                             "FROM $TABLE_PLAYLIST AS P " +
                             "LEFT JOIN $TABLE_FOLLOWED_PLAYLISTS AS FP ON FP.$FOLLOWED_PLAYLIST_ID = P.$PLAYLIST_ID " +
                             "WHERE P.$PLAYLIST_USER_ID = '$curUserId' OR FP.$FOLLOWED_PLAYLIST_USER_ID = '$curUserId' " +
@@ -1703,10 +1724,10 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
      *
      * Function takes two parameters type and curUserId
      *
-     * @param type playlist, album, and artist
+     * @param type playlist, album, artist, and track
      * @param curUserId the current user using the app
      *
-     * @return an ArrayList of playlist/album/artist
+     * @return an ArrayList of playlist/album/artist/track
      */
     fun getNewest(type: String, curUserId: String) : ArrayList<Any> {
         val rawQuery: String
@@ -1717,7 +1738,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
         when (type.lowercase()) {
             "album" -> {
-                rawQuery =  "SELECT A.$ALBUM_ID, A.$ALBUM_ARTIST_ID, A.$ALBUM_NAME, A.$ALBUM_RELEASE_DATE, A.$ALBUM_IMAGE " +
+                rawQuery =  "SELECT DISTINCT A.$ALBUM_ID, A.$ALBUM_ARTIST_ID, A.$ALBUM_NAME, A.$ALBUM_RELEASE_DATE, A.$ALBUM_IMAGE " +
                         "FROM $TABLE_HISTORY AS H " +
                         "JOIN $TABLE_TRACK AS T ON H.$HISTORY_TRACK_ID = T.$TRACK_ID " +
                         "JOIN $TABLE_ALBUM AS A ON T.$TRACK_ALBUM_ID = A.$ALBUM_ID " +
@@ -1726,7 +1747,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
             }
 
             "artist" -> {
-                rawQuery =  "SELECT ART.$ARTIST_ID, ART.$ARTIST_NAME, ART.$ARTIST_GENRE, ART.$ARTIST_IMAGE " +
+                rawQuery =  "SELECT DISTINCT ART.$ARTIST_ID, ART.$ARTIST_NAME, ART.$ARTIST_GENRE, ART.$ARTIST_IMAGE " +
                         "FROM $TABLE_HISTORY AS H " +
                         "JOIN $TABLE_TRACK AS T ON H.$HISTORY_TRACK_ID = T.$TRACK_ID " +
                         "JOIN $TABLE_ALBUM AS A ON T.$TRACK_ALBUM_ID = A.$ALBUM_ID " +
@@ -1736,10 +1757,17 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
             }
 
             "playlist" -> {
-                rawQuery =  "SELECT P.$PLAYLIST_ID, P.$PLAYLIST_USER_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
+                rawQuery = "SELECT DISTINCT P.$PLAYLIST_ID, P.$PLAYLIST_USER_ID, P.$PLAYLIST_NAME, P.$PLAYLIST_IMAGE " +
                         "FROM $TABLE_HISTORY AS H " +
                         "JOIN $TABLE_PLAYLIST_TRACK AS PT ON H.$HISTORY_TRACK_ID = PT.$PLAYLIST_TRACK_TRACK_ID " +
                         "JOIN $TABLE_PLAYLIST AS P ON PT.$PLAYLIST_TRACK_PLAYLIST_ID = P.$PLAYLIST_ID " +
+                        "WHERE H.$HISTORY_USER_ID = '$curUserId' AND H.$HISTORY_PLAYLIST_ID = P.$PLAYLIST_ID " +
+                        "ORDER BY $HISTORY_TIMESTAMP DESC"
+            }
+            "track" -> {
+                rawQuery =  "SELECT DISTINCT T.$TRACK_ID, T.$TRACK_ALBUM_ID, T.$TRACK_NAME, T.$TRACK_DURATION, T.$TRACK_PATH " +
+                        "FROM $TABLE_HISTORY AS H " +
+                        "JOIN $TABLE_TRACK AS T ON H.$HISTORY_TRACK_ID = T.$TRACK_ID " +
                         "WHERE H.$HISTORY_USER_ID = '$curUserId' " +
                         "ORDER BY $HISTORY_TIMESTAMP DESC"
             }
@@ -1780,6 +1808,12 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
                         cursor.getString(3)))
                 } while (cursor.moveToNext())
             }
+            "track" -> {
+                do {
+                    list.add(Track(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3), cursor.getString(4)))
+                } while (cursor.moveToNext())
+            }
         }
 
         cursor.close()
@@ -1787,8 +1821,49 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return list
     }
 
+    //Add history
+    /**
+     * Automatically record all listening activity by providing user_id, playlist_id, track_id
+     * @param curUserId the user who listened to the track (Normally the current one)
+     * @param playlistId the playlist where the track belongs. Providing "" if no playlist found
+     * @param trackId the id of the track
+     * @return true if successfully added
+     */
+    fun addHistory(curUserId: String, playlistId: String, trackId: String) : Boolean {
+        val db: SQLiteDatabase = this.writableDatabase
+        try {
+            db.beginTransaction()
+            val historyValue = ContentValues().apply {
+                put(HISTORY_USER_ID, curUserId)
+                put(HISTORY_PLAYLIST_ID, playlistId)
+                put(HISTORY_TRACK_ID, trackId)
+            }
+            db.insert(TABLE_HISTORY, null, historyValue)
+
+            db.setTransactionSuccessful()
+            Log.d("MusicAppDatabaseHelper",
+                "User $curUserId, Playlist $playlistId, Track $trackId recorded")
+        }
+        catch (e: Exception) {
+            Log.e("MusicAppDatabaseHelper", "Can't record - ", e)
+            db.close()
+            return false
+        }
+        finally {
+            db.endTransaction()
+        }
+
+        db.close()
+        return true
+    }
+
     ///delete all
 
+    fun deleteHistory() {
+        val db = this.writableDatabase
+        deleteAllData(TABLE_HISTORY, db)
+        db.close()
+    }
     fun deleteAll() {
         val db: SQLiteDatabase = this.writableDatabase
         try {

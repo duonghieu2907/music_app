@@ -25,8 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var drawerLayout: DrawerLayout
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private var authCode: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                 //spotifyData.buildAppApi()
                 
                 //dbHelper.deleteAll() //Run this line to delete all data
+                dbHelper.deleteHistory()
                 //To change database, wipe all data in emulator
 
                 //use for back up
@@ -73,13 +72,53 @@ class MainActivity : AppCompatActivity() {
                 val allGenres: List<String> = dbHelper.getAllGenres()
 
                 // Log the genres to verify
-                Log.d("ExploreFragment", "All Genres: $allGenres")
+                Log.d("mainActivity", "All Genres: $allGenres")
 
                 // Automatically add playlists for each genre if they don't already exist
                 allGenres.forEach { genre ->
                     val playlistName = "$genre playlist"
                     dbHelper.addGenrePlaylistIfNotExists(playlistName, genre, "1")
                 }
+
+                // Create genre-based mixes with specific keywords and group songs
+                val genreMixes = mapOf(
+                    "Mix 1" to listOf("pop"),
+                    "Mix 2" to listOf("indie"),
+                    "Mix 3" to listOf("rock"),
+                    "Mix 4" to listOf("alt"),
+                    "Mix 5" to listOf("viet")
+                )
+
+                // Loop through each mix and find songs for each genre keyword
+                genreMixes.forEach { (mixName, keywords) ->
+                    val matchingGenres = allGenres.filter { genre ->
+                        keywords.any { keyword -> genre.contains(keyword, ignoreCase = true) }
+                    }
+
+                    // If matching genres are found, create a mix playlist
+                    if (matchingGenres.isNotEmpty()) {
+                        // Create the playlist but do not join the genres into a single string
+                        dbHelper.addGenrePlaylistIfNotExists(mixName, matchingGenres.first(), "1")
+
+                        // Retrieve the playlist ID for the newly created playlist
+                        val playlistId = dbHelper.getPlaylistIdByName(mixName, "1")
+
+                        // Ensure that the playlist exists before adding tracks
+                        if (playlistId != null) {
+                            // Loop through each genre separately and add tracks for each genre
+                            matchingGenres.forEach { genre ->
+                                // Get all tracks for the genre
+                                val tracks = dbHelper.getAllTracksByGenre(genre)
+
+                                // Add each track to the playlist
+                                tracks.forEach { trackId ->
+                                    dbHelper.addPlaylistTrack(playlistId, trackId)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 //addDummyDataToDatabase(spotifyData)
             }
         } catch (e : Exception) {

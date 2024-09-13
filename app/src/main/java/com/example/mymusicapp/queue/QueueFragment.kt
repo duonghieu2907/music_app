@@ -254,7 +254,7 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener {
     @SuppressLint("NotifyDataSetChanged")
     private fun addSelectedTrack() {
         if (::selectedTrack.isInitialized) { // Check if selectedTrack is initialized
-            TrackQueue.addTrack(selectedTrack) // Add from TrackQueue
+            TrackQueue.addTrack(selectedTrack, "") // Add from TrackQueue
             queueSongAdapter.notifyDataSetChanged() // Notify adapter of data change
 
             Log.d("QueueFragment", "Track added: ${selectedTrack.name}")
