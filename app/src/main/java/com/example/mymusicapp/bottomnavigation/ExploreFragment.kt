@@ -1,5 +1,7 @@
 package com.example.mymusicapp.bottomnavigation
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,7 +16,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import com.example.mymusicapp.playlist.PlaylistFragment
 import com.example.mymusicapp.queue.QueueFragment
 
 class ExploreFragment : Fragment() {
@@ -82,16 +83,56 @@ class ExploreFragment : Fragment() {
         val boxBrowse6: LinearLayout = view.findViewById(R.id.box_browse_6)
 
         // Set click listeners for genre boxes
-        boxGenre1.setOnClickListener { onTopGenreClick(1) }
-        boxGenre2.setOnClickListener { onTopGenreClick(2) }
+        boxGenre1.setOnClickListener {
+            val boxColor = boxGenre1.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onTopGenreClick(1, boxColor)
+            }
+        }
+        boxGenre2.setOnClickListener {
+            val boxColor = boxGenre2.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onTopGenreClick(2, boxColor)
+            }
+        }
 
         // Set click listeners for browse boxes
-        boxBrowse1.setOnClickListener { onBrowseClick(1) }
-        boxBrowse2.setOnClickListener { onBrowseClick(2) }
-        boxBrowse3.setOnClickListener { onBrowseClick(3) }
-        boxBrowse4.setOnClickListener { onBrowseClick(4) }
-        boxBrowse5.setOnClickListener { onBrowseClick(5) }
-        boxBrowse6.setOnClickListener { onBrowseClick(6) }
+        boxBrowse1.setOnClickListener {
+            val boxColor = boxBrowse1.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onBrowseClick(1, boxColor)
+            }
+        }
+        boxBrowse2.setOnClickListener {
+            val boxColor = boxBrowse2.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onBrowseClick(2, boxColor)
+            }
+        }
+        boxBrowse3.setOnClickListener {
+            val boxColor = boxBrowse3.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onBrowseClick(3, boxColor)
+            }
+        }
+        boxBrowse4.setOnClickListener {
+            val boxColor = boxBrowse4.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onBrowseClick(4, boxColor)
+            }
+        }
+        boxBrowse5.setOnClickListener {
+            val boxColor = boxBrowse5.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onBrowseClick(5, boxColor)
+            }
+        }
+        boxBrowse6.setOnClickListener {
+            val boxColor = boxBrowse6.backgroundTintList?.getColorForState(boxGenre1.drawableState, Color.TRANSPARENT)
+            if (boxColor != null) {
+                onBrowseClick(6, boxColor)
+            }
+        }
 
         // Handle click for drawer items
         handleDrawerNavigation(drawerLayout)
@@ -180,18 +221,25 @@ class ExploreFragment : Fragment() {
     }
 
     // Function to create a playlist for a given genre
-    private fun onTopGenreClick(genreId: Int) {
+    private fun onTopGenreClick(genreId: Int, boxColor: Int) {
         if (genreId <= allGenres.size) {
             val genre = allGenres[genreId - 1]
             val playlistID = dbHelper.getPlaylistIdByName("$genre playlist", "1")
-            val playlistFragment =
-                playlistID?.let { PlaylistFragment.newInstance(it) } //Transfer id
-            if (playlistFragment != null) {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
-                    .addToBackStack(null)  // Optional: Add this transaction to the back stack
-                    .commit()
+
+            // Create an instance of MixPlaylistFragment
+            val mixPlaylistFragment = MixPlaylistFragment()
+
+            // Prepare the bundle with playlist ID and color
+            val bundle = Bundle().apply {
+                putString("playlist_id", playlistID)
+                putInt("box_color", boxColor)
             }
+            mixPlaylistFragment.arguments = bundle
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, mixPlaylistFragment)  // Replace with your fragment container ID
+                .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                .commit()
 
             Toast.makeText(requireContext(), "Clicked on Playlist: $genre playlist", Toast.LENGTH_SHORT).show()
         }
@@ -199,21 +247,27 @@ class ExploreFragment : Fragment() {
     }
 
     // Browse click handling function
-    private fun onBrowseClick(browseId: Int) {
+    private fun onBrowseClick(browseId: Int, boxColor: Int) {
         // Handle browse click
-        // You can use browseId to differentiate between different browse items
-        // Example: start a new fragment or activity
         if (browseId <= allGenres2.size) {
             val genre = allGenres2[browseId - 1]
             val playlistID = dbHelper.getPlaylistIdByName("$genre playlist", "1")
-            val playlistFragment =
-                playlistID?.let { PlaylistFragment.newInstance(it) } //Transfer id
-            if (playlistFragment != null) {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
-                    .addToBackStack(null)  // Optional: Add this transaction to the back stack
-                    .commit()
+
+            // Create an instance of MixPlaylistFragment
+            val mixPlaylistFragment = MixPlaylistFragment()
+
+            // Prepare the bundle with playlist ID and color
+            val bundle = Bundle().apply {
+                putString("playlist_id", playlistID)
+                putInt("box_color", boxColor)
+                putInt("underline_color", boxColor)
             }
+            mixPlaylistFragment.arguments = bundle
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, mixPlaylistFragment)  // Replace with your fragment container ID
+                .addToBackStack(null)  // Optional: Add this transaction to the back stack
+                .commit()
 
             Toast.makeText(requireContext(), "Clicked on Playlist: $genre playlist", Toast.LENGTH_SHORT).show()
         }

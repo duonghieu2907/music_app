@@ -1029,22 +1029,37 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.insert(TABLE_PLAYLIST_TRACK, null, values)
         db.close()
     }
+
     fun addPlaylistTrack(playlistId: String, trackId: String): Boolean {
         val db = this.writableDatabase
-        val contentValues = ContentValues().apply {
-            put(PLAYLIST_TRACK_PLAYLIST_ID, playlistId)
-            put(PLAYLIST_TRACK_TRACK_ID, trackId)
-        }
-
         return try {
-            val result = db.insert(TABLE_PLAYLIST_TRACK, null, contentValues)
-            db.close()
-            result != -1L  // If result is -1, the insertion failed
+            // Check if the track is already in the playlist
+            val query = "SELECT * FROM $TABLE_PLAYLIST_TRACK WHERE $PLAYLIST_TRACK_PLAYLIST_ID = ? AND $PLAYLIST_TRACK_TRACK_ID = ?"
+            val cursor = db.rawQuery(query, arrayOf(playlistId, trackId))
+
+            val trackExists = cursor.count > 0
+            cursor.close()
+
+            // If the track does not exist, insert it
+            if (!trackExists) {
+                val contentValues = ContentValues().apply {
+                    put(PLAYLIST_TRACK_PLAYLIST_ID, playlistId)
+                    put(PLAYLIST_TRACK_TRACK_ID, trackId)
+                }
+
+                val result = db.insert(TABLE_PLAYLIST_TRACK, null, contentValues)
+                db.close()
+                result != -1L  // Return true if insertion is successful
+            } else {
+                db.close()
+                false  // Track already exists, no insertion needed
+            }
         } catch (e: SQLiteException) {
             e.printStackTrace()
             false
         }
     }
+
 
     fun getPlaylistTrack(playlistId: Int, trackId: Int): PlaylistTrack? {
         val db = this.readableDatabase
@@ -1587,6 +1602,34 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.close()
         return searchResults
     }
+
+    fun getRecentlyPlayedTracks(userId: String): List<String> {
+        val db = this.readableDatabase
+        val trackList = mutableListOf<String>()
+
+        try {
+            // Query to get recently played tracks for the given user, ordered by timestamp (most recent first)
+            val query = "SELECT $HISTORY_TRACK_ID FROM $TABLE_HISTORY WHERE $HISTORY_USER_ID = ? ORDER BY $HISTORY_TIMESTAMP DESC"
+            val cursor = db.rawQuery(query, arrayOf(userId))
+
+            if (cursor.moveToFirst()) {
+                do {
+                    // Retrieve the track ID from the cursor and add it to the list
+                    val trackId = cursor.getString(cursor.getColumnIndexOrThrow(HISTORY_TRACK_ID))
+                    trackList.add(trackId)
+                } while (cursor.moveToNext())
+            }
+
+            cursor.close()
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+        } finally {
+            db.close()
+        }
+
+        return trackList
+    }
+
 
     //Sort from A-Z
     /**
