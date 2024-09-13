@@ -118,4 +118,15 @@ class FragmentNewPlaylist : Fragment() {
             return fragment
         }
     }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Show the navigation bar when this fragment is destroyed
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
+    }
 }

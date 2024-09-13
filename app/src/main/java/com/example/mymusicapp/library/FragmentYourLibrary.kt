@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.R
@@ -14,6 +15,7 @@ import com.example.mymusicapp.createnew.CreateNewPlaylist
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.playlist.FragmentNewPlaylist
 import com.example.mymusicapp.playlist.PlaylistFragment
 import com.example.mymusicapp.playlist.SingleTrackFragment
 
@@ -43,9 +45,13 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
         val addNewPlaylistSection : View  = view.findViewById(R.id.addNewPlaylistsSection)
 
         addNewPlaylistSection.setOnClickListener {
-            //Sample to test if working
-            val intent = Intent(context, CreateNewPlaylist::class.java)
-            startActivity(intent)
+
+
+            openFragment(FragmentNewPlaylist.newInstance())  // Pass the track data when opening Add2PlaylistFragment
+
+
+
+
         }
 
         //your liked song
@@ -101,5 +107,15 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
         val sample: ArrayList<Track> = db.getNewest("track", curUserId) as? ArrayList<Track>?: ArrayList()
         db.close()
         return sample
+    }
+
+
+
+    private fun openFragment(fragment: Fragment) {
+        val fragmentManager = parentFragmentManager
+        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragment_container, fragment) // Replace with the ID of your container
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 }
