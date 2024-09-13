@@ -104,7 +104,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         const val HISTORY_TIMESTAMP = "listen_at"
     }
 
-    override fun onCreate(db: SQLiteDatabase) {
+    /*override fun onCreate(db: SQLiteDatabase) {
         val createUserTable = ("CREATE TABLE $TABLE_USER ("
                 + "$USER_ID TEXT PRIMARY KEY,"
                 + "$USER_NAME TEXT,"
@@ -220,6 +220,32 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_HISTORY")
         onCreate(db)
+    }
+    */
+
+    init {
+        // Ensure the database is copied from assets if needed
+        DatabaseUtils.copyDatabaseIfNeeded(context)
+    }
+
+    override fun onCreate(db: SQLiteDatabase) {
+        // Not needed because we are using a pre-existing database
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // Handle database upgrade if needed
+    }
+
+    override fun getReadableDatabase(): SQLiteDatabase {
+        return SQLiteDatabase.openDatabase(
+            context.getDatabasePath(DATABASE_NAME).path,
+            null,
+            SQLiteDatabase.OPEN_READWRITE
+        )
+    }
+
+    override fun getWritableDatabase(): SQLiteDatabase {
+        return getReadableDatabase()
     }
 
     private fun deleteAllData(tableName: String, db: SQLiteDatabase) {
