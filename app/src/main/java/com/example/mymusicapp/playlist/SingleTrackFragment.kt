@@ -122,17 +122,29 @@ class SingleTrackFragment : Fragment() {
         playlist = playlistId.let { dbHelper.getPlaylist(it) }
         album = albumId?.let { dbHelper.getAlbum(it) }
 
-        if (TrackQueue.queue.isEmpty()) {
-            playerViewModel.playTrack(track, playlistId) // Play track without adding to queue
+
+
+
+        // Check if the track is already being played
+        if (playerViewModel.isTrackCurrentlyPlaying(track.trackId)) {
+            // Only update the UI without restarting playback
+            updateUIForTrack(track)
         } else {
-            val trackIndex = TrackQueue.queue.indexOfFirst { it.trackId == track.trackId }
-            if (trackIndex != -1) {
-                playerViewModel.playTrackAtIndex(trackIndex) // Play existing track
+            // If not already playing, start playing the track or add to the queue
+
+            if (TrackQueue.queue.isEmpty()) {
+                playerViewModel.playTrack(track, playlistId) // Play track without adding to queue
             } else {
-                TrackQueue.addTrack(track, playlistId)
-                playerViewModel.playTrackAtIndex(TrackQueue.queue.size - 1) // Add track to queue and play it
-                // This case got  bug
+                val trackIndex = TrackQueue.queue.indexOfFirst { it.trackId == track.trackId }
+                if (trackIndex != -1) {
+                    playerViewModel.playTrackAtIndex(trackIndex) // Play existing track
+                } else {
+                    TrackQueue.addTrack(track, playlistId)
+                    playerViewModel.playTrackAtIndex(TrackQueue.queue.size - 1) // Add track to queue and play it
+                    // This case got  bug
+                }
             }
+
         }
 
         updateLikeButton()

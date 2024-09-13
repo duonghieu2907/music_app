@@ -108,4 +108,10 @@ class PlayerViewModel(val exoPlayer: ExoPlayer, val db: MusicAppDatabaseHelper, 
         }
     }
 
+
+    fun isTrackCurrentlyPlaying(trackId: String): Boolean {
+        return _currentTrack.value?.trackId == trackId
+    }
+
+
 }
