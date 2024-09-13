@@ -86,6 +86,8 @@ class PlayerViewModel(val exoPlayer: ExoPlayer, val db: MusicAppDatabaseHelper, 
         // Check if the index is within the bounds of the queue
         if (index >= 0 && index < TrackQueue.queue.size) {
             currentTrackIndex = index // Update the current track index
+            _currentTrack.value = TrackQueue.queue.get(currentTrackIndex)
+            _currentPlaylistId.value = TrackQueue.queuePlaylistId.get(currentTrackIndex)
 
             val track = TrackQueue.queue[index] // Get the track at the specified index
             val playlistId = TrackQueue.queuePlaylistId[index]
