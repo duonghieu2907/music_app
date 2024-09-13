@@ -15,18 +15,16 @@ import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import com.example.mymusicapp.models.Album
-import com.example.mymusicapp.models.Track
-import com.example.mymusicapp.models.Playlist
-import com.example.mymusicapp.models.TrackQueue
-import com.example.mymusicapp.queue.QueueFragment
 import com.example.mymusicapp.data.PlayerViewModel
 import com.example.mymusicapp.data.PlayerViewModelFactory
+import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.models.TrackQueue
+import com.example.mymusicapp.queue.QueueFragment
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerControlView
-import com.google.android.exoplayer2.SimpleExoPlayer
 
 class SingleTrackFragment : Fragment() {
 
@@ -58,8 +56,13 @@ class SingleTrackFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.activity_single_song, container, false)
 
-        // Initialize ExoPlayer
+        // Initialize ExoPlayer and Database
+        dbHelper = MusicAppDatabaseHelper(requireContext())
         exoPlayer = ExoPlayer.Builder(requireContext()).build()
+
+        // Get global user ID
+        val app = requireActivity().application as Global
+        curUserId = app.curUserId
 
         // Hide the navigation bar when this fragment is created
         val activity = requireActivity()
@@ -69,7 +72,7 @@ class SingleTrackFragment : Fragment() {
 
         // Initialize ViewModel using the factory, passing ExoPlayer to it
         playerViewModel = ViewModelProvider(
-            requireActivity(), PlayerViewModelFactory(exoPlayer)
+            requireActivity(), PlayerViewModelFactory(exoPlayer, dbHelper, curUserId)
         ).get(PlayerViewModel::class.java)
 
         // Observe currentTrack LiveData for track changes
@@ -79,7 +82,6 @@ class SingleTrackFragment : Fragment() {
 
         backButton = view.findViewById(R.id.back)
         previousButton = view.findViewById(R.id.previous_button)
-        dbHelper = MusicAppDatabaseHelper(requireContext())
 
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -88,10 +90,6 @@ class SingleTrackFragment : Fragment() {
         previousButton.setOnClickListener {
             playerViewModel.playPreviousTrackInQueue()
         }
-
-        // Get global user ID
-        val app = requireActivity().application as Global
-        curUserId = app.curUserId
 
         // Set the ExoPlayer in the PlayerControlView from ViewModel
         playerControlView = view.findViewById(R.id.playerControlView)
@@ -117,21 +115,21 @@ class SingleTrackFragment : Fragment() {
 
         // Fetch track, playlist, and album using IDs
         val trackId = arguments?.getString("TRACK_ID") ?: return view
-        val playlistId = arguments?.getString("PLAYLIST_ID")
+        val playlistId = arguments?.getString("PLAYLIST_ID")?: ""
         val albumId = arguments?.getString("ALBUM_ID")
 
         track = dbHelper.getTrack(trackId) ?: return view
-        playlist = playlistId?.let { dbHelper.getPlaylist(it) }
+        playlist = playlistId.let { dbHelper.getPlaylist(it) }
         album = albumId?.let { dbHelper.getAlbum(it) }
 
         if (TrackQueue.queue.isEmpty()) {
-            playerViewModel.playTrack(track) // Play track without adding to queue
+            playerViewModel.playTrack(track, playlistId) // Play track without adding to queue
         } else {
             val trackIndex = TrackQueue.queue.indexOfFirst { it.trackId == track.trackId }
             if (trackIndex != -1) {
-                playerViewModel.playTrackAtIndex(trackIndex - 1) // Play existing track
+                playerViewModel.playTrackAtIndex(trackIndex) // Play existing track
             } else {
-                TrackQueue.queue.add(track)
+                TrackQueue.addTrack(track, playlistId)
                 playerViewModel.playTrackAtIndex(TrackQueue.queue.size - 1) // Add track to queue and play it
                 // This case got  bug
             }
@@ -176,15 +174,12 @@ class SingleTrackFragment : Fragment() {
             if (playerViewModel.currentTrackIndex > 0) {
                 playerViewModel.currentTrackIndex-- // Decrement index in ViewModel
                 playTrackAtIndex(playerViewModel.currentTrackIndex) // Use updated index
+                dbHelper.addHistory(curUserId, playlistId, trackId)
+
             } else {
                 Toast.makeText(requireContext(), "Already at the first track in the queue", Toast.LENGTH_SHORT).show()
             }
         }
-
-
-
-
-
 
         return view
     }

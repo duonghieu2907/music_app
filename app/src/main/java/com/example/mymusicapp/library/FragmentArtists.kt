@@ -57,7 +57,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
         //Sort By
         //Init all sort
         val allSort = ArrayList<String>()
-        allSort.addAll(arrayOf("Recently added", "Newest", "A-Z", "Z-A"))
+        allSort.addAll(arrayOf("Recently added", "Recently played", "A-Z", "Z-A"))
 
         //Init setOnClickListener
         val sortBut = view.findViewById<TextView>(R.id.sortButtonArtist)
@@ -65,6 +65,7 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
             when (sortBut.text.toString()) {
                 allSort[0] -> {
                     sortBut.text = allSort[1]
+                    updateAdapter(getNewest())
                 }
                 allSort[1] -> {
                     //set effect for the button
@@ -115,6 +116,13 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     private fun sort(order : String): ArrayList<Artist> {
         val db = MusicAppDatabaseHelper(requireContext())
         val sample: ArrayList<Artist> = db.sort("artist", order, curUser) as? ArrayList<Artist>?: ArrayList()
+        db.close()
+        return sample
+    }
+
+    private fun getNewest() : ArrayList<Artist> {
+        val db = MusicAppDatabaseHelper(requireContext())
+        val sample: ArrayList<Artist> = db.getNewest("artist", curUser) as? ArrayList<Artist>?: ArrayList()
         db.close()
         return sample
     }

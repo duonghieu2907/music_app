@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                 //spotifyData.buildAppApi()
                 
                 //dbHelper.deleteAll() //Run this line to delete all data
+                dbHelper.deleteHistory()
                 //To change database, wipe all data in emulator
 
                 //use for back up

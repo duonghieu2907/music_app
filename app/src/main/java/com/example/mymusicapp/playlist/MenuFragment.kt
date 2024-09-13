@@ -61,12 +61,12 @@ class MenuFragment : Fragment() {
 
         // Fetch track, playlist, and album using IDs
         val trackId = arguments?.getString("TRACK_ID") ?: return view
-        val playlistId = arguments?.getString("PLAYLIST_ID")
+        val playlistId = arguments?.getString("PLAYLIST_ID") ?: ""
         var albumId = arguments?.getString("ALBUM_ID")
 
         // Fetch objects from the database using their IDs
         track = dbHelper.getTrack(trackId) ?: return view
-        playlist = playlistId?.let { dbHelper.getPlaylist(it) }
+        playlist = playlistId.let { dbHelper.getPlaylist(it) }
 
 
         // Fetch Album and Artist details
@@ -107,7 +107,7 @@ class MenuFragment : Fragment() {
 
 
         val clickListenerQ = View.OnClickListener {
-            TrackQueue.addTrack(track)
+            TrackQueue.addTrack(track, playlistId)
         }
 
 

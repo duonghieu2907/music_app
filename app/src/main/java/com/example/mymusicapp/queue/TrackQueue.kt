@@ -9,18 +9,24 @@ object TrackQueue {
 
     )
 
+    val queuePlaylistId: MutableList<String> = mutableListOf(
+
+    )
 
     // Function to add a track to the queue
-    fun addTrack(track: Track) {
+    fun addTrack(track: Track, playlistId: String) {
         queue.add(track)
+        queuePlaylistId.add(playlistId)
     }
 
 
 
 
     // Function to add a list of tracks to the queue
-    fun addTracks(tracks: List<Track>) {
+    fun addTracks(tracks: List<Track>, playlistIds: List<String>?) {
+        val playlistIdList = playlistIds?: listOf("")
         queue.addAll(tracks)
+        queuePlaylistId.addAll(playlistIdList)
     }
 
     // Function to add a list of tracks to the beginning of the queue
@@ -31,10 +37,13 @@ object TrackQueue {
     // Function to clear the queue
     fun clearQueue() {
         queue.clear()
+        queuePlaylistId.clear()
     }
 
     // Function to remove a specific track from the queue
     fun removeTrack(track: Track) {
+        val index = queue.indexOf(track)
         queue.remove(track)
+        queuePlaylistId.removeAt(index)
     }
 }
