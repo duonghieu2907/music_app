@@ -60,9 +60,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/libraryFilter"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="4dp"
+        app:layout_constraintHorizontal_weight="1"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
