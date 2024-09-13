@@ -60,7 +60,6 @@
         android:orientation="vertical"
         android:layout_gravity="top"
         android:layout_marginTop="80dp"
-        android:paddingTop="10dp"
         android:paddingHorizontal="20dp">
 
         <TextView
@@ -74,7 +73,7 @@
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:columnCount="2"
             android:rowCount="3"
             android:orientation="horizontal"
@@ -85,7 +84,7 @@
                 android:id="@+id/box_recent_1"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/recent_listen_bg"
                 android:layout_columnWeight="1">
@@ -121,7 +120,7 @@
                 android:id="@+id/box_recent_2"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/recent_listen_bg"
                 android:layout_columnWeight="1">
@@ -156,7 +155,7 @@
                 android:id="@+id/box_recent_3"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/recent_listen_bg"
                 android:layout_columnWeight="1">
@@ -191,7 +190,7 @@
                 android:id="@+id/box_recent_4"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/recent_listen_bg"
                 android:layout_columnWeight="1">
@@ -226,7 +225,6 @@
                 android:id="@+id/box_recent_5"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:layout_marginBottom="15dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/recent_listen_bg"
                 android:layout_columnWeight="1">
@@ -261,7 +259,6 @@
                 android:id="@+id/box_recent_6"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
-                android:layout_marginBottom="15dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/recent_listen_bg"
                 android:layout_columnWeight="1">
@@ -301,7 +298,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="top"
-        android:layout_marginTop="390dp"
+        android:layout_marginTop="360dp"
         android:paddingHorizontal="20dp">
 
         <TextView
@@ -312,20 +309,190 @@
             android:textSize="20sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:layout_marginTop="10dp"
             android:layout_marginBottom="8dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/top_mixes_recyclerview"
+        <!-- Horizontal Scroll View for sliding items -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp"
-            android:clipToPadding="false"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp" />
+            android:scrollbars="none">
+
+            <!-- Container for the sliding items -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Item 1 -->
+                <LinearLayout
+                    android:id="@+id/mix_item_1"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    android:background="@color/BlueGreen"
+                    android:orientation="vertical">
+
+                    <!-- This is a FrameLayout to hold the text view at the bottom-right -->
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <!-- TextView at the bottom-right -->
+                        <TextView
+                            android:id="@+id/mix_name_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="8dp"
+                            android:text="Mix 1"
+                            android:textColor="@android:color/white"
+                            android:textSize="28sp"
+                            android:textStyle="bold" />
+
+                        <!-- Bottom line under the box -->
+                        <View
+                            android:id="@+id/underline"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:layout_gravity="bottom"
+                            android:background="#FFEB3B" />
+                    </FrameLayout>
+                </LinearLayout>
+                <!-- Item 2 -->
+                <LinearLayout
+                    android:id="@+id/mix_item_2"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#4CAF50"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/mix_name_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mix 2"
+                            android:textSize="28sp"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="8dp" />
+
+                        <View
+                            android:id="@+id/underline_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:layout_gravity="bottom"
+                            android:background="#FF9800" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Item 3 -->
+                <LinearLayout
+                    android:id="@+id/mix_item_3"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#3F51B5"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/mix_name_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mix 3"
+                            android:textSize="28sp"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="8dp" />
+
+                        <View
+                            android:id="@+id/underline_3"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:layout_gravity="bottom"
+                            android:background="#F44336" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Item 4 -->
+                <LinearLayout
+                    android:id="@+id/mix_item_4"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#9C27B0"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/mix_name_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mix 4"
+                            android:textSize="28sp"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="8dp" />
+
+                        <View
+                            android:id="@+id/underline_4"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:layout_gravity="bottom"
+                            android:background="#00BCD4" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Item 5 -->
+                <LinearLayout
+                    android:id="@+id/mix_item_5"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:background="#607D8B"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/mix_name_5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mix 5"
+                            android:textSize="28sp"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="8dp" />
+
+                        <View
+                            android:id="@+id/underline_5"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:layout_gravity="bottom"
+                            android:background="#673AB7" />
+                    </FrameLayout>
+                </LinearLayout>
 
     </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
 
     <!-- Recommendations Section -->
     <LinearLayout
@@ -334,7 +501,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="top"
-        android:layout_marginTop="530dp"
+        android:layout_marginTop="520dp"
         android:paddingHorizontal="20dp">
 
         <TextView

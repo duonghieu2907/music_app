@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121111">
+
+    <!-- Playlist Image -->
+    <View
+        android:id="@+id/playlistImage"
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:layout_centerHorizontal="true"
+        android:src="@color/BlueGreen"
+        android:contentDescription="Playlist Image"
+        android:scaleType="centerCrop" />
+
+
+
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="28dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_leftarrow"
+        android:contentDescription="Back Button"
+        android:layout_alignParentStart="true"
+        android:scaleType="centerInside" />
+
+    <!-- Options Button -->
+    <ImageView
+        android:id="@+id/optionsButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_more_vert"
+        android:contentDescription="Options Button"
+        android:layout_alignParentEnd="true"
+        android:scaleType="centerInside"
+        app:tint="@color/white" />
+
+    <!-- Header Title -->
+    <TextView
+        android:id="@+id/playlistTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/playlistImage"
+        android:layout_alignEnd="@id/playlistImage"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="15dp"
+        android:text="Mix 1"
+        android:textSize="50sp"
+        android:textColor="#FFFFFF"
+        android:fontFamily="sans-serif-medium"
+        android:textStyle="bold"
+        android:letterSpacing="0.1" />
+
+    <!-- Bottom line under the box -->
+    <View
+        android:id="@+id/underline"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_alignBottom="@id/playlistImage"
+        android:background="#FFEB3B" />
+
+    <!-- User who owns the playlist -->
+    <TextView
+        android:id="@+id/playlistOwner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/playlistTitle"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="15dp"
+        android:text="soft, chill, dreamy, lo-fi beats"
+        android:textSize="16sp"
+        android:textColor="#B3FFFFFF"
+        android:fontFamily="sans-serif" />
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSongs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/playlistOwner"
+        android:padding="16dp" />
+</RelativeLayout>

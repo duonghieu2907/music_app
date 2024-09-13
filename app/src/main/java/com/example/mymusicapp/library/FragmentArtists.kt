@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,7 +41,6 @@ class FragmentArtists : Fragment(), FragmentArtistAdapter.OnItemClickListener {
     }
 
     private fun app(view: View) {
-
         //Adapter
         adapter = FragmentArtistAdapter(items, this)
         createArtistItem()
