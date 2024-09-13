@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ import com.example.mymusicapp.library.FragmentPlaylists
 import com.example.mymusicapp.library.FragmentPodcasts
 import com.example.mymusicapp.library.FragmentYourLibrary
 import com.example.mymusicapp.library.LibraryFilterItem
+import com.example.mymusicapp.queue.QueueFragment
 
 class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibraryFilterSelectionListener {
     private lateinit var drawerLayout: DrawerLayout
@@ -161,35 +163,24 @@ class LibraryFragment : Fragment(), FragmentLibraryFilterAdapter.FragmentLibrary
     }
 
     private fun navigateToSettings() {
-        Log.d("ExploreFragment", "Navigating to SettingsFragment.")
-        // Replace with your SettingsFragment or Activity
-//        val settingsFragment = SettingsFragment()
-//        parentFragmentManager.beginTransaction()
-//            .replace(R.id.fragment_container, settingsFragment)  // Replace with your fragment container ID
-//            .addToBackStack(null)  // Optional: Add this transaction to the back stack
-//            .commit()
-//        drawerLayout.closeDrawer(GravityCompat.START)
+        Toast.makeText(context, "This feature is in development", Toast.LENGTH_SHORT).show()
     }
 
     private fun navigateToHistory() {
-        Log.d("ExploreFragment", "Navigating to HistoryFragment.")
-        // Replace with your HistoryFragment or Activity
-//        val historyFragment = HistoryFragment()
-//        parentFragmentManager.beginTransaction()
-//            .replace(R.id.fragment_container, historyFragment)  // Replace with your fragment container ID
-//            .addToBackStack(null)  // Optional: Add this transaction to the back stack
-//            .commit()
-//        drawerLayout.closeDrawer(GravityCompat.START)
+        val recentlyPlayedFragment = RecentlyPlayedFragment()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, recentlyPlayedFragment)  // Replace with your fragment container ID
+            .addToBackStack(null)  // Optional: Add this transaction to the back stack
+            .commit()
+        drawerLayout.closeDrawer(GravityCompat.START)
     }
 
     private fun navigateToQueue() {
-        Log.d("ExploreFragment", "Navigating to QueueFragment.")
-        // Navigate to QueueFragment
-//        val queueFragment = QueueFragment()
-//        parentFragmentManager.beginTransaction()
-//            .replace(R.id.fragment_container, queueFragment)  // Replace with your fragment container ID
-//            .addToBackStack(null)  // Optional: Add this transaction to the back stack
-//            .commit()
-//        drawerLayout.closeDrawer(GravityCompat.START)
+        val queueFragment = QueueFragment()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, queueFragment)  // Replace with your fragment container ID
+            .addToBackStack(null)  // Optional: Add this transaction to the back stack
+            .commit()
+        drawerLayout.closeDrawer(GravityCompat.START)
     }
 }
