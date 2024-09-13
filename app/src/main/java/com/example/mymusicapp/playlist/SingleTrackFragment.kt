@@ -115,14 +115,12 @@ class SingleTrackFragment : Fragment() {
 
         // Fetch track, playlist, and album using IDs
         val trackId = arguments?.getString("TRACK_ID") ?: return view
-        val playlistId = arguments?.getString("PLAYLIST_ID")?: ""
+        val playlistId = arguments?.getString("PLAYLIST_ID") ?: ""
         val albumId = arguments?.getString("ALBUM_ID")
 
         track = dbHelper.getTrack(trackId) ?: return view
         playlist = playlistId.let { dbHelper.getPlaylist(it) }
         album = albumId?.let { dbHelper.getAlbum(it) }
-
-
 
 
         // Check if the track is already being played
@@ -145,156 +143,157 @@ class SingleTrackFragment : Fragment() {
                 }
             }
 
-        }
-
-        updateLikeButton()
-        likeButton.setOnClickListener {
-            toggleLikeStatus()
-        }
+            updateLikeButton()
+            likeButton.setOnClickListener {
+                toggleLikeStatus()
+            }
 
 
 
-        songTitle.text = track.name
-        val album1 = dbHelper.getAlbum(track.albumId)
-        val artist = dbHelper.getArtist(album1?.artistId ?: "")
-        artistName.text = artist?.name ?: "Unknown Artist"
+            songTitle.text = track.name
+            val album1 = dbHelper.getAlbum(track.albumId)
+            val artist = dbHelper.getArtist(album1?.artistId ?: "")
+            artistName.text = artist?.name ?: "Unknown Artist"
 
 
-        if(playlist != null)
-        {
-            playlistName.text = playlist?.name
-            playingFrom.text = "PLAYING FROM PLAYLIST"
-        }
-        else if (album != null)
-        {
-            playlistName.text = album?.name
-            playingFrom.text = "PLAYING FROM ALBUM"
-        }
-        else {
-            playlistName.text = ""
-            playingFrom.text = ""
-        }
-
-
-        Glide.with(this)
-            .load(album1?.image)
-            .placeholder(R.drawable.blacker_gradient)
-            .into(songCover)
-
-
-        previousButton.setOnClickListener {
-            if (playerViewModel.currentTrackIndex > 0) {
-                playerViewModel.currentTrackIndex-- // Decrement index in ViewModel
-                playTrackAtIndex(playerViewModel.currentTrackIndex) // Use updated index
-                dbHelper.addHistory(curUserId, playlistId, trackId)
-
+            if (playlist != null) {
+                playlistName.text = playlist?.name
+                playingFrom.text = "PLAYING FROM PLAYLIST"
+            } else if (album != null) {
+                playlistName.text = album?.name
+                playingFrom.text = "PLAYING FROM ALBUM"
             } else {
-                Toast.makeText(requireContext(), "Already at the first track in the queue", Toast.LENGTH_SHORT).show()
+                playlistName.text = ""
+                playingFrom.text = ""
+            }
+
+
+            Glide.with(this)
+                .load(album1?.image)
+                .placeholder(R.drawable.blacker_gradient)
+                .into(songCover)
+
+
+            previousButton.setOnClickListener {
+                if (playerViewModel.currentTrackIndex > 0) {
+                    playerViewModel.currentTrackIndex-- // Decrement index in ViewModel
+                    playTrackAtIndex(playerViewModel.currentTrackIndex) // Use updated index
+                    dbHelper.addHistory(curUserId, playlistId, trackId)
+
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Already at the first track in the queue",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
-
         return view
     }
 
-    private fun updateLikeButton() {
-        val isLiked = dbHelper.isTrackLiked(track.trackId, curUserId)
+        private fun updateLikeButton() {
+            val isLiked = dbHelper.isTrackLiked(track.trackId, curUserId)
 
-        if (isLiked) {
-            likeButton.setImageResource(R.drawable.filledlove)
-        } else {
-            likeButton.setImageResource(R.drawable.love)
+            if (isLiked) {
+                likeButton.setImageResource(R.drawable.filledlove)
+            } else {
+                likeButton.setImageResource(R.drawable.love)
+            }
         }
-    }
 
-    private fun toggleLikeStatus() {
-        if (dbHelper.isTrackLiked(track.trackId, curUserId)) {
-            dbHelper.deleteLike(curUserId, track.trackId)
-        } else {
-            dbHelper.addLike(curUserId, track.trackId)
+        private fun toggleLikeStatus() {
+            if (dbHelper.isTrackLiked(track.trackId, curUserId)) {
+                dbHelper.deleteLike(curUserId, track.trackId)
+            } else {
+                dbHelper.addLike(curUserId, track.trackId)
+            }
+            updateLikeButton()
         }
-        updateLikeButton()
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        val activity = requireActivity()
-        if (activity is MainActivity) {
-            activity.showBottomNavigation()
+        override fun onDestroyView() {
+            super.onDestroyView()
+            val activity = requireActivity()
+            if (activity is MainActivity) {
+                activity.showBottomNavigation()
+            }
         }
-    }
 
-    companion object {
-        fun newInstance(trackId: String, playlistId: String? = null, albumId: String? = null): SingleTrackFragment {
-            val fragment = SingleTrackFragment()
-            val args = Bundle()
-            args.putString("TRACK_ID", trackId)
-            playlistId?.let { args.putString("PLAYLIST_ID", it) }
-            albumId?.let { args.putString("ALBUM_ID", it) }
-            fragment.arguments = args
-            return fragment
+        companion object {
+            fun newInstance(
+                trackId: String,
+                playlistId: String? = null,
+                albumId: String? = null
+            ): SingleTrackFragment {
+                val fragment = SingleTrackFragment()
+                val args = Bundle()
+                args.putString("TRACK_ID", trackId)
+                playlistId?.let { args.putString("PLAYLIST_ID", it) }
+                albumId?.let { args.putString("ALBUM_ID", it) }
+                fragment.arguments = args
+                return fragment
+            }
         }
-    }
 
-    private fun openMenuFragment() {
-        val menuFragment = MenuFragment.newInstance(track.trackId, playlist?.playlistId)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, menuFragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun openQueueFragment() {
-        val queueFragment = QueueFragment.newInstance(track, playlist, album)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, queueFragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val activity = requireActivity()
-        if (activity is MainActivity) {
-            activity.hideBottomNavigation()
+        private fun openMenuFragment() {
+            val menuFragment = MenuFragment.newInstance(track.trackId, playlist?.playlistId)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, menuFragment)
+                .addToBackStack(null)
+                .commit()
         }
-    }
 
-    private fun playTrackAtIndex(index: Int) {
-        playerViewModel.currentTrackIndex = index // Update index in ViewModel
+        private fun openQueueFragment() {
+            val queueFragment = QueueFragment.newInstance(track, playlist, album)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, queueFragment)
+                .addToBackStack(null)
+                .commit()
+        }
 
-        if (index >= TrackQueue.queue.size) return
+        override fun onResume() {
+            super.onResume()
+            val activity = requireActivity()
+            if (activity is MainActivity) {
+                activity.hideBottomNavigation()
+            }
+        }
 
-        val currentTrack = TrackQueue.queue[index]
+        private fun playTrackAtIndex(index: Int) {
+            playerViewModel.currentTrackIndex = index // Update index in ViewModel
 
-        // Play the selected track using the ViewModel's ExoPlayer
-        val mediaItem = MediaItem.fromUri(Uri.parse(currentTrack.path))
-        playerViewModel.exoPlayer.setMediaItem(mediaItem)
-        playerViewModel.exoPlayer.prepare()
-        playerViewModel.exoPlayer.playWhenReady = true
+            if (index >= TrackQueue.queue.size) return
 
-        // Update UI
-        songTitle.text = currentTrack.name
-        val album1 = dbHelper.getAlbum(currentTrack.albumId)
-        val artist = dbHelper.getArtist(album1?.artistId ?: "")
-        artistName.text = artist?.name ?: "Unknown Artist"
+            val currentTrack = TrackQueue.queue[index]
 
-        Glide.with(this)
-            .load(album1?.image)
-            .placeholder(R.drawable.blacker_gradient)
-            .into(songCover)
-    }
+            // Play the selected track using the ViewModel's ExoPlayer
+            val mediaItem = MediaItem.fromUri(Uri.parse(currentTrack.path))
+            playerViewModel.exoPlayer.setMediaItem(mediaItem)
+            playerViewModel.exoPlayer.prepare()
+            playerViewModel.exoPlayer.playWhenReady = true
+
+            // Update UI
+            songTitle.text = currentTrack.name
+            val album1 = dbHelper.getAlbum(currentTrack.albumId)
+            val artist = dbHelper.getArtist(album1?.artistId ?: "")
+            artistName.text = artist?.name ?: "Unknown Artist"
+
+            Glide.with(this)
+                .load(album1?.image)
+                .placeholder(R.drawable.blacker_gradient)
+                .into(songCover)
+        }
 
 
-    private fun updateUIForTrack(track: Track) {
-        songTitle.text = track.name
-        val album1 = dbHelper.getAlbum(track.albumId)
-        val artist = dbHelper.getArtist(album1?.artistId ?: "")
-        artistName.text = artist?.name ?: "Unknown Artist"
+        private fun updateUIForTrack(track: Track) {
+            songTitle.text = track.name
+            val album1 = dbHelper.getAlbum(track.albumId)
+            val artist = dbHelper.getArtist(album1?.artistId ?: "")
+            artistName.text = artist?.name ?: "Unknown Artist"
 
-        Glide.with(this)
-            .load(album1?.image)
-            .placeholder(R.drawable.blacker_gradient)
-            .into(songCover)
-    }
-
+            Glide.with(this)
+                .load(album1?.image)
+                .placeholder(R.drawable.blacker_gradient)
+                .into(songCover)
+        }
 }
