@@ -1809,6 +1809,8 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
             db.insert(TABLE_HISTORY, null, historyValue)
 
             db.setTransactionSuccessful()
+            Log.d("MusicAppDatabaseHelper",
+                "User $curUserId, Playlist $playlistId, Track $trackId recorded")
         }
         catch (e: Exception) {
             Log.e("MusicAppDatabaseHelper", "Can't record - ", e)

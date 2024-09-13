@@ -106,7 +106,7 @@ class AlbumFragment : Fragment() {
 
                         val trackList: List<Track> = dbHelper.getTracksByAlbumId(albumId)  // Ensure this method accepts String
 
-                        TrackQueue.addTracks(trackList)
+                        TrackQueue.addTracks(trackList, null)
                         println("Queue")
                         true
                     }

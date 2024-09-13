@@ -1,27 +1,20 @@
 package com.example.mymusicapp.data
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
-
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 
-
-import com.google.android.exoplayer2.ExoPlayer
-
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-
-class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
-
+class PlayerViewModel(val exoPlayer: ExoPlayer, val db: MusicAppDatabaseHelper, val curUserId: String) : ViewModel() {
     private val _currentTrack = MutableLiveData<Track>()
+    private val _currentPlaylistId = MutableLiveData<String>()
     val currentTrack: LiveData<Track> get() = _currentTrack
-
 
     var currentTrackIndex = 0
 
@@ -36,10 +29,12 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
         })
     }
 
-    fun playTrack(track: Track) {
-
+    fun playTrack(track: Track, playlistId: String) {
         _currentTrack.value = track // Notify observers of the track change
+        _currentPlaylistId.value = playlistId
 
+        //Record
+        db.addHistory(curUserId, playlistId, track.trackId)
 
         if (track.path.startsWith( "SpotifyUri")) {
             track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
@@ -65,7 +60,8 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
         currentTrackIndex++
         if (currentTrackIndex < TrackQueue.queue.size) {
             val nextTrack = TrackQueue.queue[currentTrackIndex]
-            playTrack(nextTrack)
+            val nextPlaylistId = TrackQueue.queuePlaylistId[currentTrackIndex]
+            playTrack(nextTrack, nextPlaylistId)
         } else {
             exoPlayer.stop() // End of the queue
         }
@@ -75,7 +71,8 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
         if (currentTrackIndex > 0) {
             currentTrackIndex--
             val previousTrack = TrackQueue.queue[currentTrackIndex]
-            playTrack(previousTrack)
+            val previousPlaylistId = TrackQueue.queuePlaylistId[currentTrackIndex]
+            playTrack(previousTrack, previousPlaylistId)
         }
     }
 
@@ -91,7 +88,9 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
             currentTrackIndex = index // Update the current track index
 
             val track = TrackQueue.queue[index] // Get the track at the specified index
+            val playlistId = TrackQueue.queuePlaylistId[index]
 
+            db.addHistory(curUserId, playlistId, track.trackId)
 
             if (track.path.startsWith( "SpotifyUri")) {
                 track.path = "https://stream.nct.vn/NhacCuaTui2045/MyLoveMineAllMine-Mitski-11792243.mp3?..."
