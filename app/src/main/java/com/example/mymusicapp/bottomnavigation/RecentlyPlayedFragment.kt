@@ -5,13 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
+import com.example.mymusicapp.album.AlbumTracksAdapter
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.playlist.SingleTrackFragment
 
 class RecentlyPlayedFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
@@ -45,10 +49,10 @@ class RecentlyPlayedFragment : Fragment() {
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+
         // Get albums and playlists
-        val databaseHelper = MusicAppDatabaseHelper(requireContext())
-        val albumList = databaseHelper.getNewest("album", curUser) as ArrayList<*>
-        val playlistList = databaseHelper.getNewest("playlist", curUser) as ArrayList<*>
+        val albumList = dbHelper.getNewest("album", curUser) as ArrayList<*>
+        val playlistList = dbHelper.getNewest("playlist", curUser) as ArrayList<*>
 
         // Combine the lists
         val combinedList = ArrayList<Any>()
@@ -58,6 +62,14 @@ class RecentlyPlayedFragment : Fragment() {
         // Set up RecyclerView
         val recyclerView: RecyclerView = view.findViewById(R.id.recently_played_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = RecentlyPlayedAdapter(combinedList)
+        //recyclerView.adapter = RecentlyPlayedAdapter(combinedList)
+
+        // Fetch tracks for this album
+        val trackList: List<Track> = dbHelper.getRecentlyPlayedTracks(curUser).mapNotNull { trackId ->
+            dbHelper.getTrack(trackId)  // Fetch each track's details using the track ID
+        }
+        val tracksAdapter = HistoryTrackAdapter(trackList, dbHelper)
+        recyclerView.adapter = tracksAdapter
+
     }
 }

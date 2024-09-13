@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
@@ -254,8 +255,6 @@ class PlaylistFragment : Fragment() {
         }
     }
 
-
-
     private fun openTrack(track: Track, playlist: Playlist) {
         val fragment = SingleTrackFragment.newInstance(track.trackId, playlist.playlistId, null)
         parentFragmentManager.beginTransaction()
@@ -263,5 +262,14 @@ class PlaylistFragment : Fragment() {
             .addToBackStack(null)
             .commit()
         Toast.makeText(requireContext(), track.name, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 }

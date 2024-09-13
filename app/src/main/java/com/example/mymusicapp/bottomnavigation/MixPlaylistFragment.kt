@@ -128,7 +128,7 @@ class MixPlaylistFragment : Fragment() {
                 "Mix 3" -> "Rock out to the best rock anthems."
                 "Mix 4" -> "Enjoy alternative tracks that push the boundaries."
                 "Mix 5" -> "Listen to the top Viet tracks of the moment."
-                else -> "Playlist description not available."
+                else -> ""
             }
 
             playlistImage.setBackgroundColor(boxColor)
@@ -247,8 +247,6 @@ class MixPlaylistFragment : Fragment() {
         }
     }
 
-
-
     private fun openTrack(track: Track, playlist: Playlist) {
         val fragment = SingleTrackFragment.newInstance(track.trackId, playlist.playlistId, null)
         parentFragmentManager.beginTransaction()
@@ -256,5 +254,14 @@ class MixPlaylistFragment : Fragment() {
             .addToBackStack(null)
             .commit()
         Toast.makeText(requireContext(), track.name, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 }

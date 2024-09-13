@@ -13,13 +13,40 @@ import android.widget.Toast
 import android.graphics.Color
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.bumptech.glide.Glide
+import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
+import com.example.mymusicapp.album.AlbumFragment
+import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.queue.QueueFragment
 
 class HomeFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
+    private lateinit var curUser: String
     private lateinit var drawerLayout: DrawerLayout
+
+    private lateinit var boxRecent1: LinearLayout
+    private lateinit var boxRecent2: LinearLayout
+    private lateinit var boxRecent3: LinearLayout
+    private lateinit var boxRecent4: LinearLayout
+    private lateinit var boxRecent5: LinearLayout
+    private lateinit var boxRecent6: LinearLayout
+
+    private lateinit var albumCover1: ImageView
+    private lateinit var albumCover2: ImageView
+    private lateinit var albumCover3: ImageView
+    private lateinit var albumCover4: ImageView
+    private lateinit var albumCover5: ImageView
+    private lateinit var albumCover6: ImageView
+
+    private lateinit var albumName1: TextView
+    private lateinit var albumName2: TextView
+    private lateinit var albumName3: TextView
+    private lateinit var albumName4: TextView
+    private lateinit var albumName5: TextView
+    private lateinit var albumName6: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +76,38 @@ class HomeFragment : Fragment() {
         // Initialize the database helper
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
+        val application = requireActivity().application as Global
+        curUser = application.curUserId
+
+        val recentlyPlayedAlbums = dbHelper.getNewest("album", curUser) as ArrayList<*>
+        val albums = (recentlyPlayedAlbums as? List<*>)?.mapNotNull { it as? Album } ?: arrayListOf()
+
+        // Initialize album boxes (LinearLayouts)
+        boxRecent1 = view.findViewById(R.id.box_recent_1)
+        boxRecent2 = view.findViewById(R.id.box_recent_2)
+        boxRecent3 = view.findViewById(R.id.box_recent_3)
+        boxRecent4 = view.findViewById(R.id.box_recent_4)
+        boxRecent5 = view.findViewById(R.id.box_recent_5)
+        boxRecent6 = view.findViewById(R.id.box_recent_6)
+
+        // Initialize album cover ImageViews
+        albumCover1 = view.findViewById(R.id.album_cover_1)
+        albumCover2 = view.findViewById(R.id.album_cover_2)
+        albumCover3 = view.findViewById(R.id.album_cover_3)
+        albumCover4 = view.findViewById(R.id.album_cover_4)
+        albumCover5 = view.findViewById(R.id.album_cover_5)
+        albumCover6 = view.findViewById(R.id.album_cover_6)
+
+        // Initialize album name TextViews
+        albumName1 = view.findViewById(R.id.album_name_1)
+        albumName2 = view.findViewById(R.id.album_name_2)
+        albumName3 = view.findViewById(R.id.album_name_3)
+        albumName4 = view.findViewById(R.id.album_name_4)
+        albumName5 = view.findViewById(R.id.album_name_5)
+        albumName6 = view.findViewById(R.id.album_name_6)
+
+        updateRecentlyPlayedAlbums(albums)
+        
         view.findViewById<LinearLayout>(R.id.mix_item_1).setOnClickListener {
             val boxColor = (it.findViewById<LinearLayout>(R.id.mix_item_1).background as? ColorDrawable)?.color ?: Color.TRANSPARENT
             val underlineColor = (it.findViewById<View>(R.id.underline).background as? ColorDrawable)?.color ?: Color.TRANSPARENT
@@ -85,6 +144,64 @@ class HomeFragment : Fragment() {
         }
 
     }
+
+    private fun updateRecentlyPlayedAlbums(albums: List<Album>) {
+        // Get references to all the album boxes (LinearLayouts) and their content views
+        val albumBoxes = listOf(
+            boxRecent1 to Pair(albumCover1, albumName1),
+            boxRecent2 to Pair(albumCover2, albumName2),
+            boxRecent3 to Pair(albumCover3, albumName3),
+            boxRecent4 to Pair(albumCover4, albumName4),
+            boxRecent5 to Pair(albumCover5, albumName5),
+            boxRecent6 to Pair(albumCover6, albumName6)
+        )
+
+        // Iterate over the boxes and update content
+        for (i in albumBoxes.indices) {
+            if (i < albums.size) {
+                // Get the album data
+                val album = albums[i]
+
+                // Update the album cover and name
+                val (coverImageView, nameTextView) = albumBoxes[i].second
+
+                // album image
+                Glide.with(this)
+                    .load(album.image)
+                    .placeholder(R.drawable.blacker_gradient)
+                    .into(coverImageView)
+
+                nameTextView.text = album.name // Update album name
+
+                // Show the box since there is an album to display
+                albumBoxes[i].first.visibility = View.VISIBLE
+
+                // Add onClickListener to open the album or play its track
+                albumBoxes[i].first.setOnClickListener {
+                    album.let {
+                        // Check if the current fragment is added to the activity before proceeding
+                        if (isAdded) {
+                            val albumFragment = AlbumFragment.newInstance(album.albumId) //Transfer id
+
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.fragment_container, albumFragment)
+                                .addToBackStack(null)
+                                .commit()
+
+                            Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "Fragment not attached to activity", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            } else {
+                // Hide the box if there are not enough albums
+                albumBoxes[i].first.visibility = View.GONE
+            }
+        }
+    }
+
+
 
     // Function to open the playlist corresponding to the selected mix
     private fun openMixPlaylist(mixName: String, boxColor: Int, underlineColor: Int) {
@@ -153,5 +270,14 @@ class HomeFragment : Fragment() {
             .addToBackStack(null)  // Optional: Add this transaction to the back stack
             .commit()
         drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Show the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
     }
 }
