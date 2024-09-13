@@ -60,6 +60,7 @@ class FragmentAlbums : Fragment(),
             when (sortBut.text.toString()) {
                 allSort[0] -> {
                     sortBut.text = allSort[1]
+                    updateAdapter(getNewest())
                 }
                 allSort[1] -> {
                     //set effect for the button

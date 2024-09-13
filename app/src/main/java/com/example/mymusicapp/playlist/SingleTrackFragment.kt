@@ -2,6 +2,7 @@ package com.example.mymusicapp.playlist
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +16,8 @@ import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Album
-import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.Playlist
+import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.TrackQueue
 import com.example.mymusicapp.queue.QueueFragment
 import com.google.android.exoplayer2.ExoPlayer
@@ -175,8 +176,9 @@ class SingleTrackFragment : Fragment() {
         exoPlayer.playWhenReady = true
 
         //Add history
-
-
+        val db = MusicAppDatabaseHelper(requireContext())
+        if(db.addHistory(curUserId, playlist?.playlistId?: "", track.trackId))
+            Log.d("SingleTrack", "Successfully record")
 
         songTitle.text = track.name
         val album1 = dbHelper.getAlbum(track.albumId)
@@ -242,6 +244,9 @@ class SingleTrackFragment : Fragment() {
 
 
         // Add history
+        val db = MusicAppDatabaseHelper(requireContext())
+        if(db.addHistory(curUserId, playlist?.playlistId?: "", track.trackId))
+            Log.d("SingleTrack", "Successfully record")
 
         songTitle.text = currentTrack.name
         val album1 = dbHelper.getAlbum(currentTrack.albumId)
