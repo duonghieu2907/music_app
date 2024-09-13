@@ -1059,7 +1059,6 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         }
     }
 
-
     fun getPlaylistTrack(playlistId: Int, trackId: Int): PlaylistTrack? {
         val db = this.readableDatabase
         val cursor = db.query(
@@ -1429,29 +1428,55 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         val db = this.writableDatabase
 
         // Check if the playlist already exists
-        val queryCheck = "SELECT 1 FROM $TABLE_PLAYLIST WHERE $PLAYLIST_NAME = ? AND $PLAYLIST_USER_ID = ?"
+        val queryCheck = "SELECT $PLAYLIST_ID FROM $TABLE_PLAYLIST WHERE $PLAYLIST_NAME = ? AND $PLAYLIST_USER_ID = ?"
         val cursorCheck = db.rawQuery(queryCheck, arrayOf(playlistName, userId))
 
+        var playlistId: String? = null
         if (cursorCheck.moveToFirst()) {
-            // Playlist already exists, no need to add it again
-            println("Playlist already exists")
+            // Playlist already exists, get its ID
+            playlistId = cursorCheck.getString(cursorCheck.getColumnIndexOrThrow(PLAYLIST_ID))
             cursorCheck.close()
-            db.close()
-            return
-        }
-        cursorCheck.close()
 
-        // Create a new playlist since it doesn't exist
-        val playlistId = UUID.randomUUID().toString() // Generate a unique ID for the new playlist
-        val playlistValues = ContentValues().apply {
-            put(PLAYLIST_ID, playlistId)
-            put(PLAYLIST_USER_ID, userId)
-            put(PLAYLIST_NAME, playlistName)
-            put(PLAYLIST_IMAGE, "123") // Set playlist image if available
-        }
-        db.insert(TABLE_PLAYLIST, null, playlistValues)
+            // Check if the playlist already has tracks
+            val queryCheckTracks = "SELECT 1 FROM $TABLE_PLAYLIST_TRACK WHERE $PLAYLIST_TRACK_PLAYLIST_ID = ?"
+            val cursorCheckTracks = db.rawQuery(queryCheckTracks, arrayOf(playlistId))
 
-        // Get all tracks for the given genre
+            if (cursorCheckTracks.moveToFirst()) {
+                // Playlist already has tracks, no need to add tracks again
+                println("Playlist already exists and has tracks")
+                cursorCheckTracks.close()
+                db.close()
+                return
+            }
+            cursorCheckTracks.close()
+        } else {
+            // Playlist does not exist, create a new one
+            playlistId = UUID.randomUUID().toString() // Generate a unique ID for the new playlist
+            val playlistValues = ContentValues().apply {
+                put(PLAYLIST_ID, playlistId)
+                put(PLAYLIST_USER_ID, userId)
+                put(PLAYLIST_NAME, playlistName)
+                put(PLAYLIST_IMAGE, "123") // Set playlist image if available
+            }
+            db.insert(TABLE_PLAYLIST, null, playlistValues)
+        }
+
+        // Get all tracks for the given genre using the new function
+        val tracks = getAllTracksByGenre(genre)
+
+        // Add each track to the playlist using addPlaylistTrack function
+        tracks.forEach { trackId ->
+            addPlaylistTrack(playlistId!!, trackId)
+        }
+
+        db.close()
+    }
+
+    fun getAllTracksByGenre(genre: String): List<String> {
+        val db = this.readableDatabase
+        val trackIds = mutableListOf<String>()
+
+        // Query to retrieve all tracks for the given genre
         val query = """
         SELECT t.$TRACK_ID
         FROM $TABLE_TRACK t
@@ -1461,26 +1486,17 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     """
         val cursor = db.rawQuery(query, arrayOf(genre))
 
-        // Add tracks to the new playlist
-        var trackOrder = 1
         if (cursor.moveToFirst()) {
             do {
                 val trackId = cursor.getString(cursor.getColumnIndexOrThrow(TRACK_ID))
-                val playlistTrackValues = ContentValues().apply {
-                    put(PLAYLIST_TRACK_PLAYLIST_ID, playlistId)
-                    put(PLAYLIST_TRACK_TRACK_ID, trackId)
-                    put(PLAYLIST_TRACK_ORDER, trackOrder)
-                }
-                db.insert(TABLE_PLAYLIST_TRACK, null, playlistTrackValues)
-                trackOrder++
+                trackIds.add(trackId)
             } while (cursor.moveToNext())
         }
 
         cursor.close()
         db.close()
+        return trackIds
     }
-
-
 
     fun search(keyword: String): List<SearchResult> {
         val db = this.readableDatabase

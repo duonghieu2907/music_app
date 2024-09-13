@@ -79,24 +79,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Settings Button -->
-            <TextView
-                android:id="@+id/settings_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/baseline_settings_24"
-                android:drawablePadding="16dp"
-                android:text="Settings"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                app:drawableTint="@color/white" />
-
             <!-- History Button -->
             <TextView
                 android:id="@+id/history_button"
@@ -123,6 +105,24 @@
                 android:drawableLeft="@drawable/baseline_queue_music_24"
                 android:drawablePadding="16dp"
                 android:text="Queue"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                app:drawableTint="@color/white" />
+
+            <!-- Settings Button -->
+            <TextView
+                android:id="@+id/settings_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/baseline_settings_24"
+                android:drawablePadding="16dp"
+                android:text="Settings"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:paddingTop="10dp"
