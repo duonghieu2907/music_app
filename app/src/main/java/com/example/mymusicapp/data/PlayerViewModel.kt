@@ -14,7 +14,15 @@ import com.google.android.exoplayer2.Player
 
 import com.google.android.exoplayer2.ExoPlayer
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+
 class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
+
+    private val _currentTrack = MutableLiveData<Track>()
+    val currentTrack: LiveData<Track> get() = _currentTrack
+
+
     var currentTrackIndex = 0
 
     init {
@@ -29,6 +37,9 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
     }
 
     fun playTrack(track: Track) {
+
+        _currentTrack.value = track // Notify observers of the track change
+
         val mediaItem = MediaItem.fromUri(Uri.parse(track.path))
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
@@ -66,4 +77,27 @@ class PlayerViewModel(val exoPlayer: ExoPlayer) : ViewModel() {
         super.onCleared()
         exoPlayer.release()
     }
+
+
+    fun playTrackAtIndex(index: Int) {
+        // Check if the index is within the bounds of the queue
+        if (index >= 0 && index < TrackQueue.queue.size) {
+            currentTrackIndex = index // Update the current track index
+
+            val track = TrackQueue.queue[index] // Get the track at the specified index
+
+            // Prepare the ExoPlayer to play the track directly
+            val mediaItem = MediaItem.fromUri(Uri.parse(track.path))
+            exoPlayer.setMediaItem(mediaItem) // Set the media item
+            exoPlayer.prepare() // Prepare the player
+            exoPlayer.playWhenReady = true // Start playback
+
+            // Reset the ExoPlayer listener to avoid advancing in the queue automatically
+            exoPlayer.clearMediaItems() // Clear any queued media items to ensure only this track is played
+        } else {
+            // Handle the case where the index is out of bounds
+            exoPlayer.stop() // Stop playback if the index is invalid
+        }
+    }
+
 }

@@ -72,6 +72,11 @@ class SingleTrackFragment : Fragment() {
             requireActivity(), PlayerViewModelFactory(exoPlayer)
         ).get(PlayerViewModel::class.java)
 
+        // Observe currentTrack LiveData for track changes
+        playerViewModel.currentTrack.observe(viewLifecycleOwner) { track ->
+            updateUIForTrack(track)
+        }
+
         backButton = view.findViewById(R.id.back)
         previousButton = view.findViewById(R.id.previous_button)
         dbHelper = MusicAppDatabaseHelper(requireContext())
@@ -124,10 +129,11 @@ class SingleTrackFragment : Fragment() {
         } else {
             val trackIndex = TrackQueue.queue.indexOfFirst { it.trackId == track.trackId }
             if (trackIndex != -1) {
-                playerViewModel.playTrack(TrackQueue.queue[trackIndex]) // Play existing track
+                playerViewModel.playTrackAtIndex(trackIndex - 1) // Play existing track
             } else {
                 TrackQueue.queue.add(track)
-                playerViewModel.playTrack(track) // Add track to queue and play it
+                playerViewModel.playTrackAtIndex(TrackQueue.queue.size - 1) // Add track to queue and play it
+                // This case got  bug
             }
         }
 
@@ -262,6 +268,19 @@ class SingleTrackFragment : Fragment() {
         // Update UI
         songTitle.text = currentTrack.name
         val album1 = dbHelper.getAlbum(currentTrack.albumId)
+        val artist = dbHelper.getArtist(album1?.artistId ?: "")
+        artistName.text = artist?.name ?: "Unknown Artist"
+
+        Glide.with(this)
+            .load(album1?.image)
+            .placeholder(R.drawable.blacker_gradient)
+            .into(songCover)
+    }
+
+
+    private fun updateUIForTrack(track: Track) {
+        songTitle.text = track.name
+        val album1 = dbHelper.getAlbum(track.albumId)
         val artist = dbHelper.getArtist(album1?.artistId ?: "")
         artistName.text = artist?.name ?: "Unknown Artist"
 
