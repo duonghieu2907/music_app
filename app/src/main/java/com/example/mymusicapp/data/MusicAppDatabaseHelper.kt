@@ -105,7 +105,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         const val HISTORY_TIMESTAMP = "listen_at"
     }
 
-    override fun onCreate(db: SQLiteDatabase) {
+    /*override fun onCreate(db: SQLiteDatabase) {
         val createUserTable = ("CREATE TABLE $TABLE_USER ("
                 + "$USER_ID TEXT PRIMARY KEY,"
                 + "$USER_NAME TEXT,"
@@ -209,30 +209,46 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     }
 
 
+
+    */
+
+    init {
+        // database is copied from assets
+        DatabaseUtils.copyDatabaseIfNeeded(context)
+    }
+
+    override fun onCreate(db: SQLiteDatabase) {
+        // Not needed
+    }
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-//        db.execSQL("DROP TABLE IF EXISTS \"$TABLE_LIKE\"")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLIST_TRACK")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLIST")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_TRACK")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_ALBUM")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_ARTIST")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_USER")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_PLAYLISTS")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_ALBUMS")
-//        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
+        db.execSQL("DROP TABLE IF EXISTS \"$TABLE_LIKE\"")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLIST_TRACK")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLIST")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_TRACK")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_ALBUM")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_ARTIST")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_USER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_PLAYLISTS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_ALBUMS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_HISTORY")
-        val createHistoryTable = ("CREATE TABLE $TABLE_HISTORY ("
-                + "$HISTORY_USER_ID TEXT,"
-                + "$HISTORY_TRACK_ID TEXT,"
-                + "$HISTORY_PLAYLIST_ID TEXT,"
-                + "$HISTORY_TIMESTAMP DATETIME DEFAULT CURRENT_TIMESTAMP,"
-                + "PRIMARY KEY($HISTORY_USER_ID, $HISTORY_TRACK_ID, $HISTORY_TIMESTAMP),"
-                + "FOREIGN KEY($HISTORY_USER_ID) REFERENCES $TABLE_USER($USER_ID),"
-                + "FOREIGN KEY($HISTORY_TRACK_ID) REFERENCES $TABLE_TRACK($TRACK_ID),"
-                + "FOREIGN KEY($HISTORY_PLAYLIST_ID) REFERENCES $TABLE_PLAYLIST($PLAYLIST_ID))")
-        db.execSQL(createHistoryTable)
-//        onCreate(db)
+        DatabaseUtils.copyDatabaseIfNeeded(context)
+        Log.d("DATABASE", "Upgrade")
+        
+    }
+
+    override fun getReadableDatabase(): SQLiteDatabase {
+        return SQLiteDatabase.openDatabase(
+            context.getDatabasePath(DATABASE_NAME).path,
+            null,
+            SQLiteDatabase.OPEN_READWRITE
+        )
+    }
+
+    override fun getWritableDatabase(): SQLiteDatabase {
+        return getReadableDatabase()
     }
 
     private fun deleteAllData(tableName: String, db: SQLiteDatabase) {
