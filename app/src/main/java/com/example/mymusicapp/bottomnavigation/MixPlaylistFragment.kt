@@ -2,7 +2,6 @@ package com.example.mymusicapp.bottomnavigation
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -15,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
@@ -188,13 +186,11 @@ class MixPlaylistFragment : Fragment() {
                 R.id.action_add_to_queue -> {
                     // Implement add to queue logic
 
-                    val trackList: List<Track>? = dbHelper.getTracksByPlaylistId(playlistId)
+                    val trackList: List<Track> = dbHelper.getTracksByPlaylistId(playlistId)
+                    val playlistIdList = mutableListOf<String>()
+                    for(i in 0 until trackList.size) playlistIdList.add(playlistId)
 
-                    if (trackList != null) {
-                        TrackQueue.addTracks(trackList)
-                    } else {
-                        Log.e("PlaylistFragment", "Track list is null for playlistId: $playlistId")
-                    }
+                    TrackQueue.addTracks(trackList, playlistIdList)
                     println("Queue")
                 }
                 R.id.action_share_playlist -> {
