@@ -16,9 +16,9 @@ object DatabaseUtils {
 
         // Check if the database already exists in the internal storage
         val dbFile = context.getDatabasePath(DATABASE_NAME)
-//        if (dbFile.exists()) {
-//            return  // Database already exists, no need to copy
-//        }
+        if (dbFile.exists()) {
+            return  // Database already exists, no need to copy
+        }
 
         // Create the databases folder if it doesn't exist
         dbFile.parentFile?.mkdirs()

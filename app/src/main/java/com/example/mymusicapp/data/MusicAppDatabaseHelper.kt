@@ -206,6 +206,18 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     }
 
 
+
+    */
+
+    init {
+        // database is copied from assets
+        DatabaseUtils.copyDatabaseIfNeeded(context)
+    }
+
+    override fun onCreate(db: SQLiteDatabase) {
+        // Not needed
+    }
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS \"$TABLE_LIKE\"")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
@@ -219,21 +231,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWED_ALBUMS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_FOLLOWER")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_HISTORY")
-        onCreate(db)
-    }
-    */
-
-    init {
-        // Ensure the database is copied from assets if needed
         DatabaseUtils.copyDatabaseIfNeeded(context)
-    }
-
-    override fun onCreate(db: SQLiteDatabase) {
-        // Not needed because we are using a pre-existing database
-    }
-
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Handle database upgrade if needed
     }
 
     override fun getReadableDatabase(): SQLiteDatabase {
