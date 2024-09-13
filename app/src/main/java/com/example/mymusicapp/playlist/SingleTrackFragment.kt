@@ -87,10 +87,6 @@ class SingleTrackFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        previousButton.setOnClickListener {
-            playerViewModel.playPreviousTrackInQueue()
-        }
-
         // Set the ExoPlayer in the PlayerControlView from ViewModel
         playerControlView = view.findViewById(R.id.playerControlView)
         playerControlView.player = playerViewModel.exoPlayer
@@ -142,6 +138,7 @@ class SingleTrackFragment : Fragment() {
                     // This case got  bug
                 }
             }
+        }
 
             updateLikeButton()
             likeButton.setOnClickListener {
@@ -167,14 +164,13 @@ class SingleTrackFragment : Fragment() {
                 playingFrom.text = ""
             }
 
-
             Glide.with(this)
                 .load(album1?.image)
                 .placeholder(R.drawable.blacker_gradient)
                 .into(songCover)
 
-
             previousButton.setOnClickListener {
+                playerViewModel.playPreviousTrackInQueue()
                 if (playerViewModel.currentTrackIndex > 0) {
                     playerViewModel.currentTrackIndex-- // Decrement index in ViewModel
                     playTrackAtIndex(playerViewModel.currentTrackIndex) // Use updated index
@@ -188,7 +184,6 @@ class SingleTrackFragment : Fragment() {
                     ).show()
                 }
             }
-        }
         return view
     }
 
