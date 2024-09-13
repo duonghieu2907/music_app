@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.adamratzman.spotify.models.SpotifyImage
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 //authCode received, built clientApi and AppApi
                 //spotifyData.buildClientApi(authCode!!)
                 //spotifyData.buildAppApi()
-                
+
                 //dbHelper.deleteAll() //Run this line to delete all data
                 dbHelper.deleteHistory()
                 //To change database, wipe all data in emulator
@@ -63,8 +62,8 @@ class MainActivity : AppCompatActivity() {
                 dbHelper.addUser(User("3", "Test", "", "", "", ""))
                 //insertDummyData()
                 //addDummyDataToDatabase(spotifyData)
-                
-                
+
+
                 //real data -> do not delete
                 dbHelper.addUser(User("1", "Official", "", "", "", ""))
                 Log.d("mainActivity", "Official added")
@@ -121,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
                 //addDummyDataToDatabase(spotifyData)
             }
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             Log.e("mainActivity", "Error during background: $e")
         }
 
@@ -206,10 +205,10 @@ class MainActivity : AppCompatActivity() {
             Log.d("mainActivity", "All playlist Added")
 
             //Tracks
-            for(i in 0..<playlistLength) {
+            for (i in 0..<playlistLength) {
                 val trackRaw = spotifyData.findTracksFromPlaylist(playlistRaw[i].playlistId)
                 val trackRawLength = trackRaw!!.size
-                for(k in 0..<trackRawLength) {
+                for (k in 0..<trackRawLength) {
                     //Add track
                     dbHelper.addTrack(
                         Track(
@@ -225,7 +224,7 @@ class MainActivity : AppCompatActivity() {
                         PlaylistTrack(
                             playlistRaw[i].playlistId,
                             trackRaw[k].trackId,
-                            k+1
+                            k + 1
                         )
                     )
 
@@ -247,7 +246,7 @@ class MainActivity : AppCompatActivity() {
                         Artist(
                             artistRaw!!.id,
                             artistRaw.name,
-                            artistRaw.genres.firstOrNull()?:"Unknown",
+                            artistRaw.genres.firstOrNull() ?: "Unknown",
                             checkImageReturnUrl(artistRaw.images)
                         )
                     )
@@ -278,12 +277,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 1001 && resultCode == RESULT_OK) {
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
             authCode = data?.getStringExtra("AUTH_CODE")
         }
-    }
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     private fun checkImageReturnUrl(sample: List<SpotifyImage>): String {
@@ -344,6 +340,7 @@ class MainActivity : AppCompatActivity() {
             image = "https://example.com/playlist2.jpg"
         )
     )
+
     private fun insertDummyData() {
         // Insert dummy tracks
         dummyTracks.forEach { track ->
@@ -356,14 +353,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Optionally, associate tracks with playlists
-        dbHelper.addPlaylistTrack("playlist1","track1")
-        dbHelper.addPlaylistTrack("playlist1","track2")
-        dbHelper.addPlaylistTrack("playlist2","track3")
+        dbHelper.addPlaylistTrack("playlist1", "track1")
+        dbHelper.addPlaylistTrack("playlist1", "track2")
+        dbHelper.addPlaylistTrack("playlist2", "track3")
 
         //Toast.makeText(this,  "Dummy data inserted for testing", Toast.LENGTH_SHORT).show()
     }
-
-
 
 
 }
