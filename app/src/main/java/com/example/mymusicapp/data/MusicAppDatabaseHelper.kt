@@ -1843,6 +1843,11 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
     ///delete all
 
+    fun deleteHistory() {
+        val db = this.writableDatabase
+        deleteAllData(TABLE_HISTORY, db)
+        db.close()
+    }
     fun deleteAll() {
         val db: SQLiteDatabase = this.writableDatabase
         try {

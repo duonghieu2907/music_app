@@ -127,7 +127,7 @@ class SingleTrackFragment : Fragment() {
         } else {
             val trackIndex = TrackQueue.queue.indexOfFirst { it.trackId == track.trackId }
             if (trackIndex != -1) {
-                playerViewModel.playTrackAtIndex(trackIndex - 1) // Play existing track
+                playerViewModel.playTrackAtIndex(trackIndex) // Play existing track
             } else {
                 TrackQueue.addTrack(track, playlistId)
                 playerViewModel.playTrackAtIndex(TrackQueue.queue.size - 1) // Add track to queue and play it

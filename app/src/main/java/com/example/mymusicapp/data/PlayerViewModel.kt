@@ -102,8 +102,6 @@ class PlayerViewModel(val exoPlayer: ExoPlayer, val db: MusicAppDatabaseHelper, 
             exoPlayer.prepare() // Prepare the player
             exoPlayer.playWhenReady = true // Start playback
 
-            // Reset the ExoPlayer listener to avoid advancing in the queue automatically
-            exoPlayer.clearMediaItems() // Clear any queued media items to ensure only this track is played
         } else {
             // Handle the case where the index is out of bounds
             exoPlayer.stop() // Stop playback if the index is invalid
