@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +15,6 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginButton: Button
     private lateinit var signUpButton: TextView
-    private lateinit var arrowBack: ImageView
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var dbHelper: MusicAppDatabaseHelper
@@ -39,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
 
         // Initialize UI
         loginButton = findViewById(R.id.loginButton)
-        arrowBack = findViewById(R.id.arrowBack)
         emailInput = findViewById(R.id.emailInput)
         passwordInput = findViewById(R.id.passwordInput)
         signUpButton = findViewById(R.id.signUp)
@@ -51,10 +48,6 @@ class LoginActivity : AppCompatActivity() {
 
         loginButton.setOnClickListener {
             handleLogin()
-        }
-
-        arrowBack.setOnClickListener {
-            // finish() // if required
         }
 
         signUpButton.setOnClickListener {

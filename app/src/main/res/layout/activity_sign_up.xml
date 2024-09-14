@@ -6,54 +6,61 @@
     android:layout_height="match_parent"
     android:background="#121111">
 
+    <ImageView
+        android:id="@+id/arrowBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src = "@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.06"
+        app:layout_constraintHorizontal_bias="0.08" />
+
+
     <!-- Logo -->
     <ImageView
         android:id="@+id/musiumLogo"
         android:layout_width="275dp"
         android:layout_height="215dp"
-        android:layout_marginStart="71dp"
-        android:layout_marginTop="50dp"
         android:src="@drawable/logo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.1"/>
 
-
-
-    <!-- Arrow Back Button -->
-    <ImageView
-        android:id="@+id/arrowBack"
-        android:layout_width="28dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="60dp"
-        android:src="@drawable/ic_leftarrow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Login Text -->
     <TextView
-        android:id="@+id/SignUpYourAccount"
+        android:id="@+id/loginToYourAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="274dp"
-        android:text="Sign up your account"
+        android:text="Login to your account"
         android:textSize="32sp"
         android:textColor="@android:color/white"
         android:fontFamily="@font/gothic"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/musiumLogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.05"/>
 
     <!-- Email Input -->
     <LinearLayout
-        android:layout_width="377dp"
+        android:id = "@+id/emailSection"
+        android:layout_width="match_parent"
         android:layout_height="59dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="336dp"
         android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="32dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/loginToYourAccount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.05">
 
         <View
             android:layout_width="17dp"
@@ -79,55 +86,19 @@
             tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
 
-    <!-- Password Input -->
-    <LinearLayout
-        android:layout_width="377dp"
-        android:layout_height="59dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="568dp"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <View
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="19dp"
-            android:background="@drawable/ic_lock" />
-
-        <EditText
-            android:id="@+id/passwordInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:fontFamily="@font/gothic"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/darker_gray"
-            android:textSize="16sp"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <ImageView
-            android:layout_width="19dp"
-            android:layout_height="15dp"
-            android:layout_marginTop="21dp"
-            android:src="@drawable/ic_eye_off" />
-    </LinearLayout>
-
     <!-- Username Input -->
     <LinearLayout
-        android:layout_width="377dp"
+        android:id = "@+id/usernameSection"
+        android:layout_width="match_parent"
         android:layout_height="59dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="412dp"
         android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="32dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/emailSection"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.05">
 
         <View
             android:layout_width="17dp"
@@ -153,16 +124,20 @@
             tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
 
-    <!-- Username Input -->
+    <!-- Date of birth Input -->
 
     <LinearLayout
-        android:layout_width="377dp"
+        android:id = "@+id/DOBSection"
+        android:layout_width="match_parent"
         android:layout_height="59dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="492dp"
         android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="32dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/usernameSection"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.05">
 
         <View
             android:layout_width="17dp"
@@ -191,20 +166,71 @@
             tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
 
+
+    <!-- Password Input -->
+    <LinearLayout
+        android:id = "@+id/passwordSection"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/DOBSection"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.05">
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ic_lock" />
+
+        <EditText
+            android:id="@+id/passwordInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:fontFamily="@font/gothic"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16sp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <ImageView
+            android:layout_width="19dp"
+            android:layout_height="15dp"
+            android:layout_marginTop="21dp"
+            android:src="@drawable/ic_eye_off" />
+    </LinearLayout>
+
+
+    <!-- Log in Button -->
     <Button
         android:id="@+id/signUpButton"
-        android:layout_width="377dp"
+        android:layout_width="match_parent"
         android:layout_height="59dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="656dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:backgroundTint="#06A0B5"
-        android:fontFamily="@font/gothicbold"
         android:text="Sign up"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:fontFamily="@font/gothicbold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/passwordSection"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.05"/>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -325,6 +325,7 @@ class HomeFragment : Fragment() {
         }
 
         queueButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Going to queue", Toast.LENGTH_SHORT).show()
             //navigateToQueue()
         }
 
