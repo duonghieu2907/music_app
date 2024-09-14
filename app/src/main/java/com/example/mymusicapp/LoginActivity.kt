@@ -1,3 +1,5 @@
+package com.example.mymusicapp
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -6,10 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mymusicapp.MainActivity
-import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import android.content.Context
 
 class LoginActivity : AppCompatActivity() {
 
@@ -24,13 +25,24 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // Check if the user is already logged in
+        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val loggedInUserId = sharedPref.getString("curUserId", null)
+
+        if (loggedInUserId != null) {
+            // User is already logged in, skip login and go to MainActivity
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         // Initialize UI
         loginButton = findViewById(R.id.loginButton)
         forgotPassword = findViewById(R.id.forgotPassword)
         arrowBack = findViewById(R.id.arrowBack)
         emailInput = findViewById(R.id.emailInput)
         passwordInput = findViewById(R.id.passwordInput)
-
 
         dbHelper = MusicAppDatabaseHelper(this)
 
@@ -39,12 +51,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         forgotPassword.setOnClickListener {
-            //chua lam
+            // chua lam
         }
 
         arrowBack.setOnClickListener {
-            // ua co can lam khom?
-            //finish()
+            // finish() // if required
         }
     }
 
@@ -57,16 +68,22 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // Check if user exists
         val userId = dbHelper.getUserId(email, password)
-        if (userId != "-1") {
+        if (userId != null) {
             // Login successful
-            val app = application as Global
+            val app = applicationContext as Global
             app.curUserId = userId
+
+            // Save userId in SharedPreferences
+            val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                putString("curUserId", userId)
+                apply()
+            }
 
             Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
-            // Navigate to the main activity
+            // Start the main activity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -74,9 +91,5 @@ class LoginActivity : AppCompatActivity() {
             // Login failed
             Toast.makeText(this, "Invalid email or password.", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun navigateToForgotPassword() {
-        // chua lam
     }
 }

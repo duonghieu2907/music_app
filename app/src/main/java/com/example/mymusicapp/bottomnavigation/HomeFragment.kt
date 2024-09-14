@@ -85,7 +85,7 @@ class HomeFragment : Fragment() {
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
         val application = requireActivity().application as Global
-        curUser = application.curUserId
+        curUser = application.curUserId!!
 
         val recentlyPlayedAlbums = dbHelper.getNewest("album", curUser) as ArrayList<*>
         val albums = (recentlyPlayedAlbums as? List<*>)?.mapNotNull { it as? Album } ?: arrayListOf()

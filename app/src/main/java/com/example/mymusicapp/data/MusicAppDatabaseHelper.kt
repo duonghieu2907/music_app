@@ -319,7 +319,7 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
     }
 
 
-    fun getUserId(email: String, password: String): String {
+    fun getUserId(email: String, password: String): String? {
         val db = this.readableDatabase
         val selectQuery = "SELECT $USER_ID FROM $TABLE_USER WHERE $USER_EMAIL = ? AND $USER_PASSWORD = ?"
         val cursor = db.rawQuery(selectQuery, arrayOf(email, password))
@@ -333,8 +333,9 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
         cursor.close()
         db.close()
-        return "-1" // User not found
+        return null
     }
+
 
 
 

@@ -46,7 +46,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist),
 
         artistId = arguments?.getString("artist_id") ?: ""
         val app = requireActivity().application as Global
-        curUserId = app.curUserId
+        curUserId = app.curUserId!!
 
         // Initialize DBHelper
         dbHelper = MusicAppDatabaseHelper(requireContext())

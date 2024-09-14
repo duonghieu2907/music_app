@@ -28,7 +28,7 @@ class FragmentAlbums : Fragment(),
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_albums, container, false)
         val application = requireActivity().application as Global
-        curUser = application.curUserId
+        curUser = application.curUserId!!
         app(view)
 
         return view
