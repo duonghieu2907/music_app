@@ -15,7 +15,7 @@ import com.example.mymusicapp.data.MusicAppDatabaseHelper
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginButton: Button
-    private lateinit var forgotPassword: TextView
+    private lateinit var signUpButton: TextView
     private lateinit var arrowBack: ImageView
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
@@ -39,24 +39,31 @@ class LoginActivity : AppCompatActivity() {
 
         // Initialize UI
         loginButton = findViewById(R.id.loginButton)
-        forgotPassword = findViewById(R.id.forgotPassword)
         arrowBack = findViewById(R.id.arrowBack)
         emailInput = findViewById(R.id.emailInput)
         passwordInput = findViewById(R.id.passwordInput)
+        signUpButton = findViewById(R.id.signUp)
+
+        //Check if user is back from sign up
+        if(savedInstanceState != null) {
+            emailInput.setText(savedInstanceState.getString("Email"))
+            passwordInput.setText(savedInstanceState.getString("Password"))
+        }
 
         dbHelper = MusicAppDatabaseHelper(this)
-        dbHelper.readableDatabase
 
         loginButton.setOnClickListener {
             handleLogin()
         }
 
-        forgotPassword.setOnClickListener {
-            // chua lam
-        }
-
         arrowBack.setOnClickListener {
             // finish() // if required
+        }
+
+        signUpButton.setOnClickListener {
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
