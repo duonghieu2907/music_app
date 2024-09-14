@@ -272,4 +272,13 @@ class PlaylistFragment : Fragment() {
             activity.hideBottomNavigation()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //Show navigation
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showBottomNavigation()
+        }
+    }
 }

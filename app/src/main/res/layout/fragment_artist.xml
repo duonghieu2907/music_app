@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="artist avatar"
-        android:src="@drawable/ic_avatar" />
+        android:src="@drawable/logo" />
 
     <!-- Chevron -->
     <ImageView

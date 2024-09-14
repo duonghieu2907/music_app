@@ -59,7 +59,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LoginActivity" />
         <activity
             android:name="LoginActivity"
             android:exported="true">
@@ -78,7 +77,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".bottomnavigation.SearchFragment" />
     </application>
 
 </manifest>

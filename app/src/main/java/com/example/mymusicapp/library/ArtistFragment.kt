@@ -1,7 +1,6 @@
 package com.example.mymusicapp.library
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,7 +65,7 @@ class ArtistFragment : Fragment(R.layout.fragment_artist),
             // Load artist image using Glide or any image loading library
             Glide.with(this)
                 .load(it.image)
-                .placeholder(R.drawable.ic_avatar) // Set a default placeholder
+                .placeholder(R.mipmap.ic_launcher) // Set a default placeholder
                 .into(artistImageView)
         }
 
