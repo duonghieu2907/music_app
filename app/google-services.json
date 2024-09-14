@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552242103090",
+    "project_id": "spoticon-4f9b6",
+    "storage_bucket": "spoticon-4f9b6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552242103090:android:873138b410b5eb62308d2b",
+        "android_client_info": {
+          "package_name": "com.example.mymusicapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDp4n7tpY5K-SvW0kuJVFKj3nHyIKhOQ5k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
