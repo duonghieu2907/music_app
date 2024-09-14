@@ -118,7 +118,7 @@ class MenuFragment : Fragment() {
         val app = requireActivity().application as Global
 
         // Fetch the current user's ID (assuming you have an app-level reference to the current user)
-        val curUserId = app.curUserId
+        val curUserId : String = app.curUserId!!
 
         // Check if the playlist is null, or the user doesn't own it, or it's the liked songs playlist
         if (playlist == null || playlist!!.userId != curUserId || playlistId == "userLikedSongs") {
@@ -129,8 +129,6 @@ class MenuFragment : Fragment() {
             if (playlistId == "willneverused") {
                 // Set click listener for unliking the song
                 val clickListenerUnlike = View.OnClickListener {
-
-
 
                     if (dbHelper.isTrackLiked(track.trackId, curUserId)) {
                         dbHelper.deleteLike(curUserId, track.trackId) // Use global curUserId

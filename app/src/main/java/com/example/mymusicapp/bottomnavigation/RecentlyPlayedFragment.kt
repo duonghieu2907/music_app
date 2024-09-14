@@ -40,7 +40,7 @@ class RecentlyPlayedFragment : Fragment() {
         val backButton = view.findViewById<ImageView>(R.id.back_button)
 
         val application = requireActivity().application as Global
-        curUser = application.curUserId
+        curUser = application.curUserId!!
 
 
         // Set up back button

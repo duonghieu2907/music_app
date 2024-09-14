@@ -62,7 +62,7 @@ class SingleTrackFragment : Fragment() {
 
         // Get global user ID
         val app = requireActivity().application as Global
-        curUserId = app.curUserId
+        curUserId = app.curUserId!!
 
         // Hide the navigation bar when this fragment is created
         val activity = requireActivity()

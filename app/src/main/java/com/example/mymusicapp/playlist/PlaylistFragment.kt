@@ -60,7 +60,7 @@ class PlaylistFragment : Fragment() {
         dbHelper = MusicAppDatabaseHelper(requireContext())
         if (isAdded) {
             val app = requireActivity().application as Global
-            curUserId = app.curUserId
+            curUserId = app.curUserId!!
         } else {
             // fragment is not attached
             curUserId = "1"

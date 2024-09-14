@@ -69,13 +69,14 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:hint="Email"
-            android:textColorHint="@android:color/darker_gray"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:background="@android:color/transparent"
             android:fontFamily="@font/gothic"
+            android:hint="Email"
             android:inputType="textEmailAddress"
-            android:background="@android:color/transparent" />
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16sp"
+            tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
 
     <!-- Password Input -->
@@ -102,13 +103,14 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:hint="Password"
-            android:textColorHint="@android:color/darker_gray"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:background="@android:color/transparent"
             android:fontFamily="@font/gothic"
+            android:hint="Password"
             android:inputType="textPassword"
-            android:background="@android:color/transparent" />
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16sp"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageView
             android:layout_width="19dp"

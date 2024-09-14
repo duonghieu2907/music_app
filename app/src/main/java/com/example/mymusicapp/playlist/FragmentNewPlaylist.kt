@@ -130,7 +130,7 @@ class FragmentNewPlaylist : Fragment() {
         val app = requireActivity().application as Global
 
         // Fetch the current user's ID (assuming you have an app-level reference to the current user)
-        val curUserId = app.curUserId
+        val curUserId : String = app.curUserId!!
 
         // Get the count of playlists for the current user
         val playlistCount = dbHelper.getPlaylistCountByUser(curUserId)

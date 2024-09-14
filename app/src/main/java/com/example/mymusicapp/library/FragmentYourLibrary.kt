@@ -32,7 +32,7 @@ class FragmentYourLibrary : Fragment(), FragmentYourLibraryAdapter.OnItemClickLi
     ): View {
         val view : View = inflater.inflate(R.layout.fragment_your_library, container, false)
         val app = requireActivity().application as Global
-        curUserId = app.curUserId
+        curUserId = app.curUserId!!
 
 
         app(view)
