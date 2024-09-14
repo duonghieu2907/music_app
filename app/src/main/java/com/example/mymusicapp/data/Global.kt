@@ -4,7 +4,7 @@ import android.app.Application
 
 class Global : Application() {
     //var curUserId: String = "31j3r46xev5snbqwjqbuwbrm6cwu"
-    var curUserId: String = "3"
+    var curUserId: String? = "3"
 
     //To access from fragment
     //val app = requireActivity().application as Global
