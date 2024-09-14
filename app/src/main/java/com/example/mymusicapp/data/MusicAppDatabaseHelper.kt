@@ -1678,34 +1678,6 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return searchResults
     }
 
-    fun getRecentlyPlayedTracks(userId: String): List<String> {
-        val db = this.readableDatabase
-        val trackList = mutableListOf<String>()
-
-        try {
-            // Query to get recently played tracks for the given user, ordered by timestamp (most recent first)
-            val query = "SELECT $HISTORY_TRACK_ID FROM $TABLE_HISTORY WHERE $HISTORY_USER_ID = ? ORDER BY $HISTORY_TIMESTAMP DESC"
-            val cursor = db.rawQuery(query, arrayOf(userId))
-
-            if (cursor.moveToFirst()) {
-                do {
-                    // Retrieve the track ID from the cursor and add it to the list
-                    val trackId = cursor.getString(cursor.getColumnIndexOrThrow(HISTORY_TRACK_ID))
-                    trackList.add(trackId)
-                } while (cursor.moveToNext())
-            }
-
-            cursor.close()
-        } catch (e: SQLiteException) {
-            e.printStackTrace()
-        } finally {
-            db.close()
-        }
-
-        return trackList
-    }
-
-
     //Sort from A-Z
     /**
      * Sort

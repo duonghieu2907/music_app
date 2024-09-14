@@ -74,8 +74,6 @@ class PlaylistFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_single_playlist, container, false)
 
-
-
         // Initialize UI
         backButton = view.findViewById(R.id.backButton)
         optionsButton = view.findViewById(R.id.optionsButton)
@@ -261,7 +259,6 @@ class PlaylistFragment : Fragment() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-        Toast.makeText(requireContext(), track.name, Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {

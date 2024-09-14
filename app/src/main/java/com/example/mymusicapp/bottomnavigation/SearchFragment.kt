@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -76,8 +75,6 @@ class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
                     .replace(R.id.fragment_container, artistFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
-
-                Toast.makeText(requireContext(), "Clicked on Artist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
 
             "Album" -> {
@@ -86,8 +83,6 @@ class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
                     .replace(R.id.fragment_container, albumFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
-
-                Toast.makeText(requireContext(), "Clicked on Album: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
             "Playlist" -> {
                 val playlistFragment = PlaylistFragment.newInstance(searchResult.id) //Transfer id
@@ -95,8 +90,6 @@ class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
                     .replace(R.id.fragment_container, playlistFragment)  // Replace with your fragment container ID
                     .addToBackStack(null)  // Optional: Add this transaction to the back stack
                     .commit()
-
-                Toast.makeText(requireContext(), "Clicked on Playlist: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
             "Track" -> {
                 val fragment = dbHelper.getTrack(searchResult.id)?.let { track ->
@@ -109,7 +102,6 @@ class SearchFragment : Fragment(), SearchResultAdapter.OnItemClickListener {
                         .addToBackStack(null)
                         .commit()
                 }
-                Toast.makeText(requireContext(), "Clicked on Track: ${searchResult.name}", Toast.LENGTH_SHORT).show()
             }
         }
     }

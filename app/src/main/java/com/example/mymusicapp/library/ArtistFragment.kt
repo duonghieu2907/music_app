@@ -131,8 +131,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist),
                     .replace(R.id.fragment_container, albumFragment)
                     .addToBackStack(null)
                     .commit()
-
-                Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "Fragment not attached to activity", Toast.LENGTH_SHORT).show()
             }

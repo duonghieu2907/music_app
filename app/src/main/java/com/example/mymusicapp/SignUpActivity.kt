@@ -105,8 +105,8 @@ class SignUpActivity : AppCompatActivity() {
     private fun generate16Char(): String {
         val random = Random
         val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-        val result = StringBuilder(16)
-        for(i in 0 until 16) {
+        val result = StringBuilder(28)
+        for(i in 0 until 27) {
             result.append(chars[random.nextInt(chars.length)])
         }
         return result.toString()

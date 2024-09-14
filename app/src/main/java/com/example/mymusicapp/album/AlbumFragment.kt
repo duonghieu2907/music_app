@@ -175,6 +175,5 @@ class AlbumFragment : Fragment() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-        Toast.makeText(requireContext(), trackId, Toast.LENGTH_SHORT).show()
     }
 }

@@ -20,9 +20,9 @@ import com.example.mymusicapp.models.PlaylistTrack
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.google.firebase.FirebaseApp
 
 class MainActivity : AppCompatActivity() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
                 //spotifyData.buildAppApi()
 
                 //dbHelper.deleteAll() //Run this line to delete all data
-                dbHelper.deleteHistory()
                 //To change database, wipe all data in emulator
 
                 //use for back up

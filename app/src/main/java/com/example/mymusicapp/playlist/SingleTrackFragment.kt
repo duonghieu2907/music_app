@@ -73,7 +73,7 @@ class SingleTrackFragment : Fragment() {
         // Initialize ViewModel using the factory, passing ExoPlayer to it
         playerViewModel = ViewModelProvider(
             requireActivity(), PlayerViewModelFactory(exoPlayer, dbHelper, curUserId)
-        ).get(PlayerViewModel::class.java)
+        )[PlayerViewModel::class.java]
 
         // Observe currentTrack LiveData for track changes
         playerViewModel.currentTrack.observe(viewLifecycleOwner) { track ->
