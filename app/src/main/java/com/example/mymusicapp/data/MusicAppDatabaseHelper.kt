@@ -456,6 +456,34 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
         return genres
     }
 
+    fun getTracksByArtist(artistId: String): List<Track> {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_TRACK,
+            arrayOf(TRACK_ID, TRACK_ALBUM_ID, TRACK_NAME, TRACK_DURATION, TRACK_PATH),
+            "$TRACK_ALBUM_ID IN (SELECT $ALBUM_ID FROM $TABLE_ALBUM WHERE $ALBUM_ARTIST_ID=?)",
+            arrayOf(artistId),
+            null,
+            null,
+            null
+        )
+
+        val tracks = mutableListOf<Track>()
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val track = Track(
+                    cursor.getString(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4)
+                )
+                tracks.add(track)
+            } while (cursor.moveToNext())
+        }
+        cursor?.close()
+        return tracks
+    }
 
 
     fun updateArtist(artist: Artist) {
@@ -1405,7 +1433,6 @@ class MusicAppDatabaseHelper(private val context: Context) : SQLiteOpenHelper(co
 
 
     //FOLLOWED ALBUMS
-
     fun isAlbumFollowed(userId: String, albumId: String): Boolean {
         val db = this.readableDatabase
 

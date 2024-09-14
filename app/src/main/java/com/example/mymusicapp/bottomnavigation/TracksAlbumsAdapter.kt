@@ -1,6 +1,5 @@
 package com.example.mymusicapp.bottomnavigation
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,17 +13,24 @@ import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Artist
 import com.example.mymusicapp.models.Track
 
-class HistoryTrackAdapter (
-    private val trackList: List<Track>,
-    private val dbHelper: MusicAppDatabaseHelper
+class TracksAlbumsAdapter (
+    private val tracks: List<Track>,
+    private val dbHelper: MusicAppDatabaseHelper,
+    private val onItemClick: (Track ) -> Unit
 
-) : RecyclerView.Adapter<HistoryTrackAdapter.TrackViewHolder>() {
+) : RecyclerView.Adapter<TracksAlbumsAdapter.TrackViewHolder>() {
 
     inner class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val songTitle: TextView = itemView.findViewById(R.id.songTitleTextView)
         val songArtist: TextView = itemView.findViewById(R.id.songArtistTextView)
         val songImage: ImageView = itemView.findViewById(R.id.albumArtImageView)
         val menuButton: ImageView = itemView.findViewById(R.id.menuButton)
+
+        init {
+            itemView.setOnClickListener {
+                onItemClick(tracks[adapterPosition])
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
@@ -33,7 +39,7 @@ class HistoryTrackAdapter (
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        val track = trackList[position]
+        val track = tracks[position]
 
         val album: Album? = dbHelper.getAlbum(track.albumId)
         val artist: Artist? = dbHelper.getArtist(album?.artistId ?: "")
@@ -47,13 +53,16 @@ class HistoryTrackAdapter (
             .placeholder(R.drawable.blacker_gradient) // Placeholder image
             .into(holder.songImage)
 
-        holder.menuButton.visibility = View.GONE
+        holder.menuButton.setOnClickListener { view ->
+            showMenu(view, track)
+        }
+    }
+
+    private fun showMenu(view: View?, track: Track) {
+        //jump to Menu Fragment
     }
 
     override fun getItemCount(): Int {
-        return trackList.size
+        return tracks.size
     }
-
-
-
 }

@@ -67,22 +67,6 @@
 
 
     <!-- Top 5 Songs Section -->
-    <ImageView
-        android:id="@+id/optionsButtonArtist"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_alignParentEnd="true"
-        android:contentDescription="Options Button"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_more_vert"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.958"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.021"
-        app:tint="@color/white" />
-
     <TextView
         android:id="@+id/topSongsLabel"
         android:layout_width="wrap_content"

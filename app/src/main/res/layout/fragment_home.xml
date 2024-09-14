@@ -502,10 +502,11 @@
         android:orientation="vertical"
         android:layout_gravity="top"
         android:layout_marginTop="520dp"
+        android:layout_marginBottom="25dp"
         android:paddingHorizontal="20dp">
 
         <TextView
-            android:id="@+id/recent_listening_title"
+            android:id="@+id/recommendation_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Based on Your Recent Listening"
@@ -516,7 +517,7 @@
             android:layout_marginBottom="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recent_listening_recyclerview"
+            android:id="@+id/recommendation_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

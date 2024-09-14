@@ -14,13 +14,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
+import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Track
 import com.example.mymusicapp.playlist.PlaylistTracksAdapter
 import com.example.mymusicapp.playlist.SingleTrackFragment
 
-class ArtistFragment : Fragment(R.layout.fragment_artist) {
+class ArtistFragment : Fragment(R.layout.fragment_artist),
+    FragmentAlbumsAdapter.OnItemClickListener {
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var artistId: String
     private lateinit var curUserId: String
@@ -104,7 +107,6 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
     private fun setupRecyclerView(view: View, artistId: String) {
         // Top 5 tracks RecyclerView setup
         val top5Tracks = dbHelper.getTop5TracksByArtist(artistId) // Assume you have this method
-        Log.d("ArtistFragment", "Top 5 Tracks: $top5Tracks")  // Log the result
         val trackAdapter = PlaylistTracksAdapter(this, top5Tracks, dbHelper, "") { track -> openTrack(track) }
         val trackRecyclerView = view.findViewById<RecyclerView>(R.id.topSongsRecyclerView)
         trackRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -112,11 +114,32 @@ class ArtistFragment : Fragment(R.layout.fragment_artist) {
 
         // Albums RecyclerView setup
         val albums = dbHelper.getAlbumsByArtistId(artistId) // Fetch albums of the artist
-        val albumsAdapter = FragmentAlbumsAdapter(ArrayList(albums))
+        val albumsAdapter = FragmentAlbumsAdapter(ArrayList(albums), this)
 
         val albumsRecyclerView = view.findViewById<RecyclerView>(R.id.albumsRecyclerView)
         albumsRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         albumsRecyclerView.adapter = albumsAdapter
+    }
+
+    override fun setOnItemClickListener(item: Album?) {
+        // Ensure that item is not null
+        item?.let {
+            // Check if the current fragment is added to the activity before proceeding
+            if (isAdded) {
+                val albumFragment = AlbumFragment.newInstance(item.albumId) //Transfer id
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, albumFragment)
+                    .addToBackStack(null)
+                    .commit()
+
+                Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Fragment not attached to activity", Toast.LENGTH_SHORT).show()
+            }
+        } ?: run {
+            Toast.makeText(requireContext(), "Item is null!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun openTrack(track: Track) {
