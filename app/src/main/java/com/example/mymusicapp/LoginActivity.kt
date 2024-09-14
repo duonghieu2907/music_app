@@ -44,11 +44,8 @@ class LoginActivity : AppCompatActivity() {
         passwordInput = findViewById(R.id.passwordInput)
         signUpButton = findViewById(R.id.signUp)
 
-        //Check if user is back from sign up
-        if(savedInstanceState != null) {
-            emailInput.setText(savedInstanceState.getString("Email"))
-            passwordInput.setText(savedInstanceState.getString("Password"))
-        }
+        //get Email that is from logout or sign up
+        emailInput.setText(intent.getStringExtra("Email")?: "")
 
         dbHelper = MusicAppDatabaseHelper(this)
 

@@ -1,5 +1,9 @@
 package com.example.mymusicapp.bottomnavigation
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -16,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.mymusicapp.LoginActivity
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.album.AlbumFragment
@@ -30,6 +35,9 @@ class HomeFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private lateinit var curUser: String
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var sharedPref: SharedPreferences
+    private lateinit var context: Context
+    private lateinit var activity: Activity
 
     private lateinit var boxRecent1: LinearLayout
     private lateinit var boxRecent2: LinearLayout
@@ -59,6 +67,11 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
+        //Init sharedPref and context
+        context = requireContext()
+        activity = requireActivity()
+        sharedPref = activity.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+
         // Reference to drawer layout
         drawerLayout = requireActivity().findViewById(R.id.main)
 
@@ -78,7 +91,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize the database helper
-        dbHelper = MusicAppDatabaseHelper(requireContext())
+        dbHelper = MusicAppDatabaseHelper(context)
 
         val application = requireActivity().application as Global
         curUser = application.curUserId!!
@@ -198,9 +211,9 @@ class HomeFragment : Fragment() {
                                 .addToBackStack(null)
                                 .commit()
 
-                            Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(requireContext(), "Fragment not attached to activity", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Fragment not attached to activity", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -218,7 +231,7 @@ class HomeFragment : Fragment() {
             TracksAlbumsAdapter(trackList, dbHelper) { track -> openTrack(track.trackId, track.albumId) }
 
         val recommendationRecyclerView = view.findViewById<RecyclerView>(R.id.recommendation_recyclerview)
-        recommendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recommendationRecyclerView.layoutManager = LinearLayoutManager(context)
         recommendationRecyclerView.adapter = tracksAdapter
     }
 
@@ -228,7 +241,7 @@ class HomeFragment : Fragment() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-        Toast.makeText(requireContext(), trackId, Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, trackId, Toast.LENGTH_SHORT).show()
     }
 
     private fun recommendSongsFromFrequentArtists(curUser: String): List<Track> {
@@ -291,7 +304,7 @@ class HomeFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         } else {
-            Toast.makeText(requireContext(), "Playlist not found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Playlist not found", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -299,6 +312,7 @@ class HomeFragment : Fragment() {
         val settingsButton: TextView = view.findViewById(R.id.settings_button)
         val historyButton: TextView = view.findViewById(R.id.history_button)
         val queueButton: TextView = view.findViewById(R.id.queue_button)
+        val logoutButton: TextView = view.findViewById(R.id.logout_button)
 
         settingsButton.setOnClickListener {
             navigateToSettings()
@@ -310,6 +324,10 @@ class HomeFragment : Fragment() {
 
         queueButton.setOnClickListener {
             navigateToQueue()
+        }
+
+        logoutButton.setOnClickListener {
+            handleLogout()
         }
     }
 
@@ -333,6 +351,27 @@ class HomeFragment : Fragment() {
             .addToBackStack(null)  // Optional: Add this transaction to the back stack
             .commit()
         drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
+    private fun handleLogout() {
+        //get remember userId
+        val editor = sharedPref.edit()
+
+        //get User email and store at the login page
+        val userEmail = dbHelper.getUser(curUser)?.email
+
+        editor.remove("curUserId")
+        editor.commit()
+
+        drawerLayout.closeDrawer(GravityCompat.START)
+
+        //notify
+        Toast.makeText(context, "Log out successfully.", Toast.LENGTH_SHORT).show()
+
+        //start intent
+        val intent = Intent(context, LoginActivity::class.java)
+        intent.putExtra("Email", userEmail)
+        activity.startActivity(intent)
     }
 
     override fun onResume() {

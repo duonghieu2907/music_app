@@ -133,6 +133,23 @@
                 android:background="?attr/selectableItemBackground"
                 app:drawableTint="@color/white" />
 
+            <!-- Settings Button -->
+            <TextView
+                android:id="@+id/logout_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="12dp"
+                android:text="Logout"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                app:drawableLeftCompat="@drawable/ic_logout"
+                app:drawableTint="@color/white" />
 
         </LinearLayout>
 

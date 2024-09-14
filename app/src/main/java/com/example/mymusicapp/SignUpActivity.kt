@@ -42,8 +42,9 @@ class SignUpActivity : AppCompatActivity() {
 
         db = MusicAppDatabaseHelper(this)
 
+        //set up date dialog for date of birth
         val dateOfBirthCalendar = Calendar.getInstance()
-        DatePickerDialog(this,
+        val datePickerDialog = DatePickerDialog(this,
             {_, year, month, day_of_month ->
                dateOfBirthCalendar.set(year, month, day_of_month)
                 updateDateOfBirthInput(dateOfBirthCalendar)
@@ -52,10 +53,17 @@ class SignUpActivity : AppCompatActivity() {
             dateOfBirthCalendar.get(Calendar.MONTH),
             dateOfBirthCalendar.get(Calendar.DAY_OF_MONTH))
 
+        //date of birth
+        dateOfBirthInput.setOnClickListener {
+            datePickerDialog.show()
+        }
+
+        //sign up
         signUpButton.setOnClickListener {
             handleSignUp()
         }
 
+        //back to log in
         arrowBack.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -75,7 +83,7 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         val userId = db.getUserId(email, password)
-        if (userId != null) {
+        if (userId == null) {
             // User does not exists, add successful
             db.addUser(User(NewUserId, userName, email, password, dateOfBirth, ""))
 
@@ -85,7 +93,6 @@ class SignUpActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             val bundle = Bundle()
             bundle.putString("Email", emailInput.text.toString())
-            bundle.putString("Password", passwordInput.text.toString())
             intent.putExtras(bundle)
             startActivity(intent)
         } else {
