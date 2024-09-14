@@ -1,13 +1,23 @@
 package com.example.mymusicapp.playlist
 
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import android.Manifest // Correct import
+import android.widget.ImageView
+import com.google.firebase.storage.FirebaseStorage // Correct Firebase Storage import
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.Global
@@ -21,8 +31,10 @@ class FragmentNewPlaylist : Fragment() {
     private lateinit var etPlaylistCoverUrl: EditText
     private lateinit var cancelButton: AppCompatButton
     private lateinit var createButton: AppCompatButton
+    private lateinit var selectImageButton: ImageView
 
     private var trackId: String? = null
+    private val REQUEST_IMAGE_PICK = 1001
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,11 +50,25 @@ class FragmentNewPlaylist : Fragment() {
         etPlaylistCoverUrl = view.findViewById(R.id.etPlaylistCoverUrl)
         cancelButton = view.findViewById(R.id.cancelButton)
         createButton = view.findViewById(R.id.createButton)
+        selectImageButton = view.findViewById(R.id.selectImageButton)
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
+        // Request permission
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                REQUEST_IMAGE_PICK)
+        }
+
         // Get trackId from arguments
         trackId = arguments?.getString("TRACK_ID")
+
+
+        selectImageButton.setOnClickListener {
+            openGallery()
+        }
 
         cancelButton.setOnClickListener {
             // Handle cancel action
@@ -55,6 +81,41 @@ class FragmentNewPlaylist : Fragment() {
         }
 
         return view
+    }
+
+
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, REQUEST_IMAGE_PICK)
+    }
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_IMAGE_PICK && resultCode == Activity.RESULT_OK) {
+            val imageUri = data?.data
+            if (imageUri != null) {
+                uploadImageToServer(imageUri)
+            }
+        }
+    }
+
+    private fun uploadImageToServer(imageUri: Uri) {
+        val storageReference = FirebaseStorage.getInstance().reference.child("playlist_covers/${System.currentTimeMillis()}.jpg")
+        storageReference.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
+                    val imageUrl = uri.toString()
+                    etPlaylistCoverUrl.setText(imageUrl)
+                    Toast.makeText(requireContext(), "Image uploaded successfully!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Failed to upload image.", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun createNewPlaylist() {

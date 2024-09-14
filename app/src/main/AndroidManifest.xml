@@ -61,7 +61,7 @@
 
         <activity android:name=".LoginActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -69,6 +69,16 @@
             </intent-filter>
         </activity>
 
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".bottomnavigation.SearchFragment" />
     </application>
 
 </manifest>

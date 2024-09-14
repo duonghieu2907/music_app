@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-parcelize")
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -58,6 +60,10 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.adamratzman:spotify-api-kotlin-android:3.8.1")
     implementation ("com.google.android.exoplayer:exoplayer:2.18.5")
+
+    // Firebase Storage dependency
+    implementation("com.google.firebase:firebase-storage:20.2.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

@@ -22,12 +22,14 @@ import com.example.mymusicapp.models.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.google.firebase.FirebaseApp
 
 class MainActivity : AppCompatActivity() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
     private var authCode: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         setContentView(R.layout.activity_main)
 
         //load DB
