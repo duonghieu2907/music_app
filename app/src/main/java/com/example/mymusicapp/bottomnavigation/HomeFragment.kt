@@ -1,8 +1,8 @@
 package com.example.mymusicapp.bottomnavigation
 
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,23 +10,19 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import android.graphics.Color
-import android.util.Log
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.album.AlbumFragment
-import com.example.mymusicapp.album.AlbumTracksAdapter
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import com.example.mymusicapp.library.FragmentAlbumsAdapter
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Track
-import com.example.mymusicapp.playlist.PlaylistTracksAdapter
 import com.example.mymusicapp.playlist.SingleTrackFragment
 import com.example.mymusicapp.queue.QueueFragment
 
@@ -152,6 +148,10 @@ class HomeFragment : Fragment() {
 
             openMixPlaylist("Mix 5", boxColor, underlineColor)
         }
+
+        //Find user_name
+        val userName = view.findViewById<TextView>(R.id.user_name)
+        userName.text = dbHelper.getUser(curUser)?.name
 
     }
 

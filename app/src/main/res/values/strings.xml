@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Music App</string>
+    <string name="app_name">Melodia</string>
     <string name="title_activity_player_view">PlayerViewActivity</string>
     <string-array name="playlist_options">
         <item>Edit Playlist</item>

@@ -9,6 +9,7 @@ class LaunchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         val app = applicationContext as Global
         if (app.curUserId != null) {
             // User is logged in

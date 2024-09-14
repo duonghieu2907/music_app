@@ -1,5 +1,6 @@
 package com.example.mymusicapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -10,7 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
-import android.content.Context
 
 class LoginActivity : AppCompatActivity() {
 
@@ -45,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
         passwordInput = findViewById(R.id.passwordInput)
 
         dbHelper = MusicAppDatabaseHelper(this)
+        dbHelper.readableDatabase
 
         loginButton.setOnClickListener {
             handleLogin()
