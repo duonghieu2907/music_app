@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,41 +36,46 @@ class RecentlyPlayedFragment : Fragment() {
         // Initialize DBHelper
         dbHelper = MusicAppDatabaseHelper(requireContext())
 
-        // Hide the navigation bar when this fragment is created
-        val activity = requireActivity()
-        if (activity is MainActivity) {
-            activity.hideBottomNavigation()
-        }
+        // Initialize UI
+        val backButton = view.findViewById<ImageView>(R.id.back_button)
 
         val application = requireActivity().application as Global
         curUser = application.curUserId
 
-        // Handle the back button click
-        val backButton: ImageButton = view.findViewById(R.id.back_button)
+
+        // Set up back button
         backButton.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        // Get albums and playlists
-        val albumList = dbHelper.getNewest("album", curUser) as ArrayList<*>
-        val playlistList = dbHelper.getNewest("playlist", curUser) as ArrayList<*>
-
-        // Combine the lists
-        val combinedList = ArrayList<Any>()
-        combinedList.addAll(albumList)
-        combinedList.addAll(playlistList)
-
         // Set up RecyclerView
         val recyclerView: RecyclerView = view.findViewById(R.id.recently_played_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        //recyclerView.adapter = RecentlyPlayedAdapter(combinedList)
 
         // Fetch tracks for this album
         val trackList: List<Track> = dbHelper.getRecentlyPlayedTracks(curUser).mapNotNull { trackId ->
             dbHelper.getTrack(trackId)  // Fetch each track's details using the track ID
         }
-        val tracksAdapter = HistoryTrackAdapter(trackList, dbHelper)
+        val tracksAdapter =
+            TracksAlbumsAdapter(trackList, dbHelper) { track -> openTrack(track.trackId, track.albumId) }
         recyclerView.adapter = tracksAdapter
+    }
 
+    private fun openTrack(trackId: String, albumId: String? = null) {
+        val fragment = SingleTrackFragment.newInstance(trackId,null, albumId)
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+        Toast.makeText(requireContext(), trackId, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Hide the navigation bar when this fragment is created
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.hideBottomNavigation()
+        }
     }
 }

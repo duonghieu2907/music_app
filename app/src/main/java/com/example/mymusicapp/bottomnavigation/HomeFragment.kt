@@ -11,15 +11,23 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import android.graphics.Color
+import android.util.Log
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.album.AlbumFragment
+import com.example.mymusicapp.album.AlbumTracksAdapter
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.library.FragmentAlbumsAdapter
 import com.example.mymusicapp.models.Album
+import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.playlist.PlaylistTracksAdapter
+import com.example.mymusicapp.playlist.SingleTrackFragment
 import com.example.mymusicapp.queue.QueueFragment
 
 class HomeFragment : Fragment() {
@@ -107,7 +115,9 @@ class HomeFragment : Fragment() {
         albumName6 = view.findViewById(R.id.album_name_6)
 
         updateRecentlyPlayedAlbums(albums)
-        
+
+        setupRecyclerView(view)
+
         view.findViewById<LinearLayout>(R.id.mix_item_1).setOnClickListener {
             val boxColor = (it.findViewById<LinearLayout>(R.id.mix_item_1).background as? ColorDrawable)?.color ?: Color.TRANSPARENT
             val underlineColor = (it.findViewById<View>(R.id.underline).background as? ColorDrawable)?.color ?: Color.TRANSPARENT
@@ -201,7 +211,60 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setupRecyclerView(view: View) {
+        // Albums RecyclerView setup
+        val trackList: List<Track> = recommendSongsFromFrequentArtists(curUser)
+        val tracksAdapter =
+            TracksAlbumsAdapter(trackList, dbHelper) { track -> openTrack(track.trackId, track.albumId) }
 
+        val recommendationRecyclerView = view.findViewById<RecyclerView>(R.id.recommendation_recyclerview)
+        recommendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recommendationRecyclerView.adapter = tracksAdapter
+    }
+
+    private fun openTrack(trackId: String, albumId: String? = null) {
+        val fragment = SingleTrackFragment.newInstance(trackId,null, albumId)
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+        Toast.makeText(requireContext(), trackId, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun recommendSongsFromFrequentArtists(curUser: String): List<Track> {
+        val recentlyPlayedTracks = dbHelper.getRecentlyPlayedTracks(curUser)
+            .mapNotNull { trackId ->
+                dbHelper.getTrack(trackId)  // Fetch each track's details using the track ID
+            }
+
+        // Group the tracks by album to fetch the artists and identify if a user has listened to multiple songs from the same artist
+        val artistTrackCount = recentlyPlayedTracks
+            .map { track -> dbHelper.getAlbum(track.albumId) }  // Fetch the album for each track
+            .mapNotNull { album -> album?.artistId }            // Map albums to artist IDs
+            .groupingBy { it }                                  // Group by artistId
+            .eachCount()                                        // Count how many times each artist appears
+
+        // Find artists the user has listened to more than once
+        val frequentArtists = artistTrackCount.filter { it.value > 1 }.keys
+
+        // Recommend other songs from these frequent artists
+        val recommendedTracks = mutableListOf<Track>()
+
+        frequentArtists.forEach { artistId ->
+            // Fetch all tracks by the artist that are not already in the recently played tracks
+            val allTracksByArtist = dbHelper.getTracksByArtist(artistId)
+
+            // Filter out tracks that the user has already listened to
+            val newTracks = allTracksByArtist.filter { track ->
+                track.trackId !in recentlyPlayedTracks.map { it.trackId }
+            }
+
+            recommendedTracks.addAll(newTracks)
+        }
+
+        // Optionally, limit recommendations to a certain number of songs
+        return recommendedTracks
+    }
 
     // Function to open the playlist corresponding to the selected mix
     private fun openMixPlaylist(mixName: String, boxColor: Int, underlineColor: Int) {
