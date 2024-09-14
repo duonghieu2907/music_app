@@ -79,7 +79,6 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener {
         }
 
 
-
         // Set up UI elements and receive arguments...
         clearQueueButton = view.findViewById(R.id.clearQueueButton)
         clearQueueButton.setOnClickListener {
@@ -116,8 +115,6 @@ class QueueFragment : Fragment(), QueueSongAdapter.OnItemClickListener {
         track = arguments?.getParcelable("TRACK") ?: return view
         playlist = arguments?.getParcelable("PLAYLIST")
         album = arguments?.getParcelable("ALBUM")
-
-
 
         dbHelper = MusicAppDatabaseHelper(requireContext())
 

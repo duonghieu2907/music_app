@@ -17,6 +17,8 @@ import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -26,10 +28,14 @@ import com.example.mymusicapp.R
 import com.example.mymusicapp.album.AlbumFragment
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
+import com.example.mymusicapp.data.PlayerViewModel
+import com.example.mymusicapp.data.PlayerViewModelFactory
 import com.example.mymusicapp.models.Album
 import com.example.mymusicapp.models.Track
+import com.example.mymusicapp.models.TrackQueue
 import com.example.mymusicapp.playlist.SingleTrackFragment
 import com.example.mymusicapp.queue.QueueFragment
+import com.google.android.exoplayer2.ExoPlayer
 
 class HomeFragment : Fragment() {
     private lateinit var dbHelper: MusicAppDatabaseHelper
@@ -60,6 +66,9 @@ class HomeFragment : Fragment() {
     private lateinit var albumName5: TextView
     private lateinit var albumName6: TextView
 
+    //player view model and exoPlayer
+    private lateinit var playerViewModel: PlayerViewModel
+    private lateinit var exoPlayer: ExoPlayer
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -95,6 +104,14 @@ class HomeFragment : Fragment() {
 
         val application = requireActivity().application as Global
         curUser = application.curUserId!!
+
+        //Init exoPlayer
+        exoPlayer = ExoPlayer.Builder(context).build()
+        playerViewModel = ViewModelProvider(activity as FragmentActivity,
+            PlayerViewModelFactory(exoPlayer, dbHelper, curUser))[PlayerViewModel::class.java]
+        playerViewModel.exoPlayer.let {
+            exoPlayer = it
+        }
 
         val recentlyPlayedAlbums = dbHelper.getNewest("album", curUser) as ArrayList<*>
         val albums = (recentlyPlayedAlbums as? List<*>)?.mapNotNull { it as? Album } ?: arrayListOf()
@@ -206,12 +223,7 @@ class HomeFragment : Fragment() {
                         if (isAdded) {
                             val albumFragment = AlbumFragment.newInstance(album.albumId) //Transfer id
 
-                            parentFragmentManager.beginTransaction()
-                                .replace(R.id.fragment_container, albumFragment)
-                                .addToBackStack(null)
-                                .commit()
-
-                            Toast.makeText(context, "Worked!", Toast.LENGTH_SHORT).show()
+                            loadFragment(albumFragment)
                         } else {
                             Toast.makeText(context, "Fragment not attached to activity", Toast.LENGTH_SHORT).show()
                         }
@@ -237,18 +249,11 @@ class HomeFragment : Fragment() {
 
     private fun openTrack(trackId: String, albumId: String? = null) {
         val fragment = SingleTrackFragment.newInstance(trackId,null, albumId)
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
-        Toast.makeText(context, trackId, Toast.LENGTH_SHORT).show()
+        loadFragment(fragment)
     }
 
     private fun recommendSongsFromFrequentArtists(curUser: String): List<Track> {
-        val recentlyPlayedTracks = dbHelper.getRecentlyPlayedTracks(curUser)
-            .mapNotNull { trackId ->
-                dbHelper.getTrack(trackId)  // Fetch each track's details using the track ID
-            }
+        val recentlyPlayedTracks = dbHelper.getNewest("track",curUser) as List<Track>
 
         // Group the tracks by album to fetch the artists and identify if a user has listened to multiple songs from the same artist
         val artistTrackCount = recentlyPlayedTracks
@@ -299,10 +304,7 @@ class HomeFragment : Fragment() {
             mixPlaylistFragment.arguments = bundle
 
             // Navigate to the MixPlaylistFragment
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, mixPlaylistFragment)
-                .addToBackStack(null)
-                .commit()
+            loadFragment(mixPlaylistFragment)
         } else {
             Toast.makeText(context, "Playlist not found", Toast.LENGTH_SHORT).show()
         }
@@ -323,7 +325,7 @@ class HomeFragment : Fragment() {
         }
 
         queueButton.setOnClickListener {
-            navigateToQueue()
+            //navigateToQueue()
         }
 
         logoutButton.setOnClickListener {
@@ -337,20 +339,22 @@ class HomeFragment : Fragment() {
 
     private fun navigateToHistory() {
         val recentlyPlayedFragment = RecentlyPlayedFragment()
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, recentlyPlayedFragment)  // Replace with your fragment container ID
-            .addToBackStack(null)  // Optional: Add this transaction to the back stack
-            .commit()
-        drawerLayout.closeDrawer(GravityCompat.START)
+        loadFragment(recentlyPlayedFragment)
     }
 
     private fun navigateToQueue() {
-        val queueFragment = QueueFragment()
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, queueFragment)  // Replace with your fragment container ID
-            .addToBackStack(null)  // Optional: Add this transaction to the back stack
-            .commit()
-        drawerLayout.closeDrawer(GravityCompat.START)
+        val index = playerViewModel.currentTrackIndex
+
+        if(TrackQueue.queue.isEmpty()) {
+            Toast.makeText(context, "There is no queue currently", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val track = TrackQueue.queue[index]
+        val playlistId = TrackQueue.queuePlaylistId[index]
+        val playlist = dbHelper.getPlaylist(playlistId)
+
+        val queueFragment = QueueFragment.newInstance(track, playlist, null)
+        loadFragment(queueFragment)
     }
 
     private fun handleLogout() {
@@ -365,12 +369,20 @@ class HomeFragment : Fragment() {
 
         drawerLayout.closeDrawer(GravityCompat.START)
 
+        //clear exoPlayer and queue
+        TrackQueue.clearQueue()
+        exoPlayer.stop()
+        exoPlayer.release()
+
         //notify
         Toast.makeText(context, "Log out successfully.", Toast.LENGTH_SHORT).show()
 
         //start intent
         val intent = Intent(context, LoginActivity::class.java)
         intent.putExtra("Email", userEmail)
+
+        //clear data and change activity
+        activity.finish()
         activity.startActivity(intent)
     }
 
@@ -381,5 +393,13 @@ class HomeFragment : Fragment() {
         if (activity is MainActivity) {
             activity.showBottomNavigation()
         }
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)  // Replace with your fragment container ID
+            .addToBackStack(null)  // Optional: Add this transaction to the back stack
+            .commit()
+        drawerLayout.closeDrawer(GravityCompat.START)
     }
 }

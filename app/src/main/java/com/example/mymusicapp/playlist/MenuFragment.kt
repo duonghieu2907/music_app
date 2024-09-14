@@ -108,6 +108,7 @@ class MenuFragment : Fragment() {
 
         val clickListenerQ = View.OnClickListener {
             TrackQueue.addTrack(track, playlistId)
+            Toast.makeText(requireContext(), "Add successfully", Toast.LENGTH_SHORT).show()
         }
 
 
@@ -133,8 +134,6 @@ class MenuFragment : Fragment() {
                     if (dbHelper.isTrackLiked(track.trackId, curUserId)) {
                         dbHelper.deleteLike(curUserId, track.trackId) // Use global curUserId
                     }
-
-
 
                     Toast.makeText(requireContext(), "Track unliked", Toast.LENGTH_SHORT).show()
                 }

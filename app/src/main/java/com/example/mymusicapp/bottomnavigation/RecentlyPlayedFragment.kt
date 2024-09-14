@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
-import com.example.mymusicapp.album.AlbumTracksAdapter
 import com.example.mymusicapp.data.Global
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
 import com.example.mymusicapp.models.Track
@@ -53,9 +50,7 @@ class RecentlyPlayedFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Fetch tracks for this album
-        val trackList: List<Track> = dbHelper.getRecentlyPlayedTracks(curUser).mapNotNull { trackId ->
-            dbHelper.getTrack(trackId)  // Fetch each track's details using the track ID
-        }
+        val trackList = dbHelper.getNewest("track", curUser) as List<Track>
         val tracksAdapter =
             TracksAlbumsAdapter(trackList, dbHelper) { track -> openTrack(track.trackId, track.albumId) }
         recyclerView.adapter = tracksAdapter
@@ -67,7 +62,6 @@ class RecentlyPlayedFragment : Fragment() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-        Toast.makeText(requireContext(), trackId, Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {

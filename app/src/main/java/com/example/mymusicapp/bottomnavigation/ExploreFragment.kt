@@ -1,9 +1,7 @@
 package com.example.mymusicapp.bottomnavigation
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.example.mymusicapp.MainActivity
 import com.example.mymusicapp.R
 import com.example.mymusicapp.data.MusicAppDatabaseHelper
@@ -240,8 +239,6 @@ class ExploreFragment : Fragment() {
                 .replace(R.id.fragment_container, mixPlaylistFragment)  // Replace with your fragment container ID
                 .addToBackStack(null)  // Optional: Add this transaction to the back stack
                 .commit()
-
-            Toast.makeText(requireContext(), "Clicked on Playlist: $genre playlist", Toast.LENGTH_SHORT).show()
         }
         println("Browse box $genreId clicked")
     }
@@ -268,8 +265,6 @@ class ExploreFragment : Fragment() {
                 .replace(R.id.fragment_container, mixPlaylistFragment)  // Replace with your fragment container ID
                 .addToBackStack(null)  // Optional: Add this transaction to the back stack
                 .commit()
-
-            Toast.makeText(requireContext(), "Clicked on Playlist: $genre playlist", Toast.LENGTH_SHORT).show()
         }
         println("Browse box $browseId clicked")
     }

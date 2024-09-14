@@ -103,8 +103,6 @@ class FragmentPlaylists : Fragment(), PlaylistListAdapter.FragmentPlaylistItemOn
             val playlistFragment = PlaylistFragment.newInstance(item.playlistId) //Transfer id
 
             loadFragment(playlistFragment)
-
-            Toast.makeText(requireContext(), "Worked!", Toast.LENGTH_SHORT).show()
         } ?: run {
             Toast.makeText(requireContext(), "Item is null!", Toast.LENGTH_SHORT).show()
         }
